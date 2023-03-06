@@ -1,0 +1,294 @@
+{
+    "CES_INSPYRED": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1,
+        "tau": null,
+        "tau_prime": null,
+        "epsilon": 1e-05
+    },
+    "DE_INSPYRED": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1,
+        "num_selected": 50,
+        "tournament_size": 2,
+        "crossover_rate": 1,
+        "mutation_rate": 0.1,
+        "gaussian_mean": 0,
+        "gaussian_stdev": 1
+    },
+    "EDA_INSPYRED": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1,
+        "num_selected": 50,
+        "num_offspring": 100,
+        "num_elites": 0
+    },
+    "GA_INSPYRED": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1,
+        "crossover_rate": 1,
+        "num_crossover_points": 1,
+        "mutation_rate": 1,
+        "num_elites": 0
+    },
+    "NSGA2_INSPYRED": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1
+    },
+    "PAES_INSPYRED": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1
+    },
+    "PSO_INSPYRED": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1,
+        "inertia": 0.5,
+        "cognitive_rate": 2.1,
+        "social_rate": 2.1
+    },
+    "SA_INSPYRED": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1,
+        "temperature": null,
+        "cooling_rate": null,
+        "mutation_rate": null,
+        "gaussian_mean": 0,
+        "gaussian_stdev": 1
+    },
+    "ABC_PYGMO": {
+        "number_of_generations": 100,
+        "limit": 1,
+        "number_of_islands": 1
+    },
+    "BH_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "niter": 10,
+        "T": 1.0,
+        "stepsize": 0.5,
+        "interval": 50,
+        "target_accept_rate": 0.5,
+        "stepwise_factor": 0.9,
+        "maxcor": 10,
+        "ftol": 0, //2.220446049250313e-09,
+        "gtol": 0, //1e-05,
+        "eps": 1e-14,
+        "maxfun": 100,
+        "maxiter": 10,
+        "maxls": 20
+    },
+    "CMAES_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "cc": -1,
+        "cs": -1,
+        "c1": -1,
+        "cmu": -1,
+        "sigma0": 0.5,
+        "ftol": 0, //1e-06,
+        "xtol": 0, //1e-06,
+        "memory": false,
+        "force_bounds": true,
+        "number_of_islands": 1
+    },
+    "DE1220_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "variant_adptv": 1,
+        "ftol": 0, //1e-06,
+        "xtol": 0, //1e-06,
+        "memory": false,
+        "number_of_islands": 1
+    },
+    "DE_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "F": 0.8,
+        "CR": 0.9,
+        "variant": 2,
+        "ftol": 0, //1e-06,
+        "xtol": 0, //1e-06,
+        "number_of_islands": 1
+    },
+    "GACO_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1,
+        "ker": 63,
+        "q": 1.0,
+        "oracle": 0.0,
+        "acc": 0.01,
+        "threshold": 1,
+        "n_gen_mark": 7,
+        "impstop": 100000,
+        "evalstop": 100000,
+        "focus": 0.0,
+        "memory": false
+    },
+    "MACO_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1,
+        "ker": 63,
+        "q": 1.0,
+        "threshold": 1,
+        "n_gen_mark": 7,
+        "evalstop": 100000,
+        "focus": 0.0,
+        "memory": false
+    },
+    "NM_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "xatol": 0, //0.0001,
+        "fatol": 0, //0.0001,
+        "adaptive": false
+    },
+    "NSGA2_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 12,
+        "number_of_cpu": 1,
+        "cr": 0.95,
+        "eta_c": 10.0,
+        "m": 0.01,
+        "eta_m": 50.0
+    },
+    "NSPSO_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1,
+        "omega": 0.6,
+        "c1": 0.01,
+        "c2": 0.5,
+        "chi": 0.5,
+        "v_coeff": 0.5,
+        "diversity_mechanism": "crowding distance",
+        "leader_selection_range": 2,
+        "memory": false
+    },
+    "PRAXIS_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_islands": 1
+    },
+    "PSOG_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1,
+        "omega": 0.7298,
+        "eta1": 2.05,
+        "eta2": 2.05,
+        "max_vel": 0.5,
+        "variant": 5,
+        "neighb_type": 2,
+        "neighb_param": 4,
+        "memory": false
+    },
+    "PSO_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "omega": 0.7298,
+        "eta1": 2.05,
+        "eta2": 2.05,
+        "max_vel": 0.5,
+        "variant": 5,
+        "neighb_type": 2,
+        "neighb_param": 4,
+        "memory": false,
+        "number_of_islands": 1
+    },
+    "SADE_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "variant": 2,
+        "variant_adptv": 1,
+        "ftol": 0, //1e-06,
+        "xtol": 0, //1e-06,
+        "memory": false,
+        "number_of_islands": 1
+    },
+    "SGA_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "cr": 0.9,
+        "eta_c": 1.0,
+        "m": 0.02,
+        "param_m": 1.0,
+        "param_s": 2,
+        "number_of_islands": 1
+    },
+    "XNES_PYGMO": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "eta_mu": -1,
+        "eta_sigma": -1,
+        "eta_b": -1,
+        "sigma0": -1,
+        "ftol": 0, //1e-06,
+        "xtol": 0, //1e-06,
+        "memory": false,
+        "force_bounds": true,
+        "number_of_islands": 1
+    },
+    "IBEA_BLUEPYOPT": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1,
+        "mutpb": 1.0,
+        "cxpb": 1.0
+    },
+    "NSGA2_BLUEPYOPT": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1,
+        "mutpb": 1.0,
+        "cxpb": 1.0
+    },
+    "BH_SCIPY": {
+        "niter": 100,
+        "T": 1.0,
+        "stepsize": 0.5,
+        "interval": 50,
+        "target_accept_rate": 0.5,
+        "stepwise_factor": 0.9,
+        "maxcor": 10,
+        "ftol": 0, //2.220446049250313e-09,
+        "gtol": 0, //1e-05,
+        "eps": 1e-08,
+        "maxfun": 100,
+        "maxls": 20
+    },
+    "L_BFGS_B_SCIPY": {
+        "size_of_population": 100,
+        "number_of_generations": 100,
+        "maxcor": 10,
+        "ftol": 0, //2.220446049250313e-09,
+        "gtol": 0, //1e-05,
+        "eps": 1e-08
+    },
+    "NM_SCIPY": {
+        "size_of_population": 100,
+        "maxfev": 100,
+        "xatol": 0, //0.0001,
+        "fatol": 0, //0.0001,
+        "adaptive": false
+    },
+    "CMAES_CMAES": {
+        "number_of_generations": 100,
+        "size_of_population": 100,
+        "number_of_cpu": 1,
+        "sigma": 1.3
+    },
+    "RANDOM_SEARCH": {
+        "size_of_population": 10000,
+        "number_of_cpu": 1
+    }
+}

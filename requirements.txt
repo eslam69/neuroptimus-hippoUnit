@@ -1,0 +1,5 @@
+efel==4.1.1
+matplotlib==3.6.0
+NEURON==8.2.1
+numpy==1.23.3
+
