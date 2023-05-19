@@ -14,13 +14,8 @@ def main(parameters):
     """
 
     if not parameters:
-        import graphic
-        try:
-            graphic.main()
-            sys.exit()
-        except IndexError as IE:
-            print(IE)
-            traceback.print_exc()
+        print("No argument, please type -h for help")
+        sys.exit()
 
     for o,a in parameters:
         if o=="-h":

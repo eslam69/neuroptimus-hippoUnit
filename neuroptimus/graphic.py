@@ -1984,7 +1984,9 @@ class StimuliWindow(QtWidgets.QMainWindow):
         self.stim_table.setGeometry(QtCore.QRect(80, 50, 150, 361))
         self.stim_table.setObjectName("stim_table")
         self.stim_table.setColumnCount(1)
-        self.stim_table.setHorizontalHeaderLabels(["Amplitude (nA)"])
+        _type=self.parent.stimprot.currentText()
+        unit="mV" if _type=="VClamp" else "nA" if _type=="IClamp" else ""
+        self.stim_table.setHorizontalHeaderLabels(["Amplitude ("+unit+")"])
         self.stim_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.stim_table.horizontalHeader().setStretchLastSection(True)
         if self.parent.container:

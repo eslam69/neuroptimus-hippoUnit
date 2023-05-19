@@ -10,6 +10,19 @@ import os
 import matplotlib
 matplotlib.interactive(False)
 
+class my_candidate():
+	"""
+	Mimics the behavior of ``candidate`` from the ``inspyred`` package to allow the uniform
+	handling of the results produced by the different algorithms.
+
+	:param vals: the result of the optimization
+	:param fitn: the fitness of the result
+
+	"""
+	def __init__(self,vals, fitn=-1):
+		self.candidate=vals
+		self.fitness=fitn
+
 class coreModul():
 	"""
 	This class is responsible to carry out the main steps of the optimization process by
@@ -46,6 +59,7 @@ class coreModul():
 		self.model_handler=None
 		self.optimizer=None
 		self.optimal_params=None
+		self.solutions = []
 		self.wfits = []
 		self.wfits2 = []
 		self.cands = []
@@ -396,9 +410,27 @@ class coreModul():
 			start_time=time.time()
 			self.optimizer.Optimize()
 			stop_time=time.time()
-			if isinstance(self.optimizer.solutions[0].fitness,list):
-				for solution in self.optimizer.solutions:
-					solution.fitness = numpy.average(solution.fitness, weights = self.option_handler.weights*self.data_handler.number_of_traces())
+
+			
+			with open("eval.txt","r") as ind_file:
+				for line in ind_file:
+					solution = json.loads(line)
+					candidate=solution[1]
+					fitness=solution[0]
+					self.solutions.append(my_candidate(candidate[:self.option_handler.num_params],fitness))
+			
+			
+			"""if self.option_handler.algorithm_name.split("_")[1] == "SCIPY":
+				ordered_solutions = []
+				for i in range(self.optimizer.size_of_population):
+					for x in range(0,self.optimizer.number_of_generations*self.optimizer.size_of_population,self.optimizer.number_of_generations):
+						ordered_solutions.append(self.solutions[x+i])
+				self.solutions = ordered_solutions"""
+			if isinstance(self.solutions[0].fitness,list):
+				for solution in self.solutions:
+					wsum = sum([w*f for f,w in zip(solution.fitness,self.option_handler.weights*self.data_handler.number_of_traces())])
+					solution.fitness = wsum
+					#solution.fitness = numpy.average(solution.fitness, weights = self.option_handler.weights*self.data_handler.number_of_traces())
 			self.solutions_by_generations = []
 			try:
 				os.remove(self.optimizer.directory + '/stat_file.txt')
@@ -406,7 +438,7 @@ class coreModul():
 			except OSError:
 				pass
 			current_population = []
-			for idx,solution in enumerate(self.optimizer.solutions):
+			for idx,solution in enumerate(self.solutions):
 				current_population.append(solution)
 				if not (idx+1)%self.optimizer.size_of_population:
 					self.solutions_by_generations.append(current_population)
@@ -414,17 +446,17 @@ class coreModul():
 			self.option_handler.WriteIndFile(self.solutions_by_generations)
 			self.option_handler.WriteStatFile(self.solutions_by_generations)
 
-			self.cands = [x.candidate for x in self.optimizer.solutions]
-			self.fits = [x.fitness for x in self.optimizer.solutions]
+			self.cands = [x.candidate for x in self.solutions]
+			self.fits = [x.fitness for x in self.solutions]
 
-			min_sol = min(self.optimizer.solutions, key=lambda x:x.fitness)
+			min_sol = min(self.solutions, key=lambda x:x.fitness)
 			self.best_fit = min_sol.fitness
 			self.best_cand = min_sol.candidate
 			min_ind = self.fits.index(self.best_fit)+1
 			print((self.best_cand, "Best Candidate (Normalized)"))
 			print((self.best_fit, "Best Fitness"))
 			print((min_ind, "Index of best individual"))
-			print((len(self.optimizer.solutions), "Number of Evaluations"))
+			print((len(self.solutions), "Number of Evaluations"))
 			print(("Optimization lasted for ", stop_time-start_time, " s"))	
 			self.optimal_params=self.optimizer.fit_obj.ReNormalize(self.best_cand)
 
@@ -437,7 +469,7 @@ class coreModul():
 		A report of the results is generated in the form of a html document.
 		:param args: currently not in use
 		"""
-		self.best_fit=self.optimizer.fit_obj.single_objective_fitness([self.optimizer.fit_obj.normalize(self.optimal_params)],delete_model=False)[0]
+		self.best_fit=self.optimizer.fit_obj.single_objective_fitness(self.optimizer.fit_obj.normalize(self.optimal_params),delete_model=False)
 		self.final_result=[]
 		self.error_comps=[]
 		k_range=self.data_handler.number_of_traces()
@@ -564,7 +596,7 @@ class coreModul():
 			target_dict = {"data_type":self.option_handler.type[-1],"file_name":self.option_handler.input_dir.split('/')[-1],"number_of_traces":k_range,"stim_delay":self.option_handler.stim_del,
 				"stim_duration":self.option_handler.stim_dur}
 			json_var = {"opt_name":self.name+"_"+self.option_handler.algorithm_name+str(datetime.utcnow().strftime("_%d_%b_%Y_%H:%M:%S:%f"))
-			,"seed": self.option_handler.seed,"final_fitness":self.best_fit,"number_of_evaluations": len(self.optimizer.solutions),
+			,"seed": self.option_handler.seed,"final_fitness":self.best_fit,"number_of_evaluations": len(self.solutions),
 			"models":{"model_name":self.name,"model_author":os.uname()[1]},"parameters":param_dict,"error_function":error_dict, "algorithm":[alg_dict],"target_data":target_dict, "created_at":datetime.strftime(datetime.utcnow(),"%Y-%m-%dT%H:%M:%S.%fZ")}
 			
 			if self.option_handler.type[-1]=='features':
@@ -601,8 +633,8 @@ class coreModul():
 		This tool is purely for analyzing results, and we do not recommend to use it to obtain parameter values.
 		"""
 		import copy
-		self.prev_result=copy.copy(self.optimizer.solutions)
+		self.prev_result=copy.copy(self.solutions)
 		self.optimizer=grid(self.data_handler,self.optimizer.fit_obj.model,self.option_handler,resolution)
 		self.optimizer.Optimize(self.optimal_params)
-		self.grid_result=copy.copy(self.optimizer.solutions)
-		self.optimizer.solutions=self.prev_result
+		self.grid_result=copy.copy(self.solutions)
+		self.solutions=self.prev_result

@@ -341,6 +341,7 @@ class optionHandler(object):
 			self.adjusted_params.append(options)#string list, one row contains the section, the channel, and the parameter name
 		else:
 			print("already selected\n")
+		#self.adjusted_params=list(set(self.adjusted_params))
 
 	def GetModelRun(self):
 		"""

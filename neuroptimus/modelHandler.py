@@ -141,7 +141,9 @@ class modelHandlerNeuron():
 
         """
         self.stims=stims
-        
+        #try:
+        #    print self.stims[0],"IClamp"
+        #    print self.stims[0]=="IClamp"
         if self.stims[0]=="IClamp":
             self.stimulus=self.hoc_obj.IClamp(self.stims[1],sec=self.sections[self.stims[2]])
         elif self.stims[0]=="VClamp":
@@ -212,9 +214,14 @@ class modelHandlerNeuron():
         with open(self.parameters[0],'r') as f:
             tmp=[float(n) for n in f]
             self.vec=self.vec.from_python(tmp)
-            self.vec.play(self.hoc_obj.cas()(0.5).point_processes()[0]._ref_amp,self.hoc_obj.dt)
+            #self.hoc_obj('h.vec.play(&stim.amp,dt)')
+            #print (dir(self.hoc_obj.cas()(0.5).point_processes()[0]))
+            #ref=self.hoc_obj.ref(self.stimulus.amp)
+            #self.vec.play(self.hoc_obj.cas()(0.5).point_processes()[0]._ref_amp,self.hoc_obj.dt)
+            self.vec.play(self.stimulus._ref_amp,self.hoc_obj.dt)
             self.stimulus.delay=0
             self.stimulus.dur=1e9
+            #self.stimulus.dur=self.parameters[2]
 
 
     # sets the channel parameters to the given value
@@ -231,6 +238,7 @@ class modelHandlerNeuron():
         Sets the given channel's parameter to the given value. If the section is not known that
         indicates a serious internal error and the program will abort.
 
+        print(len(self.vec))
         """
         try:
             self.sections[section].push()
