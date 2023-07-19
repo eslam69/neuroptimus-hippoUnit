@@ -1,6 +1,8 @@
 import sys
 from traceHandler import sizeError
 try:
+    import matplotlib
+    matplotlib.use("Qt5Agg")
     import matplotlib.pyplot as plt
     from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
     from matplotlib.figure import Figure
@@ -14,6 +16,7 @@ import numpy
 import os.path
 from functools import partial
 import re
+import threading
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox
@@ -722,7 +725,7 @@ class Ui_Neuroptimus(object):
         #runtab 5
         self.tabwidget.setTabText(self.tabwidget.indexOf(self.fittab), _translate("Neuroptimus", "Fitness"))
         self.pushButton_30.setText(_translate("Neuroptimus", "Run"))
-        self.pushButton_30.clicked.connect(self.runsim)
+        self.pushButton_30.clicked.connect(self.startFittingThread)
         # self.pushButton_31.setText(_translate("Neuroptimus", "Starting points"))
         # self.pushButton_31.clicked.connect(self.startingpoints)
         # self.pushButton_31.setEnabled(False)
@@ -883,6 +886,15 @@ class Ui_Neuroptimus(object):
             scroll_area.setWidget(label)
             scroll_area.setWidgetResizable(True)
 
+    def startFittingThread(self):
+    
+
+        # Create a new thread for optimization
+        optimization_thread = threading.Thread(target=self.runsim)
+        optimization_thread.start()
+        
+
+        
     def help_popup_fit(self):
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Question)

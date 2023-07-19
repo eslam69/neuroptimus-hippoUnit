@@ -1,0 +1,390 @@
+{
+    "attributes": {
+        "adjusted_params": [
+            "cm",
+            "Ra",
+            "g_pas",
+            "e_pas"
+        ],
+        "base_dir": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/test_model_package/model/",
+        "boundaries": [
+            [
+                1.0,
+                30.0,
+                5e-05,
+                -75.0
+            ],
+            [
+                10.0,
+                3000.0,
+                0.01,
+                -55.0
+            ]
+        ],
+        "current_algorithm": {
+            "RANDOM_SEARCH": {
+                "number_of_cpu": 3,
+                "size_of_population": 1
+            }
+        },
+        "feat_str": "Spikecount, steady_state_voltage, voltage_base, voltage_deflection, voltage_deflection_begin, sag_amplitude, sag_ratio1",
+        "feats": [
+            "Spikecount",
+            "steady_state_voltage",
+            "voltage_base",
+            "voltage_deflection",
+            "voltage_deflection_begin",
+            "sag_amplitude",
+            "sag_ratio1"
+        ],
+        "hippounit_settings_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/test_model_package/hippounit_settings.json",
+        "input_cont_t": null,
+        "input_dir": "",
+        "input_freq": null,
+        "input_length": null,
+        "input_scale": "mV",
+        "input_size": 2,
+        "model_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/test_model_package/model/experiment/main_model.hoc",
+        "model_spec_dir": null,
+        "num_params": 4,
+        "param_vals": [
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.1
+        ],
+        "run_controll_dt": 0.05,
+        "run_controll_pos": 0.5,
+        "run_controll_record": "v",
+        "run_controll_sec": "soma[0]",
+        "run_controll_tstop": 600.0,
+        "run_controll_vrest": -65.0,
+        "seed": 1234,
+        "sim_command": " ",
+        "simulator": "hippounit",
+        "spike_thres": 0.0,
+        "spike_window": null,
+        "start_time_stamp": 1659100441.4472558,
+        "starting_points": null,
+        "stim_amp": [
+            -0.25,
+            0.05
+        ],
+        "stim_del": 200.0,
+        "stim_dur": 300.0,
+        "stim_pos": 0.5,
+        "stim_sec": "soma[0]",
+        "stim_type": "IClamp",
+        "type": [
+            "hippounit"
+        ],
+        "u_fun_string": "\n\n\n\ndef usr_fun(self,v):\n#4\n#cm\n#Ra\n#g_pas\n#e_pas\n\tfor sec in h.allsec():\n\t\tsec.cm=v[0]\n\t\tsec.Ra=v[1]\n\t\tfor seg in sec:\n\t\t\tseg.g_pas=v[2]\n\t\t\tseg.e_pas=v[3]",
+        "weights": [
+            0.1429,
+            0.1429,
+            0.1429,
+            0.1429,
+            0.1429,
+            0.1429,
+            0.1429
+        ]
+    },
+    "selectable_algorithms": {
+        "ABC_PYGMO": {
+            "limit": 1,
+            "number_of_generations": 100,
+            "number_of_islands": 1
+        },
+        "BH_PYGMO": {
+            "T": 1.0,
+            "eps": 1e-08,
+            "ftol": 2.220446049250313e-09,
+            "gtol": 1e-05,
+            "interval": 50,
+            "maxcor": 10,
+            "maxfun": 100,
+            "maxiter": 10,
+            "maxls": 20,
+            "niter": 10,
+            "number_of_generations": 100,
+            "size_of_population": 100,
+            "stepsize": 0.5,
+            "stepwise_factor": 0.9,
+            "target_accept_rate": 0.5
+        },
+        "BH_SCIPY": {
+            "T": 1.0,
+            "eps": 1e-08,
+            "ftol": 2.220446049250313e-09,
+            "gtol": 1e-05,
+            "interval": 50,
+            "maxcor": 10,
+            "maxfun": 100,
+            "maxls": 20,
+            "niter": 100,
+            "stepsize": 0.5,
+            "stepwise_factor": 0.9,
+            "target_accept_rate": 0.5
+        },
+        "CES_INSPYRED": {
+            "epsilon": 1e-05,
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "size_of_population": 100,
+            "tau": null,
+            "tau_prime": null
+        },
+        "CMAES_CMAES": {
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "sigma": 1.3,
+            "size_of_population": 100
+        },
+        "CMAES_PYGMO": {
+            "c1": -1,
+            "cc": -1,
+            "cmu": -1,
+            "cs": -1,
+            "force_bounds": true,
+            "ftol": 1e-06,
+            "memory": false,
+            "number_of_generations": 100,
+            "number_of_islands": 1,
+            "sigma0": 0.5,
+            "size_of_population": 100,
+            "xtol": 1e-06
+        },
+        "DE1220_PYGMO": {
+            "ftol": 1e-06,
+            "memory": false,
+            "number_of_generations": 100,
+            "number_of_islands": 1,
+            "size_of_population": 100,
+            "variant_adptv": 1,
+            "xtol": 1e-06
+        },
+        "DE_INSPYRED": {
+            "crossover_rate": 1,
+            "gaussian_mean": 0,
+            "gaussian_stdev": 1,
+            "mutation_rate": 0.1,
+            "num_selected": 50,
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "size_of_population": 100,
+            "tournament_size": 2
+        },
+        "DE_PYGMO": {
+            "CR": 0.9,
+            "F": 0.8,
+            "ftol": 1e-06,
+            "number_of_generations": 100,
+            "number_of_islands": 1,
+            "size_of_population": 100,
+            "variant": 2,
+            "xtol": 1e-06
+        },
+        "EDA_INSPYRED": {
+            "num_elites": 0,
+            "num_offspring": 100,
+            "num_selected": 50,
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "size_of_population": 100
+        },
+        "GACO_PYGMO": {
+            "acc": 0.01,
+            "evalstop": 100000,
+            "focus": 0.0,
+            "impstop": 100000,
+            "ker": 63,
+            "memory": false,
+            "n_gen_mark": 7,
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "oracle": 0.0,
+            "q": 1.0,
+            "size_of_population": 100,
+            "threshold": 1
+        },
+        "GA_INSPYRED": {
+            "crossover_rate": 1,
+            "mutation_rate": 1,
+            "num_crossover_points": 1,
+            "num_elites": 0,
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "size_of_population": 100
+        },
+        "IBEA_BLUEPYOPT": {
+            "cxpb": 1.0,
+            "mutpb": 1.0,
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "size_of_population": 100
+        },
+        "L_BFGS_B_SCIPY": {
+            "eps": 1e-08,
+            "ftol": 2.220446049250313e-09,
+            "gtol": 1e-05,
+            "maxcor": 10,
+            "number_of_generations": 100,
+            "size_of_population": 100
+        },
+        "MACO_PYGMO": {
+            "evalstop": 100000,
+            "focus": 0.0,
+            "ker": 63,
+            "memory": false,
+            "n_gen_mark": 7,
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "q": 1.0,
+            "size_of_population": 100,
+            "threshold": 1
+        },
+        "NM_PYGMO": {
+            "adaptive": false,
+            "fatol": 0.0001,
+            "number_of_generations": 100,
+            "size_of_population": 100,
+            "xatol": 0.0001
+        },
+        "NM_SCIPY": {
+            "adaptive": false,
+            "fatol": 0.0001,
+            "maxfev": 100,
+            "size_of_population": 100,
+            "xatol": 0.0001
+        },
+        "NSGA2_BLUEPYOPT": {
+            "cxpb": 1.0,
+            "mutpb": 1.0,
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "size_of_population": 100
+        },
+        "NSGA2_INSPYRED": {
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "size_of_population": 100
+        },
+        "NSGA2_PYGMO": {
+            "cr": 0.95,
+            "eta_c": 10.0,
+            "eta_m": 50.0,
+            "m": 0.01,
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "size_of_population": 12
+        },
+        "NSPSO_PYGMO": {
+            "c1": 0.01,
+            "c2": 0.5,
+            "chi": 0.5,
+            "diversity_mechanism": "crowding distance",
+            "leader_selection_range": 2,
+            "memory": false,
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "omega": 0.6,
+            "size_of_population": 100,
+            "v_coeff": 0.5
+        },
+        "PAES_INSPYRED": {
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "size_of_population": 100
+        },
+        "PRAXIS_PYGMO": {
+            "number_of_generations": 100,
+            "number_of_islands": 1,
+            "size_of_population": 100
+        },
+        "PSOG_PYGMO": {
+            "eta1": 2.05,
+            "eta2": 2.05,
+            "max_vel": 0.5,
+            "memory": false,
+            "neighb_param": 4,
+            "neighb_type": 2,
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "omega": 0.7298,
+            "size_of_population": 100,
+            "variant": 5
+        },
+        "PSO_INSPYRED": {
+            "cognitive_rate": 2.1,
+            "inertia": 0.5,
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "size_of_population": 100,
+            "social_rate": 2.1
+        },
+        "PSO_PYGMO": {
+            "eta1": 2.05,
+            "eta2": 2.05,
+            "max_vel": 0.5,
+            "memory": false,
+            "neighb_param": 4,
+            "neighb_type": 2,
+            "number_of_generations": 100,
+            "number_of_islands": 1,
+            "omega": 0.7298,
+            "size_of_population": 100,
+            "variant": 5
+        },
+        "RANDOM_SEARCH": {
+            "number_of_cpu": 1,
+            "size_of_population": 1
+        },
+        "SADE_PYGMO": {
+            "ftol": 1e-06,
+            "memory": false,
+            "number_of_generations": 100,
+            "number_of_islands": 1,
+            "size_of_population": 100,
+            "variant": 2,
+            "variant_adptv": 1,
+            "xtol": 1e-06
+        },
+        "SA_INSPYRED": {
+            "cooling_rate": null,
+            "gaussian_mean": 0,
+            "gaussian_stdev": 1,
+            "mutation_rate": null,
+            "number_of_cpu": 1,
+            "number_of_generations": 100,
+            "size_of_population": 100,
+            "temperature": null
+        },
+        "SGA_PYGMO": {
+            "cr": 0.9,
+            "eta_c": 1.0,
+            "m": 0.02,
+            "number_of_generations": 100,
+            "number_of_islands": 1,
+            "param_m": 1.0,
+            "param_s": 2,
+            "size_of_population": 100
+        },
+        "XNES_PYGMO": {
+            "eta_b": -1,
+            "eta_mu": -1,
+            "eta_sigma": -1,
+            "force_bounds": true,
+            "ftol": 1e-06,
+            "memory": false,
+            "number_of_generations": 100,
+            "number_of_islands": 1,
+            "sigma0": -1,
+            "size_of_population": 100,
+            "xtol": 1e-06
+        }
+    }
+}

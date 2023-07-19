@@ -4,7 +4,8 @@ from traceHandler import Trace
 import optimizerHandler
 import importlib
 import neuron
-
+import json
+import collections
 first_hoc_cls = neuron.h.__class__
 first_hoc_dict = neuron.h.__dict__
 
@@ -440,3 +441,63 @@ class modelHandlerNeuron():
         tr.Convert(vector)
         return tr.data
         # comment: pass the hoc vector to Convert, not the hoc_object
+
+
+
+class modelHandlerHippounit:
+    def __init__(self, option_handler):
+        from hippounit.utils import ModelLoaderNeuroptimus
+
+        self.option = option_handler
+        self.base_directory = self.option.base_dir
+        os.chdir(self.base_directory)
+
+        self.model_path = self.option.model_path
+        #self.number_of_params = None
+        self.record = []
+        #self.spike_times = None
+
+        # load hippounit settings
+        self.settings = {}
+        self.load_settings()
+
+        # create model loader
+        self.output_directory = self.settings["model"]["output_dir"]
+        mod_files_path = self.settings["model"]["mod_files_path"]
+        user_function = self.option.u_fun_string
+        self.model = ModelLoaderNeuroptimus(mod_files_path=mod_files_path, user_function_string=user_function)
+        self.set_model_parameters()
+
+        # load observations and stimuli json
+        self.observation = {}
+        self.config = {}
+        #self.load_target_and_stimuli()
+
+    def load_settings(self):
+        with open(self.option.hippounit_settings_path) as settings_file:
+            self.settings = json.load(settings_file)
+
+    def set_model_parameters(self):
+        self.model.name = self.settings["model"]["name"]
+        self.model.hocpath = self.model_path
+        self.model.template_name = self.settings["model"]["template_name"]
+        self.model.SomaSecList_name = self.settings["model"]["SomaSecList_name"]
+        self.model.soma = self.settings["model"]["soma"]
+        self.model.v_init = self.settings["model"]["v_init"]
+        self.model.celsius = self.settings["model"]["celsius"]
+        self.model.TrunkSecList_name = self.settings["model"]["TrunkSecList_name"]
+        self.model.ObliqueSecList_name = self.settings["model"]["ObliqueSecList_name"]
+        self.model.cvode_active = False
+
+    def load_target_and_stimuli(self):
+        target_data_path = self.settings["model"]["target_data_path"]
+        stimuli_file_path = self.settings["model"]["stimuli_file_path"]
+        with open(target_data_path) as target_file:
+            self.observation = json.load(target_file, object_pairs_hook=collections.OrderedDict)
+        with open(stimuli_file_path) as stimuli_file:
+            self.config = json.load(stimuli_file, object_pairs_hook=collections.OrderedDict)
+
+    def run(self, test):
+        score = test.judge(self.model)
+        score.summarize()
+        return score.norm_score

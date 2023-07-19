@@ -8,6 +8,7 @@ import numpy
 import json
 import os
 import matplotlib
+matplotlib.use("Qt5Agg")
 matplotlib.interactive(False)
 
 class my_candidate():
@@ -128,6 +129,13 @@ class coreModul():
 	def htmlPciture(self,inp):
 		return "<p align=\"center\"><img style=\"border:none;\" src=\""+inp+"\" ></p>"
 
+	def htmlPdf(self, inp):
+		#return "<p align=\"center\"><embed src = \""+inp+"#toolbar=0&navpanes=0&scrollbar=0\" width = \"800px\" height = \"630px\" /></p>"
+		return "<p align=\"center\"><embed src = \" "+inp+" \" width = \"800px\" height = \"630px\" /></p>"
+	
+	
+
+
 
 	def Print(self):
 		print([self.option_handler.GetFileOption(),
@@ -152,11 +160,13 @@ class coreModul():
 		self.option_handler.SetFileOptions(args.get("file"))
 		self.option_handler.SetInputOptions(args.get("input"))
 
-		self.data_handler.Read([self.option_handler.input_dir],self.option_handler.input_size,self.option_handler.input_scale,self.option_handler.input_length,self.option_handler.input_freq,self.option_handler.type[-1])
-
-
-		if self.option_handler.type[-1]=='features':
-			self.option_handler.input_size= len(self.data_handler.features_data['stim_amp'])
+		stim_type = self.option_handler.type[-1]
+		if stim_type == "hippounit":
+			self.option_handler.SetSimParam(["hippounit", []])
+		else:
+			self.data_handler.Read([self.option_handler.input_dir],self.option_handler.input_size,self.option_handler.input_scale,self.option_handler.input_length,self.option_handler.input_freq,stim_type)
+			if stim_type == "features":
+				self.option_handler.input_size= len(self.data_handler.features_data['stim_amp'])
 
 	def LoadModel(self,args):
 		"""
@@ -172,6 +182,8 @@ class coreModul():
 		if self.option_handler.GetSimParam()[0]=="Neuron":
 			self.option_handler.SetModelOptions(args.get("model"))
 			self.model_handler=modelHandlerNeuron(self.option_handler.model_path,self.option_handler.model_spec_dir,self.option_handler.base_dir)
+		elif self.option_handler.GetSimParam()[0] == "hippounit":
+			return
 		else:
 			self.model_handler=externalHandler(self.option_handler.GetSimParam()[1])
 			self.model_handler.SetNParams(self.option_handler)
@@ -363,7 +375,7 @@ class coreModul():
 			#tmp.append(args.get("starting_points"))
 			self.option_handler.SetOptimizerOptions(tmp)
 
-		if self.option_handler.type[-1]!='features':
+		if self.option_handler.type[-1]!='features' and self.option_handler.type[-1]!='hippounit':
 			if self.option_handler.run_controll_dt<self.data_handler.data.step:
 				print("re-sampling because integration step is smaller then data step")
 				print((self.option_handler.run_controll_dt,self.data_handler.data.step))
@@ -392,7 +404,9 @@ class coreModul():
 
 		exec("self.optimizer="+self.option_handler.algorithm_name+"(self.data_handler,self.option_handler)")
 
-		if self.option_handler.type[-1]!= 'features':
+		if self.option_handler.type[-1] == 'hippounit':
+			self.option_handler.feat_str = ""  # TODO
+		elif self.option_handler.type[-1]!= 'features':
 			self.option_handler.feat_str=", ".join([self.ffun_mapper[x.__name__] for x in self.option_handler.feats])
 		else:
 			self.option_handler.feat_str=", ".join(self.option_handler.feats)
@@ -426,11 +440,12 @@ class coreModul():
 					for x in range(0,self.optimizer.number_of_generations*self.optimizer.size_of_population,self.optimizer.number_of_generations):
 						ordered_solutions.append(self.solutions[x+i])
 				self.solutions = ordered_solutions"""
+			
+			print(self.solutions[0].fitness)
 			if isinstance(self.solutions[0].fitness,list):
 				for solution in self.solutions:
 					wsum = sum([w*f for f,w in zip(solution.fitness,self.option_handler.weights*self.data_handler.number_of_traces())])
 					solution.fitness = wsum
-					#solution.fitness = numpy.average(solution.fitness, weights = self.option_handler.weights*self.data_handler.number_of_traces())
 			self.solutions_by_generations = []
 			try:
 				os.remove(self.optimizer.directory + '/stat_file.txt')
@@ -445,6 +460,7 @@ class coreModul():
 					current_population = []
 			self.option_handler.WriteIndFile(self.solutions_by_generations)
 			self.option_handler.WriteStatFile(self.solutions_by_generations)
+
 
 			self.cands = [x.candidate for x in self.solutions]
 			self.fits = [x.fitness for x in self.solutions]
@@ -469,60 +485,84 @@ class coreModul():
 		A report of the results is generated in the form of a html document.
 		:param args: currently not in use
 		"""
+		if self.option_handler.type[-1] == 'hippounit':
+			self.optimizer.fit_obj.is_figures_saved = True
+
+
 		self.best_fit=self.optimizer.fit_obj.single_objective_fitness(self.optimizer.fit_obj.normalize(self.optimal_params),delete_model=False)
+		
+
+		
 		self.final_result=[]
 		self.error_comps=[]
-		k_range=self.data_handler.number_of_traces()
-			
-		for k in range(k_range):
-			self.error_comps.append(self.optimizer.fit_obj.getErrorComponents(k, self.optimizer.fit_obj.model_trace[k]))
-			with open("result_trace"+str(k)+".txt","w+") as trace_handler:
+
+
+		if self.option_handler.type[-1] == 'hippounit':
+			k_range = 1
+			self.error_comps.append(self.optimizer.fit_obj.getTestErrorComponents())
+		else:
+			if self.option_handler.type[-1]!= 'features':
+				k_range=self.data_handler.number_of_traces()
+			else:
+				k_range=len(self.data_handler.features_data["stim_amp"])
+
+			for k in range(k_range):
+				self.error_comps.append(self.optimizer.fit_obj.getErrorComponents(k, self.optimizer.fit_obj.model_trace[k]))
+				trace_handler=open("result_trace"+str(k)+".txt","w+")
 				for l in self.optimizer.fit_obj.model_trace[k]:
 					trace_handler.write(str(l))
 					trace_handler.write("\n")
-			self.final_result.append(self.optimizer.fit_obj.model_trace[k])
+				trace_handler.close()
+				self.final_result.append(self.optimizer.fit_obj.model_trace[k])
+
+
 
 		if isinstance(self.optimizer.fit_obj.model, externalHandler):
 			self.optimizer.fit_obj.model.record[0]=[]
 
-		fig, axes = matplotlib.pyplot.subplots(1, figsize=(7, 6))
-		fig.clf()
-		axes = fig.add_subplot(111)
-		exp_data = []
-		model_data = []
-		if self.option_handler.type[-1] != 'features':
-			for n in range(k_range):
-				exp_data.extend(self.data_handler.data.GetTrace(n))
-				model_data.extend(self.final_result[n])
-		else:
-			for n in range(k_range):
-				model_data.extend(self.final_result[n])
-		if self.option_handler.type[-1]  != 'features':
-			t = int(self.option_handler.input_length)
-		else:
-			t = int(self.option_handler.run_controll_tstop)
-		step = self.option_handler.run_controll_dt
-		axes.set_xticks([n for n in range(0, int((t * k_range) / (step)), int((t * k_range) / (step) / 5.0)) ])
-		axes.set_xticklabels([str(n) for n in range(0, int(t * k_range), int((t * k_range) / 5))])
+		# ---------------------------------------------------------------------------- #
+		#TODO : result trace fig May not work with hippoUnit, Comment it then
+		if self.option_handler.type[-1] != 'hippounit':
+			fig, axes = matplotlib.pyplot.subplots(1, figsize=(7, 6))
+			fig.clf()
+			axes = fig.add_subplot(111)
+			exp_data = []
+			model_data = []
+			if self.option_handler.type[-1] != 'features':
+				for n in range(k_range):
+					exp_data.extend(self.data_handler.data.GetTrace(n))
+					model_data.extend(self.final_result[n])
+			else:
+				for n in range(k_range):
+					model_data.extend(self.final_result[n])
+			if self.option_handler.type[-1]  != 'features':
+				t = int(self.option_handler.input_length)
+			else:
+				t = int(self.option_handler.run_controll_tstop)
+			step = self.option_handler.run_controll_dt
+			axes.set_xticks([n for n in range(0, int((t * k_range) / (step)), int((t * k_range) / (step) / 5.0)) ])
+			axes.set_xticklabels([str(n) for n in range(0, int(t * k_range), int((t * k_range) / 5))])
 
-		
-		axes.set_xlabel("time [ms]")
-		if self.option_handler.type[-1]!= 'features':
-			_type = self.data_handler.data.type
-		else:
-			_type = "Voltage" if self.option_handler.run_controll_record =="v" else "Current" if self.option_handler.run_controll_record == "c" else ""
-		axes.set_ylabel(_type + " [" + self.option_handler.input_scale + "]")
-		if self.option_handler.type[-1]!= 'features':
-			axes.plot(list(range(0, len(exp_data))), exp_data)
-			axes.plot(list(range(0, len(model_data))), model_data, 'r')
-			axes.legend(["target", "model"])
-		else:
-			axes.plot(list(range(0, len(model_data))), model_data, 'r')
-			axes.legend(["model"])
-		fig.savefig("result_trace.png", dpi=None, facecolor='w', edgecolor='w',
-		orientation='portrait', format=None, bbox_inches=None, pad_inches=0.1)
-		#fig.savefig("result_trace.eps", dpi=None, facecolor='w', edgecolor='w')
-		fig.savefig("result_trace.svg", dpi=None, facecolor='w', edgecolor='w')
+			
+			axes.set_xlabel("time [ms]")
+			if self.option_handler.type[-1]!= 'features':
+				_type = self.data_handler.data.type
+			else:
+				_type = "Voltage" if self.option_handler.run_controll_record =="v" else "Current" if self.option_handler.run_controll_record == "c" else ""
+			axes.set_ylabel(_type + " [" + self.option_handler.input_scale + "]")
+			if self.option_handler.type[-1]!= 'features':
+				axes.plot(list(range(0, len(exp_data))), exp_data)
+				axes.plot(list(range(0, len(model_data))), model_data, 'r')
+				axes.legend(["target", "model"])
+			else:
+				axes.plot(list(range(0, len(model_data))), model_data, 'r')
+				axes.legend(["model"])
+			fig.savefig("result_trace.png", dpi=None, facecolor='w', edgecolor='w',
+			orientation='portrait', format=None, bbox_inches=None, pad_inches=0.1)
+			#fig.savefig("result_trace.eps", dpi=None, facecolor='w', edgecolor='w')
+			fig.savefig("result_trace.svg", dpi=None, facecolor='w', edgecolor='w')
+		# ---------------------------------------------------------------------------- #
+
 
 		self.name=self.option_handler.model_path.split("/")[-1].split(".")[0]
 		f_handler=open(self.name+"_results.html","w+")
@@ -538,7 +578,20 @@ class coreModul():
 		tmp_str+=self.htmlTable(["Parameter Name","Minimum","Maximum","Optimum"], tmp_list)+"\n"
 		tmp_str+="<center><p>"+self.htmlStrBold("Fitness: ")
 		tmp_str+=self.htmlStrBold(str(self.best_fit))+"</p></center>\n"
-		tmp_str+=self.htmlPciture("result_trace.png")+"\n"
+
+		if self.option_handler.type[-1] == "hippounit":
+			hippounit_settings = self.optimizer.fit_obj.model.settings
+			model_name = hippounit_settings["model"]["name"]
+			test_name = 'somaticfeat'
+			dataset_name = hippounit_settings["model"]["dataset"]
+			pdf_path = "output/figs/{}_{}/{}/traces.pdf".format(test_name, dataset_name, model_name)
+			print(pdf_path)
+			tmp_str+=self.htmlPdf(pdf_path)+"\n"
+		else:
+			tmp_str+=self.htmlPciture("result_trace.png")+"\n"
+
+
+
 		for k in list(self.option_handler.GetOptimizerOptions().keys()):
 			tmp_str+="<p><b>"+k+" =</b> "+str(self.option_handler.GetOptimizerOptions()[k])+"</p>\n"
 		tmp_str+="<p><b>feats =</b> "+self.option_handler.feat_str +"</p>\n"
@@ -552,7 +605,7 @@ class coreModul():
 		tmp_list=[]
 		for t in self.error_comps:
 			for c in t:
-				if self.option_handler.type[-1]!='features':
+				if self.option_handler.type[-1]!='features' and self.option_handler.type[-1]!= 'hippounit':
 				#tmp_str.append( "*".join([str(c[0]),c[1].__name__]))
 					tmp_list.append([self.ffun_mapper[c[1].__name__],
 										str(c[2]),
@@ -576,7 +629,7 @@ class coreModul():
 				tmp[1]+=c[t_idx][2]
 				tmp[2]=c[t_idx][0]
 				tmp[3]+=c[t_idx][2]*c[t_idx][0]
-			if self.option_handler.type[-1]!='features':
+			if self.option_handler.type[-1]!='features' and self.option_handler.type[-1]!= 'hippounit':
 				tmp[0]=self.ffun_mapper[c[t_idx][1].__name__]
 			else:
 				tmp[0]=(c[t_idx][1])
@@ -599,7 +652,10 @@ class coreModul():
 			,"seed": self.option_handler.seed,"final_fitness":self.best_fit,"number_of_evaluations": len(self.solutions),
 			"models":{"model_name":self.name,"model_author":os.uname()[1]},"parameters":param_dict,"error_function":error_dict, "algorithm":[alg_dict],"target_data":target_dict, "created_at":datetime.strftime(datetime.utcnow(),"%Y-%m-%dT%H:%M:%S.%fZ")}
 			
-			if self.option_handler.type[-1]=='features':
+			if self.option_handler.type[-1]=='hippounit':
+				with open('metadata.json', 'w+') as outfile:
+					json.dump(json_var, outfile, indent=4)
+			elif self.option_handler.type[-1]=='features':
 				with open(self.option_handler.input_dir, 'r') as outfile:
 					input_features=json.load(outfile)
 					amp_list=[]

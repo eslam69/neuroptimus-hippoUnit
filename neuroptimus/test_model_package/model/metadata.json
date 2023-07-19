@@ -1,0 +1,83 @@
+{
+    "opt_name": "main_model_RANDOM_SEARCH_18_Jul_2023_04:24:46:361670",
+    "seed": 1234,
+    "final_fitness": [
+        0.5473805424392276
+    ],
+    "number_of_evaluations": 1,
+    "models": {
+        "model_name": "main_model",
+        "model_author": "Eslam-OMEN"
+    },
+    "parameters": [
+        {
+            "name": "cm",
+            "min_boundary": "1.0",
+            "max_boundary": "10.0",
+            "optimum": "9.698081821229248"
+        },
+        {
+            "name": "Ra",
+            "min_boundary": "30.0",
+            "max_boundary": "3000.0",
+            "optimum": "1338.9758195507975"
+        },
+        {
+            "name": "g_pas",
+            "min_boundary": "5e-05",
+            "max_boundary": "0.01",
+            "optimum": "0.00012454012708294255"
+        },
+        {
+            "name": "e_pas",
+            "min_boundary": "-75.0",
+            "max_boundary": "-55.0",
+            "optimum": "-56.78048075101752"
+        }
+    ],
+    "error_function": [
+        {
+            "name": "SomaticFeaturesTest",
+            "value": "3.830514642681789",
+            "weight": "0.1429",
+            "weighted_value": "0.5473805424392276"
+        }
+    ],
+    "algorithm": [
+        {
+            "algorithm_name": "RANDOM",
+            "algorithm_package": "SEARCH",
+            "algorithm_parameters": [
+                {
+                    "parameter_name": "size_of_population",
+                    "parameter_value": "1"
+                },
+                {
+                    "parameter_name": "number_of_cpu",
+                    "parameter_value": "3"
+                }
+            ]
+        }
+    ],
+    "target_data": [
+        {
+            "data_type": "hippounit",
+            "file_name": "",
+            "number_of_traces": 1,
+            "stim_delay": 200.0,
+            "stim_duration": 300.0
+        }
+    ],
+    "created_at": "2023-07-18T04:24:46.361700Z",
+    "statistics": [
+        {
+            "generation": 0,
+            "population": 1,
+            "maximum": 0.5473805424392276,
+            "minimum": 0.5473805424392276,
+            "median": 0.5473805424392276,
+            "mean": 0.5473805424392276,
+            "std": 0.0
+        }
+    ]
+}

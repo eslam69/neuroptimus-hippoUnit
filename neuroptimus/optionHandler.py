@@ -139,6 +139,7 @@ class optionHandler(object):
 		self.feats=[]
 		self.feat_str=[]
 		self.weights=[]
+		self.hippounit_settings_path=None
 		#self.class_content=list(OrderedSet(post)-OrderedSet(prev))
 		self.class_content = copy.copy(vars(self))
 		self.algorithm_parameters_dict=json.load(open(os.path.dirname(os.path.abspath(__file__))+"/algorithm_parameters.json", "r"))
@@ -148,7 +149,7 @@ class optionHandler(object):
 		json_dict={}
 		for m in self.class_content:
 			if m=="feats":
-				if self.type[-1]!='features':
+				if self.type[-1]!='features' and self.type[-1]!='hippounit':
 					json_dict[m]=[f_mapper[x.__name__] for x in self.__getattribute__(m)]
 				else:
 					json_dict[m]=self.feats

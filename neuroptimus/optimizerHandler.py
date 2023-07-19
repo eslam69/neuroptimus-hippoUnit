@@ -1,4 +1,4 @@
-from fitnessFunctions import fF,frange
+from fitnessFunctions import fF,frange,fF_Factory
 from optionHandler import optionHandler
 import sys
 import logging
@@ -100,7 +100,7 @@ class SINGLERUN():
 	An abstract base class to implement a single evaluation process.
 	"""
 	def __init__(self, reader_obj, option_obj):
-		self.fit_obj = fF(reader_obj,  option_obj)
+		self.fit_obj = fF_Factory.create(reader_obj,  option_obj)
 		self.SetFFun(option_obj)
 		self.directory = option_obj.base_dir
 		self.num_params = option_obj.num_params
@@ -128,15 +128,20 @@ class baseOptimizer():
 	An abstract base class to implement the base of an optimization process.
 	"""
 	def __init__(self, reader_obj,  option_obj):
-		self.fit_obj = fF(reader_obj,  option_obj)
+		self.fit_obj = fF_Factory.create(reader_obj,  option_obj)
 		self.SetFFun(option_obj)
 		self.rand = random
 		self.seed = int(option_obj.seed)
 		self.rand.seed(self.seed)
 		self.directory = option_obj.base_dir
 		self.num_params = option_obj.num_params
-		self.number_of_traces = reader_obj.number_of_traces()
-		self.num_obj = self.num_params*int(self.number_of_traces)
+		if option_obj.type[-1]=="hippounit":
+			self.number_of_traces = None
+		elif option_obj.type[-1]!= "features":
+			self.number_of_traces = reader_obj.number_of_traces()
+		else:
+			self.number_of_traces = len(reader_obj.features_data["stim_amp"])
+		#self.num_obj = self.num_params*int(self.number_of_traces)
 		self.boundaries = option_obj.boundaries
 		self.algo_params =  copy.copy(option_obj.algorithm_parameters)
 		open("eval.txt", "w")
@@ -154,7 +159,7 @@ class baseOptimizer():
 		except KeyError:
 			sys.exit("Unknown fitness function!")
 		
-		if option_obj.type[-1]!= 'features':
+		if option_obj.type[-1]!= 'features' and option_obj.type[-1]!='hippounit':
 			try:
 				option_obj.feats = [self.fit_obj.calc_dict[x] for x in option_obj.feats]
 			except KeyError:
@@ -246,7 +251,12 @@ class PygmoAlgorithmBasis(baseOptimizer):
 		self.pg.set_global_rng_seed(seed = self.seed)
 		self.boundaries = [[0]*len(option_obj.boundaries[0]),[1]*len(option_obj.boundaries[1])]
 		self.base_dir = option_obj.base_dir
-		self.number_of_traces=reader_obj.number_of_traces()
+		if self.option_obj.type[-1]=="hippounit":
+			self.number_of_traces=1 # TODO: this is fake
+		elif self.option_obj.type[-1]!="features":
+			self.number_of_traces=reader_obj.number_of_traces()
+		else:
+			self.number_of_traces=len(reader_obj.features_data["stim_amp"])
 		self.n_obj=len(option_obj.GetFitnessParam()[-1])*int(self.number_of_traces)
 		self.number_of_cpu = int(self.algo_params.pop("number_of_cpu",1))
 		self.num_islands = int(self.algo_params.pop("number_of_islands",1))
@@ -780,7 +790,7 @@ class grid(baseOptimizer):
 
 	"""
 	def __init__(self,reader_obj,option_obj,resolution):
-		self.fit_obj=fF(reader_obj,option_obj)
+		self.fit_obj=fF_Factory.create(reader_obj,option_obj)
 		self.SetFFun(option_obj)
 		self.num_params=option_obj.num_params
 		self.num_points_per_dim=resolution

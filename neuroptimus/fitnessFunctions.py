@@ -9,6 +9,9 @@ import random
 import threading
 import matplotlib.pyplot as plt
 import threading
+import json
+import collections
+import traceback
 try:
     import copyreg
 except:
@@ -87,6 +90,14 @@ class spike(spike_frame):
     def __init(self, start, start_val, peak, peak_val, stop, stop_val, spike):
         spike_frame.__init__(self, start, start_val, peak, peak_val, stop, stop_val)
         self.s = spike#vector, with the spike in it
+
+class fF_Factory:
+    @classmethod
+    def create(cls, reader_object, option_object):
+        if option_object.type[-1] == "hippounit":
+            return fF_HippoUnit(reader_object, option_object)
+        else:
+            return fF(reader_object, option_object)
 
 class fF(object):
     """
@@ -1155,7 +1166,7 @@ class fF(object):
             add_data = None
         args = {}
         args["add_data"] = add_data
-        if (self.option.type[-1]!='features'):
+        if self.option.type[-1]!='features' and self.option.type[-1]!='hippounit':
             for f, w in zip(features, weigths):
                 fit_list.append([w, f, (f(model_output, self.reader.data.GetTrace(index_of_trace), args))])
         else:
@@ -1264,3 +1275,128 @@ class fF(object):
                 del self.model
         return self.fitnes
 
+
+
+class fF_HippoUnit(fF):
+    def __init__(self, reader_object, option_object):
+        super().__init__(reader_object, option_object)
+        self.model_trace = []
+        self.is_figures_saved = False
+        self.model=modelHandler.modelHandlerHippounit(self.option)
+        self.tests_selected = self.model.settings["model"]["tests"]
+        self.tests_fitness = {}
+
+    def select_test(self, test_name):
+        from hippounit import tests
+
+        if test_name == "SomaticFeaturesTest":
+            with open(self.model.settings["tests"]["SomaticFeaturesTest"]["target_data_path"], "r") as target_data_file:
+                observation = json.load(target_data_file)
+            with open(self.model.settings["tests"]["SomaticFeaturesTest"]["stimuli_file_path"], "r") as stimuli_file:
+                config = json.load(stimuli_file)
+            return tests.SomaticFeaturesTest(observation=observation, config=config, force_run=True, show_plot=False,
+                                             save_all=self.is_figures_saved, base_directory=self.model.output_directory,
+                                             serialized=True)
+        elif test_name == "DepolarizationBlockTest":
+            with open(self.model.settings["tests"]["DepolarizationBlockTest"]["target_data_path"],
+                      "r") as target_data_file:
+                observation = json.load(target_data_file)
+            return tests.DepolarizationBlockTest(observation=observation, force_run=True,
+                                                 show_plot=False, save_all=self.is_figures_saved,
+                                                 base_directory=self.model.output_directory, serialized=True)
+        elif test_name == "BackpropagatingAPTest":
+            with open(self.model.settings["tests"]["BackpropagatingAPTest"]["target_data_path"], "r") as f:
+                observation = json.load(f, object_pairs_hook=collections.OrderedDict)
+            with open(self.model.settings["tests"]["BackpropagatingAPTest"]["stimuli_file_path"], "r") as f:
+                config = json.load(f, object_pairs_hook=collections.OrderedDict)
+            return tests.BackpropagatingAPTest(config=config, observation=observation, force_run=True,
+                                               force_run_FindCurrentStim=True, show_plot=False,
+                                               save_all=self.is_figures_saved, base_directory=self.model.output_directory,
+                                               serialized=True)
+        elif test_name == "PSPAttenuationTest":
+            with open(self.model.settings["tests"]["PSPAttenuationTest"]["target_data_path"], "r") as f:
+                observation = json.load(f, object_pairs_hook=collections.OrderedDict)
+            with open(self.model.settings["tests"]["PSPAttenuationTest"]["stimuli_file_path"], "r") as f:
+                config = json.load(f, object_pairs_hook=collections.OrderedDict)
+            num_of_dend_locations = self.model.settings["tests"]["PSPAttenuationTest"]["num_of_dend_locations"]
+            #trunk_origin = self.model.settings["tests"]["PSPAttenuationTest"]["trunk_origin"]
+            self.model.model.SecList = self.model.model.TrunkSecList_name
+            return tests.PSPAttenuationTest(config=config, observation=observation, num_of_dend_locations=num_of_dend_locations,
+                                            force_run=True, show_plot=False, save_all=self.is_figures_saved,
+                                            base_directory=self.model.output_directory, serialized=True)
+        elif test_name == "ObliqueIntegrationTest":
+            with open(self.model.settings["tests"]["ObliqueIntegrationTest"]["target_data_path"], "r") as f:
+                observation = json.load(f, object_pairs_hook=collections.OrderedDict)
+            return tests.ObliqueIntegrationTest(observation=observation, save_all=self.is_figures_saved,
+                                                force_run_synapse=True, force_run_bin_search=True, show_plot=False,
+                                                base_directory=self.model.output_directory, serialized=True)
+
+    def single_objective_fitness(self, candidates, args={}, delete_model=True):
+        os.chdir(self.option.base_dir)
+
+        candidate_renormalized = self.ReNormalize(candidates)
+        self.model.model.set_candidate(candidate_renormalized)
+
+        self.fitnes = []
+        error = 0
+        for idx, test_name in enumerate(self.tests_selected):
+            test = self.select_test(test_name)
+            test.specify_data_set = self.model.settings["model"]["dataset"]
+            try:
+                score = self.model.run(test)
+                error += self.option.weights[idx] * score
+                self.tests_fitness[test_name] = score
+            except Exception as e:
+                print('Model: ' + self.model.model.name + ' could not be run')
+                traceback.print_stack()
+        # print(self.tests_selected)
+        self.fitnes.append(error)
+        with open("eval.txt", "a") as f: 
+            f.write(str([error,[x for x in candidates]])+" \n")
+        if self.option.output_level == "1":
+            print("current fitness: ",error)
+        if(self.option.simulator == 'Neuron') and delete_model:
+            "Deletes the reference of the instance"
+            del self.model
+        return self.fitnes
+        # return [error]
+
+    def multi_objective_fitness(self, candidates, args={}, delete_model=True):
+        os.chdir(self.option.base_dir)
+
+        candidate_renormalized = self.ReNormalize(candidates[0])
+        self.model.model.set_candidate(candidate_renormalized)
+
+        self.fitnes = []
+        temp_fit = []
+
+        tests_selected = self.model.settings["model"]["tests"]
+        for test_name in tests_selected:
+            test = self.select_test(test_name)
+            test.specify_data_set = self.model.settings["model"]["dataset"]
+
+            print("Running {test} on {model}".format(test=test, model=self.model.model.name))
+            try:
+                error = self.model.run(test)
+                temp_fit.append(error)
+                self.model_trace = self.model.record
+            except Exception as e:
+                print('Model: ' + self.model.model.name + ' could not be run')
+                print(e)
+                traceback.print_stack()
+
+        self.fitnes.append(temp_fit)
+        return self.fitnes
+
+    def getTestErrorComponents(self):
+        fit_list = []
+        print("%%%%%%%%%%%%%%%%%%%%")
+        print(self.tests_fitness)
+        print("%%%%%%%%%%%%%%%%%%%%")
+
+        for i in range(len(self.tests_selected)):
+            f = self.tests_selected[i]
+            w = self.option.weights[i]
+            e = self.tests_fitness[f]
+            fit_list.append([w, f, e])
+        return fit_list

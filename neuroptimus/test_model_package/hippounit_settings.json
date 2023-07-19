@@ -1,0 +1,41 @@
+{
+    "model": {
+        "name": "CA1_Bianchi",
+        "mod_files_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/test_model_package/model/experiment/",
+        "output_dir": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/test_model_package/output/",
+        "template_name": null,
+        "SomaSecList_name": null,
+        "TrunkSecList_name": null,
+        "ObliqueSecList_name": null,
+        "soma": "soma[0]",
+        "v_init": -70,
+        "celsius": 34,
+        "tests": [  
+                    "SomaticFeaturesTest"
+                  
+                 ],
+        "dataset": "test_dataset"
+    },
+    "tests": {
+        "SomaticFeaturesTest": {
+            "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/test_model_package/input/valid_feat_rat_CA1_JMakara_OUR_features.json",
+            "stimuli_file_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/test_model_package/input/stim_rat_CA1_PC_JMakara.json"
+        },
+        "DepolarizationBlockTest": {
+            "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/test_model_package/input/depol_block_target_data.json"
+        },
+        "BackpropagatingAPTest": {
+            "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/test_model_package/input/feat_backpropagating_AP_target_data.json",
+            "stimuli_file_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/test_model_package/input/stim_bAP_test.json"
+        },
+        "PSPAttenuationTest": {
+            "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/test_model_package/input/feat_PSP_attenuation_target_data.json",
+            "stimuli_file_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/test_model_package/input/stim_PSP_attenuation_test.json",
+            "num_of_dend_locations": 15
+        }
+        
+        ,"ObliqueIntegrationTest": {
+            "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/test_model_package/input/oblique_target_data.json"
+        }
+    }
+}
