@@ -1,2 +1,3 @@
 .vscode/
-neuroptimus/__pycache__/
+neuroptimus/__pycache__/*.pyc
+neuroptimus/__pycache__/Core.cpython-37.pyc

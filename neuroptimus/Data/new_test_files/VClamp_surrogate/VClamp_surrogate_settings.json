@@ -6,7 +6,7 @@
             "tau_rise",
             "tau_decay"
         ],
-        "base_dir": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/new_test_files/VClamp_surrogate",
+        "base_dir": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/new_test_files/VClamp_surrogate",
         "boundaries": [
             [
                 0.001,
@@ -23,8 +23,8 @@
         ],
         "current_algorithm": {
             "Random Search": {
-                "number_of_cpu": 1,
-                "size_of_population": 1
+                "number_of_cpu": 5,
+                "size_of_population": 1000
             }
         },
         "feat_str": "MSE",
@@ -33,12 +33,12 @@
         ],
         "hippounit_settings_path": null,
         "input_cont_t": true,
-        "input_dir": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/new_test_files/VClamp_surrogate/iclamp_new_evendt.dat",
+        "input_dir": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/new_test_files/VClamp_surrogate/iclamp_new_evendt.dat",
         "input_freq": 40000.0,
         "input_length": 500.0,
         "input_scale": "mV",
         "input_size": 1,
-        "model_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/new_test_files/VClamp_surrogate/simple_hh_syn_vclamp_toopt2.hoc",
+        "model_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/new_test_files/VClamp_surrogate/simple_hh_syn_vclamp_toopt2.hoc",
         "model_spec_dir": null,
         "num_params": 4,
         "output_level": "0",
@@ -59,7 +59,7 @@
         "simulator": "Neuron",
         "spike_thres": 0.0,
         "spike_window": 40.0,
-        "start_time_stamp": 1694460161.0520122,
+        "start_time_stamp": 1694818251.3783042,
         "starting_points": null,
         "stim_amp": [
             -70.0

@@ -1,10 +1,10 @@
 {
-    "opt_name": "simple_hh_syn_vclamp_toopt2_RANDOM_SEARCH_11_Sep_2023_19:25:32:016583",
+    "opt_name": "simple_hh_syn_vclamp_toopt2_RANDOM_SEARCH_15_Sep_2023_22:56:23:335982",
     "seed": 1234,
     "final_fitness": [
-        168.33739031758546
+        0.003168389104951793
     ],
-    "number_of_evaluations": 1,
+    "number_of_evaluations": 1211,
     "models": {
         "model_name": "simple_hh_syn_vclamp_toopt2",
         "model_author": "Eslam-OMEN"
@@ -14,33 +14,33 @@
             "name": "weight",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.9664870821564466"
+            "optimum": "0.01629859800023066"
         },
         {
             "name": "delay",
             "min_boundary": "0.0",
             "max_boundary": "5.0",
-            "optimum": "2.2036629958767633"
+            "optimum": "2.317154023329019"
         },
         {
             "name": "tau_rise",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.008483978588528604"
+            "optimum": "0.005715943487439242"
         },
         {
             "name": "tau_decay",
             "min_boundary": "0.1",
             "max_boundary": "5.0",
-            "optimum": "4.563782216000709"
+            "optimum": "1.6783094771727107"
         }
     ],
     "error_function": [
         {
             "name": "MSE",
-            "value": "168.33739031758546",
+            "value": "0.003168389104951793",
             "weight": "1.0",
-            "weighted_value": "168.33739031758546"
+            "weighted_value": "0.003168389104951793"
         }
     ],
     "algorithm": [
@@ -50,11 +50,11 @@
             "algorithm_parameters": [
                 {
                     "parameter_name": "size_of_population",
-                    "parameter_value": "1"
+                    "parameter_value": "1000"
                 },
                 {
                     "parameter_name": "number_of_cpu",
-                    "parameter_value": "1"
+                    "parameter_value": "5"
                 }
             ]
         }
@@ -75,16 +75,16 @@
             ]
         }
     ],
-    "created_at": "2023-09-11T19:25:32.016612Z",
+    "created_at": "2023-09-15T22:56:23.336002Z",
     "statistics": [
         {
             "generation": 0,
-            "population": 1,
-            "maximum": 168.33739031758546,
-            "minimum": 168.33739031758546,
-            "median": 168.33739031758546,
-            "mean": 168.33739031758546,
-            "std": 0.0
+            "population": 1000,
+            "maximum": 307.98499794482444,
+            "minimum": 0.003168389104951793,
+            "median": 32.27326884856387,
+            "mean": 56.13862860903207,
+            "std": 63.628070404612544
         }
     ]
 }

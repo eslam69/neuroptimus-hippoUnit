@@ -19,8 +19,29 @@ import re
 import threading
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox
+from PyQt5.QtWidgets import QMainWindow, QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox
 from PyQt5.QtGui import *
+from PyQt5.QtCore import QThread, pyqtSignal
+import warnings
+warnings.simplefilter("ignore", UserWarning)
+
+class FittingThread(QThread):
+    finished = pyqtSignal()
+    error = pyqtSignal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def run(self):
+        try:
+            # Call the runsim method
+            self.parent().runsim()
+
+            # Emit the finished signal
+            self.finished.emit()
+        except Exception as e:
+            # Emit the error signal with the error message
+            self.error.emit(str(e))
 
 
 def popup(message):
@@ -40,7 +61,7 @@ def popup(message):
 
 
 
-class Ui_Neuroptimus(object):
+class Ui_Neuroptimus(QMainWindow):
     def __init__(self,*args):
         super().__init__(*args)
 
@@ -831,11 +852,11 @@ class Ui_Neuroptimus(object):
 
         #grid layout
         self.statLayout = QtWidgets.QGridLayout(self.stat_tab)
-        self.statLayout.addWidget(self.label_74, 0, 0, 1, 2)
-        self.statLayout.addWidget(self.pushButton_35, 2, 0, 1, 2)
-        self.statLayout.addWidget(self.fitstat, 0, 1, 1, 1)
-        self.statLayout.addWidget(self.errorlist, 1, 1, 1, 2) 
-        self.statLayout.addWidget(self.pushButton_37, 2, 1, 1, 1)
+        # self.statLayout.addWidget(self.label_74, 0, 0, 1, 2)
+        # self.statLayout.addWidget(self.pushButton_35, 2, 0, 1, 2)
+        # self.statLayout.addWidget(self.fitstat, 0, 1, 1, 1)
+        # self.statLayout.addWidget(self.errorlist, 1, 1, 1, 2) 
+        # self.statLayout.addWidget(self.pushButton_37, 2, 1, 1, 1)
         
         #making pushButtons 37,35 not to stretch and be fixed
         self.pushButton_37.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
@@ -1229,9 +1250,25 @@ class Ui_Neuroptimus(object):
 
             elif curr_tab is self.stat_tab:
                 self.statLayout.addWidget(self.label_74, 0, 0, 1, 2)
-                self.statLayout.addWidget(scroll_area,1,0,1,2)
-                self.statLayout.addWidget(self.pushButton_35, 2, 0, 1, 2)
-                self.statLayout.addWidget(self.fitstat, 0, 3, 1, 3) #label
+                self.statLayout.addWidget(scroll_area,1,0,2,2)
+                self.scroll_area2_stat = QtWidgets.QScrollArea(self.stat_tab)
+                self.stats_label = QtWidgets.QLabel(self.stat_tab)
+                self.stats_label.setGeometry(QtCore.QRect(300, 80, 250, 146))
+                font = QtGui.QFont()
+                font.setFamily("Ubuntu")
+                font.setPointSize(10)
+                font.setBold(False)
+                font.setWeight(50)
+                self.stats_label.setFont(font)
+                self.stats_label.setObjectName("label")
+                # scroll_area_2.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                self.scroll_area2_stat.setGeometry(QtCore.QRect(300,80, 350, 100))
+                self.scroll_area2_stat.setWidgetResizable(True)
+                self.statLayout.addWidget(self.pushButton_35, 3, 0, 1, 2)
+
+
+                self.statLayout.addWidget(self.fitstat, 0, 4, 1, 4) #label
+                self.statLayout.addWidget(self.scroll_area2_stat, 1, 4, 1, 2)
                 #making a bold label
                 font = QtGui.QFont()
                 font.setFamily("Ubuntu")
@@ -1239,20 +1276,33 @@ class Ui_Neuroptimus(object):
                 font.setBold(True)
                 font.setWeight(75)
                 self.fitstat.setFont(font)
-                self.statLayout.addWidget(self.errorlist, 1, 3, 1, 3) 
-                self.statLayout.addWidget(self.pushButton_37, 2, 3, 1, 1)
+                self.statLayout.addWidget(self.errorlist, 2, 4, 1, 4) 
+                self.statLayout.addWidget(self.pushButton_37, 3, 4, 1, 1)
+                self.errorlist.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                self.errorlist.horizontalHeader().setStretchLastSection(True)
+                # self.statLayout.setColumnStretch(0, 1)
+                # self.statLayout.setColumnStretch(1, 2)
 
 
 
+
+
+    # def startFittingThread(self):
+    
+
+    #     # Create a new thread for optimization
+    #     optimization_thread = threading.Thread(target=self.runsim)
+    #     optimization_thread.start()
 
 
     def startFittingThread(self):
-    
-
         # Create a new thread for optimization
-        optimization_thread = threading.Thread(target=self.runsim)
-        optimization_thread.start()
-        
+        self.fitting_thread = FittingThread(self)
+        # self.fitting_thread.finished.connect(self.on_fitting_finished)
+        # self.fitting_thread.error.connect(self.on_fitting_error)
+
+        # Start the thread
+        self.fitting_thread.start()    
 
         
     def help_popup_fit(self):
@@ -2127,20 +2177,8 @@ class Ui_Neuroptimus(object):
         except AttributeError:
             stats={'best' : "unkown",'worst' : "unkown",'mean' : "unkown",'median' : "unkown", 'std' : "unkown"}
         string = "Best: " + str(stats['best']) + "\nWorst: " + str(stats['worst']) + "\nMean: " + str(stats['mean']) + "\nMedian: " + str(stats['median']) + "\nStd:" + str(stats['std'])
-        label = QtWidgets.QLabel(self.stat_tab)
-        label.setGeometry(QtCore.QRect(300, 80, 250, 146))
-        font = QtGui.QFont()
-        font.setFamily("Ubuntu")
-        font.setPointSize(10)
-        font.setBold(False)
-        font.setWeight(50)
-        label.setFont(font)
-        label.setObjectName("label")
-        label.setText(QtCore.QCoreApplication.translate("Neuroptimus", string))
-        scroll_area = QtWidgets.QScrollArea(self.stat_tab)
-        scroll_area.setGeometry(QtCore.QRect(300,80, 350, 100))
-        scroll_area.setWidget(label)
-        scroll_area.setWidgetResizable(True)
+        self.stats_label.setText(QtCore.QCoreApplication.translate("Neuroptimus", string))
+        self.scroll_area2_stat.setWidget(self.stats_label)
         self.errorlist.setRowCount(self.recursive_len(self.core.error_comps))
 
         idx=0

@@ -10,6 +10,7 @@ import os
 import matplotlib
 matplotlib.use("Qt5Agg")
 matplotlib.interactive(False)
+from matplotlib import pyplot as plt
 
 class my_candidate():
 	"""
@@ -523,7 +524,7 @@ class coreModul():
 		# ---------------------------------------------------------------------------- #
 		#TODO : result trace fig May not work with hippoUnit, Comment it then
 		if self.option_handler.type[-1] != 'hippounit':
-			fig, axes = matplotlib.pyplot.subplots(1, figsize=(7, 6))
+			fig, axes = plt.subplots(1, figsize=(7, 6))
 			fig.clf()
 			axes = fig.add_subplot(111)
 			exp_data = []

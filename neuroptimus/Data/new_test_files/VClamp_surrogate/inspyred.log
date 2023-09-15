@@ -1,0 +1,178 @@
+2023-09-16 01:52:49,239 - inspyred.ec - DEBUG - generating initial population
+2023-09-16 01:52:49,239 - inspyred.ec - DEBUG - evaluating initial population
+2023-09-16 01:52:49,246 - inspyred.ec - DEBUG - unable to pickle args parameter statistics_file in parallel_evaluation_mp
+2023-09-16 01:52:49,246 - inspyred.ec - DEBUG - unable to pickle args parameter individuals_file in parallel_evaluation_mp
+2023-09-16 01:52:49,246 - inspyred.ec - DEBUG - unable to pickle args parameter _ec in parallel_evaluation_mp
+2023-09-16 01:52:50,191 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:50,191 - inspyred.ec - DEBUG - archiving initial population
+2023-09-16 01:52:50,191 - inspyred.ec - DEBUG - archive size is now 10
+2023-09-16 01:52:50,191 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:50,192 - inspyred.ec - DEBUG - observation using file_observer at generation 0 and evaluation 10
+2023-09-16 01:52:50,193 - inspyred.ec - DEBUG - termination test using generation_termination at generation 0 and evaluation 10
+2023-09-16 01:52:50,193 - inspyred.ec - DEBUG - selection using _swarm_selector at generation 0 and evaluation 10
+2023-09-16 01:52:50,193 - inspyred.ec - DEBUG - selected 10 candidates
+2023-09-16 01:52:50,194 - inspyred.ec - DEBUG - variation using _swarm_variator at generation 0 and evaluation 10
+2023-09-16 01:52:50,194 - inspyred.ec - DEBUG - created 10 offspring
+2023-09-16 01:52:50,194 - inspyred.ec - DEBUG - evaluation using parallel_evaluation_mp at generation 0 and evaluation 10
+2023-09-16 01:52:50,201 - inspyred.ec - DEBUG - unable to pickle args parameter statistics_file in parallel_evaluation_mp
+2023-09-16 01:52:50,202 - inspyred.ec - DEBUG - unable to pickle args parameter individuals_file in parallel_evaluation_mp
+2023-09-16 01:52:50,202 - inspyred.ec - DEBUG - unable to pickle args parameter _ec in parallel_evaluation_mp
+2023-09-16 01:52:51,129 - inspyred.ec - DEBUG - replacement using _swarm_replacer at generation 0 and evaluation 20
+2023-09-16 01:52:51,129 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:51,130 - inspyred.ec - DEBUG - migration using default_migration at generation 0 and evaluation 20
+2023-09-16 01:52:51,130 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:51,130 - inspyred.ec - DEBUG - archival using _swarm_archiver at generation 0 and evaluation 20
+2023-09-16 01:52:51,130 - inspyred.ec - DEBUG - archive size is now 10
+2023-09-16 01:52:51,130 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:51,130 - inspyred.ec - DEBUG - observation using file_observer at generation 1 and evaluation 20
+2023-09-16 01:52:51,132 - inspyred.ec - DEBUG - termination test using generation_termination at generation 1 and evaluation 20
+2023-09-16 01:52:51,132 - inspyred.ec - DEBUG - selection using _swarm_selector at generation 1 and evaluation 20
+2023-09-16 01:52:51,132 - inspyred.ec - DEBUG - selected 10 candidates
+2023-09-16 01:52:51,132 - inspyred.ec - DEBUG - variation using _swarm_variator at generation 1 and evaluation 20
+2023-09-16 01:52:51,133 - inspyred.ec - DEBUG - created 10 offspring
+2023-09-16 01:52:51,133 - inspyred.ec - DEBUG - evaluation using parallel_evaluation_mp at generation 1 and evaluation 20
+2023-09-16 01:52:51,139 - inspyred.ec - DEBUG - unable to pickle args parameter statistics_file in parallel_evaluation_mp
+2023-09-16 01:52:51,139 - inspyred.ec - DEBUG - unable to pickle args parameter individuals_file in parallel_evaluation_mp
+2023-09-16 01:52:51,140 - inspyred.ec - DEBUG - unable to pickle args parameter _ec in parallel_evaluation_mp
+2023-09-16 01:52:52,065 - inspyred.ec - DEBUG - replacement using _swarm_replacer at generation 1 and evaluation 30
+2023-09-16 01:52:52,065 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:52,066 - inspyred.ec - DEBUG - migration using default_migration at generation 1 and evaluation 30
+2023-09-16 01:52:52,066 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:52,066 - inspyred.ec - DEBUG - archival using _swarm_archiver at generation 1 and evaluation 30
+2023-09-16 01:52:52,066 - inspyred.ec - DEBUG - archive size is now 10
+2023-09-16 01:52:52,066 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:52,066 - inspyred.ec - DEBUG - observation using file_observer at generation 2 and evaluation 30
+2023-09-16 01:52:52,067 - inspyred.ec - DEBUG - termination test using generation_termination at generation 2 and evaluation 30
+2023-09-16 01:52:52,067 - inspyred.ec - DEBUG - selection using _swarm_selector at generation 2 and evaluation 30
+2023-09-16 01:52:52,068 - inspyred.ec - DEBUG - selected 10 candidates
+2023-09-16 01:52:52,068 - inspyred.ec - DEBUG - variation using _swarm_variator at generation 2 and evaluation 30
+2023-09-16 01:52:52,068 - inspyred.ec - DEBUG - created 10 offspring
+2023-09-16 01:52:52,068 - inspyred.ec - DEBUG - evaluation using parallel_evaluation_mp at generation 2 and evaluation 30
+2023-09-16 01:52:52,075 - inspyred.ec - DEBUG - unable to pickle args parameter statistics_file in parallel_evaluation_mp
+2023-09-16 01:52:52,075 - inspyred.ec - DEBUG - unable to pickle args parameter individuals_file in parallel_evaluation_mp
+2023-09-16 01:52:52,075 - inspyred.ec - DEBUG - unable to pickle args parameter _ec in parallel_evaluation_mp
+2023-09-16 01:52:53,020 - inspyred.ec - DEBUG - replacement using _swarm_replacer at generation 2 and evaluation 40
+2023-09-16 01:52:53,021 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:53,021 - inspyred.ec - DEBUG - migration using default_migration at generation 2 and evaluation 40
+2023-09-16 01:52:53,021 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:53,021 - inspyred.ec - DEBUG - archival using _swarm_archiver at generation 2 and evaluation 40
+2023-09-16 01:52:53,021 - inspyred.ec - DEBUG - archive size is now 10
+2023-09-16 01:52:53,021 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:53,022 - inspyred.ec - DEBUG - observation using file_observer at generation 3 and evaluation 40
+2023-09-16 01:52:53,023 - inspyred.ec - DEBUG - termination test using generation_termination at generation 3 and evaluation 40
+2023-09-16 01:52:53,023 - inspyred.ec - DEBUG - selection using _swarm_selector at generation 3 and evaluation 40
+2023-09-16 01:52:53,023 - inspyred.ec - DEBUG - selected 10 candidates
+2023-09-16 01:52:53,023 - inspyred.ec - DEBUG - variation using _swarm_variator at generation 3 and evaluation 40
+2023-09-16 01:52:53,023 - inspyred.ec - DEBUG - created 10 offspring
+2023-09-16 01:52:53,023 - inspyred.ec - DEBUG - evaluation using parallel_evaluation_mp at generation 3 and evaluation 40
+2023-09-16 01:52:53,028 - inspyred.ec - DEBUG - unable to pickle args parameter statistics_file in parallel_evaluation_mp
+2023-09-16 01:52:53,028 - inspyred.ec - DEBUG - unable to pickle args parameter individuals_file in parallel_evaluation_mp
+2023-09-16 01:52:53,028 - inspyred.ec - DEBUG - unable to pickle args parameter _ec in parallel_evaluation_mp
+2023-09-16 01:52:53,950 - inspyred.ec - DEBUG - replacement using _swarm_replacer at generation 3 and evaluation 50
+2023-09-16 01:52:53,950 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:53,950 - inspyred.ec - DEBUG - migration using default_migration at generation 3 and evaluation 50
+2023-09-16 01:52:53,950 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:53,950 - inspyred.ec - DEBUG - archival using _swarm_archiver at generation 3 and evaluation 50
+2023-09-16 01:52:53,950 - inspyred.ec - DEBUG - archive size is now 10
+2023-09-16 01:52:53,950 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:53,950 - inspyred.ec - DEBUG - observation using file_observer at generation 4 and evaluation 50
+2023-09-16 01:52:53,951 - inspyred.ec - DEBUG - termination test using generation_termination at generation 4 and evaluation 50
+2023-09-16 01:52:53,951 - inspyred.ec - DEBUG - selection using _swarm_selector at generation 4 and evaluation 50
+2023-09-16 01:52:53,952 - inspyred.ec - DEBUG - selected 10 candidates
+2023-09-16 01:52:53,952 - inspyred.ec - DEBUG - variation using _swarm_variator at generation 4 and evaluation 50
+2023-09-16 01:52:53,952 - inspyred.ec - DEBUG - created 10 offspring
+2023-09-16 01:52:53,952 - inspyred.ec - DEBUG - evaluation using parallel_evaluation_mp at generation 4 and evaluation 50
+2023-09-16 01:52:53,959 - inspyred.ec - DEBUG - unable to pickle args parameter statistics_file in parallel_evaluation_mp
+2023-09-16 01:52:53,960 - inspyred.ec - DEBUG - unable to pickle args parameter individuals_file in parallel_evaluation_mp
+2023-09-16 01:52:53,960 - inspyred.ec - DEBUG - unable to pickle args parameter _ec in parallel_evaluation_mp
+2023-09-16 01:52:54,901 - inspyred.ec - DEBUG - replacement using _swarm_replacer at generation 4 and evaluation 60
+2023-09-16 01:52:54,902 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:54,902 - inspyred.ec - DEBUG - migration using default_migration at generation 4 and evaluation 60
+2023-09-16 01:52:54,902 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:54,903 - inspyred.ec - DEBUG - archival using _swarm_archiver at generation 4 and evaluation 60
+2023-09-16 01:52:54,903 - inspyred.ec - DEBUG - archive size is now 10
+2023-09-16 01:52:54,903 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:54,903 - inspyred.ec - DEBUG - observation using file_observer at generation 5 and evaluation 60
+2023-09-16 01:52:54,905 - inspyred.ec - DEBUG - termination test using generation_termination at generation 5 and evaluation 60
+2023-09-16 01:52:54,905 - inspyred.ec - DEBUG - selection using _swarm_selector at generation 5 and evaluation 60
+2023-09-16 01:52:54,906 - inspyred.ec - DEBUG - selected 10 candidates
+2023-09-16 01:52:54,906 - inspyred.ec - DEBUG - variation using _swarm_variator at generation 5 and evaluation 60
+2023-09-16 01:52:54,907 - inspyred.ec - DEBUG - created 10 offspring
+2023-09-16 01:52:54,907 - inspyred.ec - DEBUG - evaluation using parallel_evaluation_mp at generation 5 and evaluation 60
+2023-09-16 01:52:54,914 - inspyred.ec - DEBUG - unable to pickle args parameter statistics_file in parallel_evaluation_mp
+2023-09-16 01:52:54,914 - inspyred.ec - DEBUG - unable to pickle args parameter individuals_file in parallel_evaluation_mp
+2023-09-16 01:52:54,915 - inspyred.ec - DEBUG - unable to pickle args parameter _ec in parallel_evaluation_mp
+2023-09-16 01:52:55,841 - inspyred.ec - DEBUG - replacement using _swarm_replacer at generation 5 and evaluation 70
+2023-09-16 01:52:55,841 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:55,841 - inspyred.ec - DEBUG - migration using default_migration at generation 5 and evaluation 70
+2023-09-16 01:52:55,841 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:55,841 - inspyred.ec - DEBUG - archival using _swarm_archiver at generation 5 and evaluation 70
+2023-09-16 01:52:55,841 - inspyred.ec - DEBUG - archive size is now 10
+2023-09-16 01:52:55,842 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:55,842 - inspyred.ec - DEBUG - observation using file_observer at generation 6 and evaluation 70
+2023-09-16 01:52:55,842 - inspyred.ec - DEBUG - termination test using generation_termination at generation 6 and evaluation 70
+2023-09-16 01:52:55,842 - inspyred.ec - DEBUG - selection using _swarm_selector at generation 6 and evaluation 70
+2023-09-16 01:52:55,842 - inspyred.ec - DEBUG - selected 10 candidates
+2023-09-16 01:52:55,843 - inspyred.ec - DEBUG - variation using _swarm_variator at generation 6 and evaluation 70
+2023-09-16 01:52:55,843 - inspyred.ec - DEBUG - created 10 offspring
+2023-09-16 01:52:55,843 - inspyred.ec - DEBUG - evaluation using parallel_evaluation_mp at generation 6 and evaluation 70
+2023-09-16 01:52:55,846 - inspyred.ec - DEBUG - unable to pickle args parameter statistics_file in parallel_evaluation_mp
+2023-09-16 01:52:55,846 - inspyred.ec - DEBUG - unable to pickle args parameter individuals_file in parallel_evaluation_mp
+2023-09-16 01:52:55,846 - inspyred.ec - DEBUG - unable to pickle args parameter _ec in parallel_evaluation_mp
+2023-09-16 01:52:56,762 - inspyred.ec - DEBUG - replacement using _swarm_replacer at generation 6 and evaluation 80
+2023-09-16 01:52:56,762 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:56,762 - inspyred.ec - DEBUG - migration using default_migration at generation 6 and evaluation 80
+2023-09-16 01:52:56,763 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:56,763 - inspyred.ec - DEBUG - archival using _swarm_archiver at generation 6 and evaluation 80
+2023-09-16 01:52:56,763 - inspyred.ec - DEBUG - archive size is now 10
+2023-09-16 01:52:56,763 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:56,763 - inspyred.ec - DEBUG - observation using file_observer at generation 7 and evaluation 80
+2023-09-16 01:52:56,764 - inspyred.ec - DEBUG - termination test using generation_termination at generation 7 and evaluation 80
+2023-09-16 01:52:56,764 - inspyred.ec - DEBUG - selection using _swarm_selector at generation 7 and evaluation 80
+2023-09-16 01:52:56,764 - inspyred.ec - DEBUG - selected 10 candidates
+2023-09-16 01:52:56,764 - inspyred.ec - DEBUG - variation using _swarm_variator at generation 7 and evaluation 80
+2023-09-16 01:52:56,764 - inspyred.ec - DEBUG - created 10 offspring
+2023-09-16 01:52:56,764 - inspyred.ec - DEBUG - evaluation using parallel_evaluation_mp at generation 7 and evaluation 80
+2023-09-16 01:52:56,769 - inspyred.ec - DEBUG - unable to pickle args parameter statistics_file in parallel_evaluation_mp
+2023-09-16 01:52:56,769 - inspyred.ec - DEBUG - unable to pickle args parameter individuals_file in parallel_evaluation_mp
+2023-09-16 01:52:56,770 - inspyred.ec - DEBUG - unable to pickle args parameter _ec in parallel_evaluation_mp
+2023-09-16 01:52:57,689 - inspyred.ec - DEBUG - replacement using _swarm_replacer at generation 7 and evaluation 90
+2023-09-16 01:52:57,689 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:57,689 - inspyred.ec - DEBUG - migration using default_migration at generation 7 and evaluation 90
+2023-09-16 01:52:57,689 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:57,689 - inspyred.ec - DEBUG - archival using _swarm_archiver at generation 7 and evaluation 90
+2023-09-16 01:52:57,689 - inspyred.ec - DEBUG - archive size is now 10
+2023-09-16 01:52:57,690 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:57,690 - inspyred.ec - DEBUG - observation using file_observer at generation 8 and evaluation 90
+2023-09-16 01:52:57,690 - inspyred.ec - DEBUG - termination test using generation_termination at generation 8 and evaluation 90
+2023-09-16 01:52:57,691 - inspyred.ec - DEBUG - selection using _swarm_selector at generation 8 and evaluation 90
+2023-09-16 01:52:57,691 - inspyred.ec - DEBUG - selected 10 candidates
+2023-09-16 01:52:57,691 - inspyred.ec - DEBUG - variation using _swarm_variator at generation 8 and evaluation 90
+2023-09-16 01:52:57,691 - inspyred.ec - DEBUG - created 10 offspring
+2023-09-16 01:52:57,691 - inspyred.ec - DEBUG - evaluation using parallel_evaluation_mp at generation 8 and evaluation 90
+2023-09-16 01:52:57,695 - inspyred.ec - DEBUG - unable to pickle args parameter statistics_file in parallel_evaluation_mp
+2023-09-16 01:52:57,695 - inspyred.ec - DEBUG - unable to pickle args parameter individuals_file in parallel_evaluation_mp
+2023-09-16 01:52:57,695 - inspyred.ec - DEBUG - unable to pickle args parameter _ec in parallel_evaluation_mp
+2023-09-16 01:52:58,617 - inspyred.ec - DEBUG - replacement using _swarm_replacer at generation 8 and evaluation 100
+2023-09-16 01:52:58,618 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:58,618 - inspyred.ec - DEBUG - migration using default_migration at generation 8 and evaluation 100
+2023-09-16 01:52:58,619 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:58,619 - inspyred.ec - DEBUG - archival using _swarm_archiver at generation 8 and evaluation 100
+2023-09-16 01:52:58,619 - inspyred.ec - DEBUG - archive size is now 10
+2023-09-16 01:52:58,619 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:58,619 - inspyred.ec - DEBUG - observation using file_observer at generation 9 and evaluation 100
+2023-09-16 01:52:58,620 - inspyred.ec - DEBUG - termination test using generation_termination at generation 9 and evaluation 100
+2023-09-16 01:52:58,620 - inspyred.ec - DEBUG - termination from generation_termination at generation 9 and evaluation 100
+57,695 - inspyred.ec - DEBUG - unable to pickle args parameter statistics_file in parallel_evaluation_mp
+2023-09-16 01:52:57,695 - inspyred.ec - DEBUG - unable to pickle args parameter individuals_file in parallel_evaluation_mp
+2023-09-16 01:52:57,695 - inspyred.ec - DEBUG - unable to pickle args parameter _ec in parallel_evaluation_mp
+2023-09-16 01:52:58,617 - inspyred.ec - DEBUG - replacement using _swarm_replacer at generation 8 and evaluation 100
+2023-09-16 01:52:58,618 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:58,618 - inspyred.ec - DEBUG - migration using default_migration at generation 8 and evaluation 100
+2023-09-16 01:52:58,619 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:58,619 - inspyred.ec - DEBUG - archival using _swarm_archiver at generation 8 and evaluation 100
+2023-09-16 01:52:58,619 - inspyred.ec - DEBUG - archive size is now 10
+2023-09-16 01:52:58,619 - inspyred.ec - DEBUG - population size is now 10
+2023-09-16 01:52:58,619 - inspyred.ec - DEBUG - observation using file_observer at generation 9 and evaluation 100
+2023-09-16 01:52:58,620 - inspyred.ec - DEBUG - termination test using generation_termination at generation 9 and evaluation 100
+2023-09-16 01:52:58,620 - inspyred.ec - DEBUG - termination from generation_termination at generation 9 and evaluation 100
