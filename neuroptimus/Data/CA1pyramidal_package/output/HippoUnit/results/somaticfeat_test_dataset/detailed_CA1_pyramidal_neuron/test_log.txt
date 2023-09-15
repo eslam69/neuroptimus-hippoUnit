@@ -1,0 +1,7 @@
+Features excluded (due to invalid values):
+AHP_depth_abs.Step0.15, AHP_depth_abs.Step0.2, AHP_depth_abs.Step0.25, AHP_time_from_peak.Step0.15, AHP_time_from_peak.Step0.2, AHP_time_from_peak.Step0.25, AP2_amp.Step0.15, AP2_amp.Step0.2, AP2_amp.Step0.25, AP_amplitude.Step0.15, AP_amplitude.Step0.2, AP_amplitude.Step0.25, AP_begin_voltage.Step0.15, AP_begin_voltage.Step0.2, AP_begin_voltage.Step0.25, AP_duration_half_width.Step0.15, AP_duration_half_width.Step0.2, AP_duration_half_width.Step0.25, AP_fall_time.Step0.15, AP_fall_time.Step0.2, AP_fall_time.Step0.25, AP_rise_time.Step0.15, AP_rise_time.Step0.2, AP_rise_time.Step0.25, APlast_amp.Step0.15, APlast_amp.Step0.2, APlast_amp.Step0.25
+---------------------------------------------------------------------------------------------------
+Number of features succesfully evaluated: 39/66
+---------------------------------------------------------------------------------------------------
+ZScore_avg = 4.83
+---------------------------------------------------------------------------------------------------

@@ -953,7 +953,7 @@ class fF(object):
         weigths = self.option.weights
         temp_fit = 0
         if self.option.type[-1]!= 'features':
-            window = int(self.option.spike_window)
+            window = int(self.option.spike_window) #TODO: Bug, self.option.spike_window is found to be null 
         else:
             window=None
         if(self.option.simulator == 'Neuron'):

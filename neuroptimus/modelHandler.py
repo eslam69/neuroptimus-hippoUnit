@@ -8,6 +8,9 @@ import json
 import collections
 first_hoc_cls = neuron.h.__class__
 first_hoc_dict = neuron.h.__dict__
+import trace
+from hippounit import tests
+import numpy as np
 
 try:
     import copyreg
@@ -451,7 +454,6 @@ class modelHandlerHippounit:
         self.option = option_handler
         self.base_directory = self.option.base_dir
         os.chdir(self.base_directory)
-
         self.model_path = self.option.model_path
         #self.number_of_params = None
         self.record = []
@@ -497,7 +499,31 @@ class modelHandlerHippounit:
         with open(stimuli_file_path) as stimuli_file:
             self.config = json.load(stimuli_file, object_pairs_hook=collections.OrderedDict)
 
-    def run(self, test):
+
+    def run(self,test):
         score = test.judge(self.model)
-        score.summarize()
-        return score.norm_score
+        if not isinstance(test, tests.SomaticFeaturesTest):
+            score.summarize()
+            return score.norm_score 
+        else:
+            observation = score.observation 
+            prediction = score.prediction
+            feature_errors=[ ]
+            PENALTY = 250
+            for features_name in  observation.keys():
+                model_mean = prediction[features_name]['feature mean']
+                observation_mean = float(observation[features_name]['Mean'])
+                observation_std = float(observation[features_name]['Std'])
+
+                if (np.isnan(model_mean) or np.isinf(model_mean) ) and ( (not np.isnan(observation_mean))  and (not np.isnan(observation_std)) ):
+                    feature_error = PENALTY
+                else:
+                    try:
+                        feature_error = abs(model_mean - observation_mean)/observation_std
+                        if not np.isscalar(feature_error):
+                            feature_error = np.asscalar(feature_error)  
+                    except ZeroDivisionError:
+                        feature_error = float("inf")
+                feature_errors.append(feature_error)
+            score_avg=np.mean(feature_errors)
+            return score_avg

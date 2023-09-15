@@ -1,0 +1,90 @@
+{
+    "opt_name": "simple_hh_syn_vclamp_toopt2_RANDOM_SEARCH_11_Sep_2023_19:25:32:016583",
+    "seed": 1234,
+    "final_fitness": [
+        168.33739031758546
+    ],
+    "number_of_evaluations": 1,
+    "models": {
+        "model_name": "simple_hh_syn_vclamp_toopt2",
+        "model_author": "Eslam-OMEN"
+    },
+    "parameters": [
+        {
+            "name": "weight",
+            "min_boundary": "0.001",
+            "max_boundary": "1.0",
+            "optimum": "0.9664870821564466"
+        },
+        {
+            "name": "delay",
+            "min_boundary": "0.0",
+            "max_boundary": "5.0",
+            "optimum": "2.2036629958767633"
+        },
+        {
+            "name": "tau_rise",
+            "min_boundary": "0.001",
+            "max_boundary": "1.0",
+            "optimum": "0.008483978588528604"
+        },
+        {
+            "name": "tau_decay",
+            "min_boundary": "0.1",
+            "max_boundary": "5.0",
+            "optimum": "4.563782216000709"
+        }
+    ],
+    "error_function": [
+        {
+            "name": "MSE",
+            "value": "168.33739031758546",
+            "weight": "1.0",
+            "weighted_value": "168.33739031758546"
+        }
+    ],
+    "algorithm": [
+        {
+            "algorithm_name": "RANDOM",
+            "algorithm_package": "SEARCH",
+            "algorithm_parameters": [
+                {
+                    "parameter_name": "size_of_population",
+                    "parameter_value": "1"
+                },
+                {
+                    "parameter_name": "number_of_cpu",
+                    "parameter_value": "1"
+                }
+            ]
+        }
+    ],
+    "target_data": [
+        {
+            "data_type": "voltage",
+            "file_name": "iclamp_new_evendt.dat",
+            "number_of_traces": 1,
+            "stim_delay": 1.0,
+            "stim_duration": 1.0,
+            "length_ms": 500.0,
+            "sampling_frequency": 40000.0,
+            "stim_amp": [
+                {
+                    "stim_amplitude": -70.0
+                }
+            ]
+        }
+    ],
+    "created_at": "2023-09-11T19:25:32.016612Z",
+    "statistics": [
+        {
+            "generation": 0,
+            "population": 1,
+            "maximum": 168.33739031758546,
+            "minimum": 168.33739031758546,
+            "median": 168.33739031758546,
+            "mean": 168.33739031758546,
+            "std": 0.0
+        }
+    ]
+}

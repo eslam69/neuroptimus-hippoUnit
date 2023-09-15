@@ -1,0 +1,42 @@
+{
+    "('apical_dendrite[4]', 0.5)": {
+        "attenuation_soma/dendrite": 0.17189127821167863,
+        "distance": 115.37084249162642
+    },
+    "('apical_dendrite[16]', 0.5)": {
+        "attenuation_soma/dendrite": 0.04076975516017904,
+        "distance": 217.14191870903784
+    },
+    "('apical_dendrite[0]', 0.75)": {
+        "attenuation_soma/dendrite": 0.3075717263630648,
+        "distance": 76.99165908019937
+    },
+    "('apical_dendrite[14]', 0.5)": {
+        "attenuation_soma/dendrite": 0.09822756063970384,
+        "distance": 155.5723586388841
+    },
+    "('apical_dendrite[25]', 0.5)": {
+        "attenuation_soma/dendrite": 0.022148060103475056,
+        "distance": 258.5541696303022
+    },
+    "('apical_dendrite[15]', 0.5)": {
+        "attenuation_soma/dendrite": 0.06474080777831207,
+        "distance": 184.36116824116903
+    },
+    "('apical_dendrite[6]', 0.5)": {
+        "attenuation_soma/dendrite": 0.13061412307964188,
+        "distance": 135.02606175244458
+    },
+    "('apical_dendrite[27]', 0.5)": {
+        "attenuation_soma/dendrite": 0.011062225607930222,
+        "distance": 315.2665379658441
+    },
+    "('apical_dendrite[26]', 0.5)": {
+        "attenuation_soma/dendrite": 0.014344044194138202,
+        "distance": 280.83327219826776
+    },
+    "('apical_dendrite[22]', 0.5)": {
+        "attenuation_soma/dendrite": 0.031267121002509723,
+        "distance": 236.0198782037361
+    }
+}

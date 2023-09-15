@@ -1,0 +1,98 @@
+{
+    "attributes": {
+        "adjusted_params": [
+            "cm",
+            "Ra",
+            "g_pas",
+            "e_pas"
+        ],
+        "base_dir": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/test_model_package/model/",
+        "boundaries": [
+            [
+                1.0,
+                30.0,
+                5e-05,
+                -75.0
+            ],
+            [
+                10.0,
+                3000.0,
+                0.01,
+                -55.0
+            ]
+        ],
+        "current_algorithm": {
+            "RANDOM_SEARCH": {
+                "number_of_cpu": 3,
+                "size_of_population": 1
+            }
+        },
+        "feat_str": "",
+        "feats": [
+            "Spikecount",
+            "steady_state_voltage",
+            "voltage_base",
+            "voltage_deflection",
+            "voltage_deflection_begin",
+            "sag_amplitude",
+            "sag_ratio1"
+        ],
+        "hippounit_settings_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/test_model_package/hippounit_settings.json",
+        "input_cont_t": null,
+        "input_dir": "",
+        "input_freq": null,
+        "input_length": null,
+        "input_scale": "mV",
+        "input_size": 2,
+        "model_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/test_model_package/model/experiment/main_model.hoc",
+        "model_spec_dir": null,
+        "num_params": 4,
+        "output_level": "0",
+        "param_vals": [
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.1
+        ],
+        "run_controll_dt": 0.05,
+        "run_controll_pos": 0.5,
+        "run_controll_record": "v",
+        "run_controll_sec": "soma[0]",
+        "run_controll_tstop": 600.0,
+        "run_controll_vrest": -65.0,
+        "seed": 1234,
+        "sim_command": [],
+        "simulator": "hippounit",
+        "spike_thres": 0.0,
+        "spike_window": null,
+        "start_time_stamp": 1659100441.4472558,
+        "starting_points": null,
+        "stim_amp": [
+            -0.25,
+            0.05
+        ],
+        "stim_del": 200.0,
+        "stim_dur": 300.0,
+        "stim_pos": 0.5,
+        "stim_sec": "soma[0]",
+        "stim_type": "IClamp",
+        "type": [
+            "hippounit",
+            "hippounit"
+        ],
+        "u_fun_string": "\n\n\n\ndef usr_fun(self,v):\n#4\n#cm\n#Ra\n#g_pas\n#e_pas\n\tfor sec in h.allsec():\n\t\tsec.cm=v[0]\n\t\tsec.Ra=v[1]\n\t\tfor seg in sec:\n\t\t\tseg.g_pas=v[2]\n\t\t\tseg.e_pas=v[3]",
+        "weights": [
+            0.1429,
+            0.1429,
+            0.1429,
+            0.1429,
+            0.1429,
+            0.1429,
+            0.1429
+        ]
+    }
+}

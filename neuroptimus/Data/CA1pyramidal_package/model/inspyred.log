@@ -1,0 +1,5 @@
+2023-08-26 08:40:38,175 - inspyred.ec - DEBUG - generating initial population
+2023-08-26 08:40:38,175 - inspyred.ec - DEBUG - evaluating initial population
+2023-08-26 08:40:38,191 - inspyred.ec - DEBUG - unable to pickle args parameter statistics_file in parallel_evaluation_mp
+2023-08-26 08:40:38,191 - inspyred.ec - DEBUG - unable to pickle args parameter individuals_file in parallel_evaluation_mp
+2023-08-26 08:40:38,192 - inspyred.ec - DEBUG - unable to pickle args parameter _ec in parallel_evaluation_mp
