@@ -1330,6 +1330,15 @@ class fF_HippoUnit(fF):
             return tests.ObliqueIntegrationTest(observation=observation, save_all=self.is_figures_saved,
                                                 force_run_synapse=True, force_run_bin_search=True, show_plot=False,
                                                 base_directory=self.model.output_directory, serialized=True)
+        # elif test_name =="PathwayInteraction" :
+        #     with open(self.model.settings["tests"]["PathwayInteraction"]["target_data_path"], "r") as f:
+        #         observation = json.load(f, object_pairs_hook=collections.OrderedDict)
+        #     with open(self.model.settings["tests"]["PathwayInteraction"]["stimuli_file_path"], "r") as f:
+        #         config = json.load(f, object_pairs_hook=collections.OrderedDict)
+        #     return tests.PathwayInteraction(config=config, observation=observation, force_run=True,
+        #                                     force_run_FindCurrentStim=True, show_plot=False,
+        #                                     save_all=self.is_figures_saved, base_directory=self.model.output_directory,
+        #                                     serialized=True)
 
     def single_objective_fitness(self, candidates, args={}, delete_model=True):
         os.chdir(self.option.base_dir)
@@ -1342,13 +1351,16 @@ class fF_HippoUnit(fF):
         for idx, test_name in enumerate(self.tests_selected):
             test = self.select_test(test_name)
             test.specify_data_set = self.model.settings["model"]["dataset"]
-            try:
-                score = self.model.run(test)
-                error += self.option.weights[idx] * score
-                self.tests_fitness[test_name] = score
-            except Exception as e:
-                print('Model: ' + self.model.model.name + ' could not be run')
-                traceback.print_stack()
+            score = self.model.run(test)
+            error += self.option.weights[idx] * score
+            self.tests_fitness[test_name] = score
+            # try:
+            #     score = self.model.run(test)
+            #     error += self.option.weights[idx] * score
+            #     self.tests_fitness[test_name] = score
+            # except Exception as e:
+            #     print('Model: ' + self.model.model.name + ' could not be run')
+            #     traceback.print_stack()
         # print(self.tests_selected)
         self.fitnes.append(error)
         with open("eval.txt", "a") as f: 

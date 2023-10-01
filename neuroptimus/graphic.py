@@ -216,10 +216,37 @@ class Ui_Neuroptimus(QMainWindow):
         self.layout.addWidget(self.freq_ctrl, 4, 3, 1, 1)
 
 
-        self.layout.addWidget(self.pushButton_3, 5, 0, 1, 2)
+        self.layout.addWidget(self.pushButton_3, 5, 0, 1, 2) #load data button
         
         self.layout.addWidget(self.input_tree, 6, 0, 1, 2)
         self.layout.addWidget(self.widget, 6, 2, 1, 2)
+
+        self.target_data_ui_components = []
+
+        # Append the objects to the list
+        self.target_data_ui_components.append(self.input_type_label)
+        # self.target_data_ui_components.append(self.type_selector)
+        self.target_data_ui_components.append(self.label_2)
+        self.target_data_ui_components.append(self.lineEdit_file)
+        self.target_data_ui_components.append(self.input_file_controll)
+        self.target_data_ui_components.append(self.time_checker)
+        # self.target_data_ui_components.append(self.label_3)
+        # self.target_data_ui_components.append(self.lineEdit_folder)
+        # self.target_data_ui_components.append(self.base_dir_controll)
+        self.target_data_ui_components.append(self.label_5)
+        self.target_data_ui_components.append(self.size_ctrl)
+        self.target_data_ui_components.append(self.label_7)
+        self.target_data_ui_components.append(self.dropdown)
+        self.target_data_ui_components.append(self.label_4)
+        self.target_data_ui_components.append(self.length_ctrl)
+        self.target_data_ui_components.append(self.label_6)
+        self.target_data_ui_components.append(self.freq_ctrl)
+        # self.target_data_ui_components.append(self.pushButton_3)
+        # self.target_data_ui_components.append(self.input_tree)
+        self.target_data_ui_components.append(self.widget)
+
+
+
 
         #make all buttons in this tab the same size
         for widget in self.filetab.findChildren(QtWidgets.QPushButton):
@@ -972,10 +999,13 @@ class Ui_Neuroptimus(QMainWindow):
         self.type_selector.setItemText(0, _translate("Neuroptimus", "Voltage trace"))
         self.type_selector.setItemText(1, _translate("Neuroptimus", "Current trace"))
         self.type_selector.setItemText(2, _translate("Neuroptimus", "Features"))
-        self.type_selector.setItemText(3, _translate("Neuroptimus", "Hippounit"))
+        self.type_selector.setItemText(3, _translate("Neuroptimus", "HippoUnit"))
         self.type_selector.setItemText(4, _translate("Neuroptimus", "Other"))
 
         self.type_selector.currentTextChanged.connect(self.unitchange)
+        #if current tab changed to second tab, then call the function
+        self.tabwidget.currentChanged.connect(self.tabchange)
+
         self.input_file_controll.setText(_translate("Neuroptimus", "Browse..."))
         self.input_file_controll.clicked.connect(self.openFileNameDialog)
         self.time_checker.setText(_translate("Neuroptimus", "Contains time"))
@@ -1295,6 +1325,14 @@ class Ui_Neuroptimus(QMainWindow):
     #     optimization_thread.start()
 
 
+    def tabchange(self):
+        """if current tab changed to second tab and the file is loaded with Hippounit mode selected, then disable the simulation type selection"""
+        if self.tabwidget.currentIndex()==1:
+            if self.type_selector.currentText() == "HippoUnit" :
+                self.dd_type.setEnabled(False)
+            else:
+                self.dd_type.setEnabled(True)
+
     def startFittingThread(self):
         # Create a new thread for optimization
         self.fitting_thread = FittingThread(self)
@@ -1380,6 +1418,9 @@ class Ui_Neuroptimus(QMainWindow):
         folderName= QFileDialog.getExistingDirectory(None, options=options)
         if folderName:
             self.lineEdit_folder.setText(folderName)
+            if self.type_selector.currentText() == "HippoUnit" :
+                self.pushButton_3.setEnabled(True)
+
 
     def disable_mod_path(self):
         """
@@ -1398,12 +1439,18 @@ class Ui_Neuroptimus(QMainWindow):
         Sets units for drop down widget selecting simulation type.
         """
         self.dropdown.clear()
+        for component in self.target_data_ui_components:
+                component.setEnabled(True)
+                self.pushButton_3.setEnabled(False)
         if self.type_selector.currentIndex()==0:
             self.dropdown.addItems(["uV","mV","V"])
         elif self.type_selector.currentIndex()==1:
             self.dropdown.addItems(["pA","nA","uA"])
         elif self.type_selector.currentIndex()==2:
             self.dropdown.addItems(["uV","mV","V","pA","nA","uA"])
+        elif self.type_selector.currentIndex()==3:
+            for component in self.target_data_ui_components:
+                component.setEnabled(False)
         else:
             self.dropdown.addItems(["none"])
         self.dropdown.setCurrentIndex(1)
@@ -1452,7 +1499,11 @@ class Ui_Neuroptimus(QMainWindow):
                 
             except ValueError as ve:
                 print(ve)
-
+        elif self.type_selector.currentIndex()==3: 
+            self.tabwidget.setTabEnabled(1,True)
+            kwargs = {"file" : str(self.lineEdit_folder.text()),
+            "input": [ None]*6 + ["hippounit"]}
+            pass  #TODO load_neuroptimus()
         else:
             try:
 
@@ -1467,6 +1518,7 @@ class Ui_Neuroptimus(QMainWindow):
                 
             except ValueError as ve:
                 print(ve)
+        
         self.core.FirstStep(kwargs)
         self.tabwidget.setTabEnabled(1,True)
         if self.type_selector.currentIndex()==0 or self.type_selector.currentIndex()==1 or self.type_selector.currentIndex()==3:
@@ -1518,6 +1570,7 @@ class Ui_Neuroptimus(QMainWindow):
                 self.tspike_t=self.input_tree.AppendItem(self.troot,"Spike times")
                 self.input_tree.AppendItem(self.tspike_t,self.input_file_controll.GetValue().split("/")[-1])
                 '''
+        
 
         elif self.type_selector.currentIndex()==2:
             for n in [x for x in enumerate(self.loaded_input_types) if x[1]!=None and x[0]!=2]:
@@ -1525,12 +1578,16 @@ class Ui_Neuroptimus(QMainWindow):
             input_string="Features"
             input_string+=str(str(self.lineEdit_file.text()).split("/")[-1])+"\n"
             input_string+=self.add_data_dict(self.core.data_handler.features_dict)
+        
+        # elif self.type_selector.currentIndex()==3: 
+        #     self.tabwidget.setTabEnabled(1,True)
+        #     pass  #TODO load_neuroptimus()
 
         else:
             pass
         
         self.input_label.setText(QtCore.QCoreApplication.translate("Neuroptimus", input_string))
-        if self.core.option_handler.type[-1]!="features":
+        if self.core.option_handler.type[-1].lower() not in ["features", "hippounit"]:
                 self.my_list = copy(self.core.ffun_calc_list)
                
         else:
