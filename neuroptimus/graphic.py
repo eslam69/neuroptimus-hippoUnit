@@ -100,7 +100,12 @@ class Ui_Neuroptimus(QMainWindow):
         self.tabwidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.laybox.addWidget(self.tabwidget)
 
+
+        self.hippoUnit_only_widgets = []
+        self.neuroptimus_only_widgets = []
+        
         # filetab 1
+        
         self.filetab = QtWidgets.QWidget()
         self.filetab.setObjectName("filetab")
 
@@ -342,6 +347,26 @@ class Ui_Neuroptimus(QMainWindow):
         self.remover.setObjectName("remover")
         self.remover.setEnabled(False)
 
+        #model name label
+        self.model_name_label = QtWidgets.QLabel(self.modeltab)
+        self.model_name_label.setGeometry(QtCore.QRect(10, 10, 300, 16))
+        font.setWeight(50)
+        self.model_name_label.setFont(font)
+        self.model_name_label.setObjectName("model_name_label")
+        self.model_name_label.setText("Model Name")
+
+        #model name input
+        self.model_name_input = QtWidgets.QLineEdit(self.modeltab)
+        self.model_name_input.setGeometry(QtCore.QRect(10, 30, 221, 22))
+        self.model_name_input.setObjectName("model_name_input")
+        #text placeholder
+        self.model_name_input.setPlaceholderText("(for HippoUnit)")
+
+
+        self.hippoUnit_only_widgets.append(self.model_name_label)
+        self.hippoUnit_only_widgets.append(self.model_name_input)
+
+
 
 
        
@@ -349,9 +374,13 @@ class Ui_Neuroptimus(QMainWindow):
         self.layout = QtWidgets.QGridLayout(self.modeltab)
         
         self.layout.addWidget(self.dd_type, 0, 0, 1, 3) #simulator
+        self.layout.addWidget(self.model_name_label, 0, 3, 1, 1)
+        self.layout.addWidget(self.model_name_input, 0, 4, 1, 2)
 
+
+
+        #2nd row
         self.layout.addWidget(self.label_24, 1, 0, 1, 1) #label Model file
-
         self.layout.addWidget(self.lineEdit_file2, 1, 1, 1, 2)
         self.layout.addWidget(self.pushButton_15, 1, 3, 1, 1) #first browse non hidden 
         self.layout.addWidget(self.pushButton_13, 1, 4, 1, 1) #load
@@ -502,7 +531,8 @@ class Ui_Neuroptimus(QMainWindow):
         self.label_55.setFont(font)
         self.label_55.setObjectName("label_55")
         
-       
+        
+        
 
 
         # Create a new QGridLayout layout
@@ -575,6 +605,104 @@ class Ui_Neuroptimus(QMainWindow):
         grid.addWidget(sim_group, 0, 2, 6, 1)
 
        
+
+
+
+        # container for the widgets that are only used for HippoUnit
+        self.hippounit_settings_widgets = []
+
+        #HippoUnit: output directory 
+        self.output_dir_label = QtWidgets.QLabel(self.simtab)
+        self.output_dir_label.setGeometry(QtCore.QRect(10, 30, 300, 16))
+        font.setWeight(50)
+        self.output_dir_label.setFont(font)
+        self.output_dir_label.setObjectName("output_dir_label")
+        self.output_dir_label.setText("HippoUnit Output Directory")
+        
+        self.output_dir_input = QtWidgets.QLineEdit(self.simtab)
+        self.output_dir_input.setGeometry(QtCore.QRect(10, 50, 221, 22))
+        self.output_dir_input.setObjectName("output_dir_input")
+        # self.output_dir_input.setPlaceholderText("(for HippoUnit)")
+        
+        self.hippounit_settings_widgets.append(self.output_dir_label)
+        self.hippounit_settings_widgets.append(self.output_dir_input)
+
+        #HippoUnit: template name
+        self.template_name_label = QtWidgets.QLabel(self.simtab)
+        self.template_name_label.setGeometry(QtCore.QRect(10, 70, 300, 16))
+        font.setWeight(50)
+        self.template_name_label.setFont(font)
+        self.template_name_label.setObjectName("template_name_label")
+        self.template_name_label.setText("Template Name")
+
+        self.template_name_input = QtWidgets.QLineEdit(self.simtab)
+        self.template_name_input.setGeometry(QtCore.QRect(10, 90, 221, 22))
+        self.template_name_input.setObjectName("template_name_input")
+
+        self.hippounit_settings_widgets.append(self.template_name_label)
+        self.hippounit_settings_widgets.append(self.template_name_input)
+
+        #HippoUnit: v_init
+        self.v_init_label = QtWidgets.QLabel(self.simtab)
+        self.v_init_label.setGeometry(QtCore.QRect(10, 110, 300, 16))
+        font.setWeight(50)
+        self.v_init_label.setFont(font)
+        self.v_init_label.setObjectName("v_init_label")
+        self.v_init_label.setText("V_init")
+
+        self.v_init_input = QtWidgets.QLineEdit(self.simtab)
+        self.v_init_input.setGeometry(QtCore.QRect(10, 130, 221, 22))
+        self.v_init_input.setObjectName("v_init_input")
+
+        self.hippounit_settings_widgets.append(self.v_init_label)
+        self.hippounit_settings_widgets.append(self.v_init_input)
+
+        #HippoUnit: celsius
+        self.celsius_label = QtWidgets.QLabel(self.simtab)
+        self.celsius_label.setGeometry(QtCore.QRect(10, 150, 300, 16))
+        font.setWeight(50)
+        self.celsius_label.setFont(font)
+        self.celsius_label.setObjectName("celsius_label")
+        self.celsius_label.setText("Celsius")
+
+        self.celsius_input = QtWidgets.QLineEdit(self.simtab)
+        self.celsius_input.setGeometry(QtCore.QRect(10, 170, 221, 22))
+        self.celsius_input.setObjectName("celsius_input")
+
+        self.hippounit_settings_widgets.append(self.celsius_label)
+        self.hippounit_settings_widgets.append(self.celsius_input)
+
+        #HippoUnit: soma
+
+        self.soma_label = QtWidgets.QLabel(self.simtab)
+        self.soma_label.setGeometry(QtCore.QRect(10, 190, 300, 16))
+        font.setWeight(50)
+        self.soma_label.setFont(font)
+        self.soma_label.setObjectName("soma_label")
+        self.soma_label.setText("Soma")
+
+        self.soma_input = QtWidgets.QLineEdit(self.simtab)
+        self.soma_input.setGeometry(QtCore.QRect(10, 210, 221, 22))
+        self.soma_input.setObjectName("soma_input")
+
+        self.hippounit_settings_widgets.append(self.soma_label)
+        self.hippounit_settings_widgets.append(self.soma_input)
+
+
+        #creat a groub box for the hippounit settings
+        hippounit_group = QtWidgets.QGroupBox("HippoUnit Settings")
+        hippounit_layout = QtWidgets.QVBoxLayout()
+        for widget in self.hippounit_settings_widgets:
+            hippounit_layout.addWidget(widget)
+        hippounit_group.setLayout(hippounit_layout)
+
+        #add the hippounit group box to the grid layout
+        grid.addWidget(hippounit_group, 6, 1, 7, 1)
+
+
+        #add these group boxes except hippounit_group to a list
+        self.simtab_neuroptimus_group_boxes = [stim_group, time_group, pos_group, rec_group, sim_group]
+
 
         for widget in self.simtab.findChildren(QtWidgets.QPushButton):
             widget.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -1327,11 +1455,19 @@ class Ui_Neuroptimus(QMainWindow):
 
     def tabchange(self):
         """if current tab changed to second tab and the file is loaded with Hippounit mode selected, then disable the simulation type selection"""
-        if self.tabwidget.currentIndex()==1:
-            if self.type_selector.currentText() == "HippoUnit" :
-                self.dd_type.setEnabled(False)
-            else:
-                self.dd_type.setEnabled(True)
+        # if self.tabwidget.currentIndex()==1:
+        self.model_name_label.setEnabled(True)
+        self.model_name_input.setEnabled(True)
+        # self.simtab_neuroptimus_group_boxes.setEnabled(True)
+        [widget.setEnabled(True) for widget in self.simtab_neuroptimus_group_boxes]
+        if self.type_selector.currentText() == "HippoUnit" :
+            self.dd_type.setEnabled(False)
+            [widget.setEnabled(False) for widget in self.simtab_neuroptimus_group_boxes]
+
+        else:
+            self.dd_type.setEnabled(True)
+            self.model_name_label.setEnabled(False)
+            self.model_name_input.setEnabled(False)
 
     def startFittingThread(self):
         # Create a new thread for optimization
@@ -1385,7 +1521,10 @@ class Ui_Neuroptimus(QMainWindow):
                 self.size_ctrl.setText(str(len(all_line[0].split())-1))  #trace number
         except:
                 print('No data file selected')
-            
+
+    def set_widgets_in_list(self, widget_list,enabled):
+        for widget in widget_list:
+            widget.setEnabled(enabled)  
 
     def openFolderNameDialog2(self): 
         """
@@ -1521,7 +1660,7 @@ class Ui_Neuroptimus(QMainWindow):
         
         self.core.FirstStep(kwargs)
         self.tabwidget.setTabEnabled(1,True)
-        if self.type_selector.currentIndex()==0 or self.type_selector.currentIndex()==1 or self.type_selector.currentIndex()==3:
+        if self.type_selector.currentText().lower() in ["voltage", "current"]:
             
             f = self.core.option_handler.input_freq
             t = self.core.option_handler.input_length
@@ -1572,31 +1711,35 @@ class Ui_Neuroptimus(QMainWindow):
                 '''
         
 
-        elif self.type_selector.currentIndex()==2:
+        elif self.type_selector.currentText().lower() == "features":
             for n in [x for x in enumerate(self.loaded_input_types) if x[1]!=None and x[0]!=2]:
                 self.loaded_input_types[n[0]]=None
             input_string="Features"
             input_string+=str(str(self.lineEdit_file.text()).split("/")[-1])+"\n"
             input_string+=self.add_data_dict(self.core.data_handler.features_dict)
         
-        # elif self.type_selector.currentIndex()==3: 
+        elif self.type_selector.currentText().lower() == "hippounit": 
+            input_string="Hippounit"
         #     self.tabwidget.setTabEnabled(1,True)
         #     pass  #TODO load_neuroptimus()
 
         else:
-            pass
+            raise NotImplementedError("Input type not implemented yet")
         
         self.input_label.setText(QtCore.QCoreApplication.translate("Neuroptimus", input_string))
-        if self.core.option_handler.type[-1].lower() not in ["features", "hippounit"]:
+        if self.core.option_handler.type[-1].lower()  in ["voltage", "current"]:
                 self.my_list = copy(self.core.ffun_calc_list)
-               
-        else:
+        elif self.core.option_handler.type[-1].lower() == "hippounit":
+                print("hippounit tests loading in table")
+                self.my_list = copy(self.core.hippounit_tests_names)               
+        else: #features
             self.my_list=list(self.core.data_handler.features_data.keys())[3:]
         self.param_list = [[]] * len(self.my_list)
-        if self.core.option_handler.type[-1]!="features":
+        if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
             self.param_list[2] = [("Spike detection thres. (mV)",0.0)]
             self.param_list[1] = [("Spike detection thres. (mV)",0.0), ("Spike Window (ms)",1.0)]
-        else:
+            print("self.param_list",self.param_list)
+        elif self.core.option_handler.type[-1].lower() == "features":
             self.param_list[0] = [("Spike detection thres. (mV)",0.0)]
 
         if self.core.option_handler.type[-1]=="features":
@@ -1614,7 +1757,7 @@ class Ui_Neuroptimus(QMainWindow):
                 itemv = QTableWidgetItem("0")
             self.fitlist.setItem(index, 1, itemv)
 
-        if self.core.option_handler.type[-1]!="features":
+        if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
             self.kwargs={"runparam" : [self.core.data_handler.data.t_length,
                                         self.core.data_handler.data.step,
                                         "record",
@@ -1622,7 +1765,7 @@ class Ui_Neuroptimus(QMainWindow):
                                         "pos",
                                         "vrest"]
                             }
-        else:
+        elif self.core.option_handler.type[-1].lower() == "features":
             self.kwargs={"runparam" : [self.core.data_handler.features_data["stim_delay"] + self.core.data_handler.features_data["stim_duration"]+100,
                                         0.05,
                                         "record",
@@ -1632,9 +1775,9 @@ class Ui_Neuroptimus(QMainWindow):
         if self.core.option_handler.output_level=="1":
             self.core.Print()
         self.fit_container=[]
-        if self.core.option_handler.type[-1]!="features":
+        if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
             self.lineEdit_tstop.setText(str(self.core.data_handler.data.t_length))
-        else:
+        elif self.core.option_handler.type[-1].lower() == "features":
             self.lineEdit_tstop.setText(str(self.core.data_handler.features_data["stim_delay"] + self.core.data_handler.features_data["stim_duration"]+100))
             self.lineEdit_delay.setText(str(self.core.data_handler.features_data["stim_delay"]))
             self.lineEdit_duration.setText(str(self.core.data_handler.features_data["stim_duration"]))    
@@ -1797,6 +1940,9 @@ class Ui_Neuroptimus(QMainWindow):
             self.spec_file = self.lineEdit_folder2.text()
         else:
             self.spec_file = None
+
+        if self.type_selector.currentText().lower() == "Hippounit":
+            self.model_name = self.model_name_input.text()
 
         try:
             self.core.LoadModel({"model" : [self.model_file, self.spec_file],
@@ -2061,13 +2207,13 @@ class Ui_Neuroptimus(QMainWindow):
                 if current_weight:
                     self.fitfun_list.append(current_fun)
                     self.weights.append(current_weight) 
-            if self.core.option_handler.type[-1]!="features":
+            if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
                 self.kwargs.update({"feat":
                                     [{"Spike Detection Thres. (mv)": float(self.spike_tresh.text()), "Spike Window (ms)":float(self.spike_window.text())},
                                     self.fitfun_list]
                                     })
                 self.kwargs.update({"weights" : self.weights})
-            else:
+            elif self.core.option_handler.type[-1].lower() == "features":
                 self.kwargs.update({"feat":
                                     [{"Spike Detection Thres. (mv)": float(self.spike_tresh.text()), "Spike Window (ms)":float(self.spike_window.text())},
                                     self.fitfun_list]
@@ -2169,7 +2315,7 @@ class Ui_Neuroptimus(QMainWindow):
         model_data = []
         
         self.results_tab_axes.cla()
-        if self.core.option_handler.type[-1]!="features":
+        if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
             for n in range(self.core.data_handler.number_of_traces()):
                 exp_data.extend(self.core.data_handler.data.GetTrace(n))
                 model_data.extend(self.core.final_result[n])
@@ -2246,10 +2392,12 @@ class Ui_Neuroptimus(QMainWindow):
                 tmp[1]+=c[t_idx][2]
                 tmp[2]=c[t_idx][0]
                 tmp[3]+=c[t_idx][2]*c[t_idx][0]
-            if self.core.option_handler.type[-1]!='features':
+            if self.core.option_handler.type[-1].lower() in ["voltage","current"]:
                 tmp[0]=self.core.ffun_mapper[c[t_idx][1].__name__]
-            else:
+            elif self.core.option_handler.type[-1].lower() in ["features", "hipounit"]: #TODO: Check this (is it working as expected? supposed to fill "Error functions" column with the name of the error function in the table)
                 tmp[0]=(c[t_idx][1])
+            else:
+                raise NotImplementedError("Unknown type: {}".format(self.core.option_handler.type[-1]))
             idx+=1
             tmp=list(map(str,tmp))
             self.errorlist.setItem(c_idx, 0, QTableWidgetItem(tmp[0]))
@@ -2923,9 +3071,9 @@ class ErrorDialog(QtWidgets.QMainWindow):
         for t in parent.core.error_comps:
             for c in t:
                 #tmp_str.append( "*".join([str(c[0]),c[1].__name__]))
-                if parent.core.option_handler.type[-1]!="features":
+                if parent.core.option_handler.type[-1].lower() in ["voltage", "current"]:
                     self.error_comp_table.setItem(c_idx,0,QTableWidgetItem(parent.core.ffun_mapper[c[1].__name__]))
-                else:
+                else: #TODO: check If Hippounit working like features or not
                     self.error_comp_table.setItem(c_idx,0,QTableWidgetItem(c[1]))
                 self.error_comp_table.setItem(c_idx,1,QTableWidgetItem(str("{:.4f}".format(c[2]))))
                 self.error_comp_table.setItem(c_idx,2,QTableWidgetItem(str("{:.4f}".format(c[0]))))

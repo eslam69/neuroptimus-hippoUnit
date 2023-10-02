@@ -3,3 +3,5 @@ neuroptimus/__pycache__/
 neuroptimus/__pycache__/*.pyc
 neuroptimus/Data/*
 .vscode/launch.json
+neuroptimus/__pycache__/Core.cpython-37.pyc
+neuroptimus/__pycache__/graphic.cpython-37.pyc
