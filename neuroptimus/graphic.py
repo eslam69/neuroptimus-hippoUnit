@@ -690,14 +690,15 @@ class Ui_Neuroptimus(QMainWindow):
 
 
         #creat a groub box for the hippounit settings
-        hippounit_group = QtWidgets.QGroupBox("HippoUnit Settings")
+        self.hippounit_group = QtWidgets.QGroupBox("HippoUnit Settings")
+        self.hippounit_group.setEnabled(False)
         hippounit_layout = QtWidgets.QVBoxLayout()
         for widget in self.hippounit_settings_widgets:
             hippounit_layout.addWidget(widget)
-        hippounit_group.setLayout(hippounit_layout)
+        self.hippounit_group.setLayout(hippounit_layout)
 
         #add the hippounit group box to the grid layout
-        grid.addWidget(hippounit_group, 6, 1, 7, 1)
+        grid.addWidget(self.hippounit_group, 6, 1, 7, 1)
 
 
         #add these group boxes except hippounit_group to a list
@@ -764,29 +765,28 @@ class Ui_Neuroptimus(QMainWindow):
         self.pushButton_normalize.setToolTip("<p>Rescale the active fitness weights sum to 1</p>")
         self.fitlist.setToolTip("<p>Fitness functions with 0 weights considered inactive</p>")
 
-
         # Create a new QGridLayout
         grid = QtWidgets.QGridLayout(self.fittab)
 
         grid.addWidget(self.pushButton_normalize, 0, 1)
-        grid.addWidget(self.fitlist, 1, 0, 10, 2)
+        grid.addWidget(self.fitlist, 1, 0, 10, 3)
         #make the table widget stretch to fill the available space
         grid.setColumnStretch(0, 1)
-        grid.setRowStretch(0, 1)
+        # grid.setRowStretch(0, 1)
 
 
 
         # Create a new QGroupBox for the spike detection parameters
-        spike_group_box = QtWidgets.QGroupBox("Spike Detection Parameters")
+        self.spike_group_box = QtWidgets.QGroupBox("Spike Detection Parameters")
         #make the group panel flat
        
 
         #set the font to be bold for the group box title
-        spike_group_box.setStyleSheet("QGroupBox { font-weight: bold; }")
+        self.spike_group_box.setStyleSheet("QGroupBox { font-weight: bold; }")
 
 
         # Create a new QGridLayout for the spike detection group box
-        spike_group_layout = QtWidgets.QVBoxLayout(spike_group_box)
+        spike_group_layout = QtWidgets.QVBoxLayout(self.spike_group_box)
 
         # Add the widgets to the spike detection group box
         spike_group_layout.addWidget(self.label_69)
@@ -796,11 +796,217 @@ class Ui_Neuroptimus(QMainWindow):
 
 
        
-        grid.addWidget(spike_group_box, 1, 5, 4, 2)
+        grid.addWidget(self.spike_group_box, 1, 3, 2, 4)
 
 
         # Set the layout of the spike detection group box
-        spike_group_box.setLayout(spike_group_layout)
+        self.spike_group_box.setLayout(spike_group_layout)
+        
+
+
+        #HippoUnit: Test specific settings
+        #Create a table with 2 columns and a label above the table HippoUnit Test-Specific Settings
+        self.hippounit_test_specific_settings_label = QtWidgets.QLabel(self.fittab)
+        self.hippounit_test_specific_settings_label.setGeometry(QtCore.QRect(330, 260, 300, 16))
+        self.hippounit_test_specific_settings_label.setFont(font)
+        self.hippounit_test_specific_settings_label.setObjectName("hippounit_test_specific_settings_label")
+        self.hippounit_test_specific_settings_label.setText("HippoUnit Test-Specific Settings")
+
+
+        self.hippounit_test_specific_settings_table = QtWidgets.QTableWidget(self.fittab)
+        self.hippounit_test_specific_settings_table.setObjectName("hippounit_test_specific_settings_table")
+        self.hippounit_test_specific_settings_table.setColumnCount(3)
+        self.hippounit_test_specific_settings_table.setHorizontalHeaderLabels(["Test", "target_data_path","stimuli_file_path"])
+        self.hippounit_test_specific_settings_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.hippounit_test_specific_settings_table.verticalHeader().setVisible(False)
+        self.hippounit_test_specific_settings_table.setRowCount(0)
+        self.hippounit_test_specific_settings_table.setAlternatingRowColors(False)
+        self.hippounit_test_specific_settings_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.hippounit_test_specific_settings_table.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.hippounit_test_specific_settings_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.hippounit_test_specific_settings_table.setSortingEnabled(False)
+        self.hippounit_test_specific_settings_table.setShowGrid(True)
+        self.hippounit_test_specific_settings_table.setWordWrap(False)
+        self.hippounit_test_specific_settings_table.setCornerButtonEnabled(True)
+        self.hippounit_test_specific_settings_table.horizontalHeader().setStretchLastSection(True)
+        
+        #add the label and the table to the grid layout
+        grid.addWidget(self.hippounit_test_specific_settings_label, 4, 3, 1, 5)
+        grid.addWidget(self.hippounit_test_specific_settings_table, 5, 3, 2, 6)
+        #stretch the table to fill the available space
+        grid.setColumnStretch(5, 2)
+        grid.setRowStretch(5, 1)
+
+
+        #add a browse button to the grid layout, to to fill get a location of file to be used as a fill to the second column of the table in the corrresponding selected row
+        self.hippounit_test_specific_settings_browse_button = QtWidgets.QPushButton(self.fittab)
+        self.hippounit_test_specific_settings_browse_button.setGeometry(QtCore.QRect(330, 290, 80, 22))
+        self.hippounit_test_specific_settings_browse_button.setObjectName("hippounit_test_specific_settings_browse_button")
+        self.hippounit_test_specific_settings_browse_button.setText("Browse")
+        self.hippounit_test_specific_settings_browse_button.setToolTip("<p>Get a location of the configuration file</p>")
+        grid.addWidget(self.hippounit_test_specific_settings_browse_button, 5, 10, 1, 1)
+
+
+        #the second column of the table to be filled with a browse dialog
+        self.hippounit_test_specific_settings_browse_button.clicked.connect(self.browse_file_for_hippounit_test_specific_settings_table)
+
+        #selection is by cell not row
+        self.hippounit_test_specific_settings_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectItems)
+
+        #fill the table with the test specific settings configurations paths
+        self.hippounit_test_specific_settings_table.setRowCount(0)
+        #row 0 SomaticFeaturesTest target_data_path , second column to be filled with stimuli_file_path
+        self.hippounit_test_specific_settings_table.insertRow(0)
+        self.hippounit_test_specific_settings_table.setItem(0, 0, QtWidgets.QTableWidgetItem("SomaticFeaturesTest"))
+        self.hippounit_test_specific_settings_table.setItem(0, 1, QtWidgets.QTableWidgetItem(""))
+        self.hippounit_test_specific_settings_table.setItem(0, 2, QtWidgets.QTableWidgetItem(""))
+
+        #row 1 PSPAttenuationTest
+        self.hippounit_test_specific_settings_table.insertRow(1)
+        self.hippounit_test_specific_settings_table.setItem(1, 0, QtWidgets.QTableWidgetItem("PSPAttenuationTest"))
+        self.hippounit_test_specific_settings_table.setItem(1, 1, QtWidgets.QTableWidgetItem(""))
+        self.hippounit_test_specific_settings_table.setItem(1, 2, QtWidgets.QTableWidgetItem(""))
+        #BackpropagatingAPTest
+        self.hippounit_test_specific_settings_table.insertRow(2)
+        self.hippounit_test_specific_settings_table.setItem(2, 0, QtWidgets.QTableWidgetItem("BackpropagatingAPTest"))
+        self.hippounit_test_specific_settings_table.setItem(2, 1, QtWidgets.QTableWidgetItem(""))
+        self.hippounit_test_specific_settings_table.setItem(2, 2, QtWidgets.QTableWidgetItem(""))
+        #PathwayInteractionTest
+        self.hippounit_test_specific_settings_table.insertRow(3)
+        self.hippounit_test_specific_settings_table.setItem(3, 0, QtWidgets.QTableWidgetItem("PathwayInteractionTest"))
+        self.hippounit_test_specific_settings_table.setItem(3, 1, QtWidgets.QTableWidgetItem(""))
+        self.hippounit_test_specific_settings_table.setItem(3, 2, QtWidgets.QTableWidgetItem(""))
+        #BackpropagatingAPTest
+        self.hippounit_test_specific_settings_table.insertRow(4)
+        self.hippounit_test_specific_settings_table.setItem(4, 0, QtWidgets.QTableWidgetItem("BackpropagatingAPTest"))
+        self.hippounit_test_specific_settings_table.setItem(4, 1, QtWidgets.QTableWidgetItem(""))
+        self.hippounit_test_specific_settings_table.setItem(4, 2, QtWidgets.QTableWidgetItem("NA"))
+
+    
+        #non editable and non selectable cell
+        self.hippounit_test_specific_settings_table.item(4, 2).setFlags(QtCore.Qt.NoItemFlags)
+        #setting color to gray rgb(192,192,192)
+        self.hippounit_test_specific_settings_table.item(4, 2).setBackground(QtGui.QColor(192,192,192))
+
+        
+
+        #DepolarizationBlockTest
+        self.hippounit_test_specific_settings_table.insertRow(5)
+        self.hippounit_test_specific_settings_table.setItem(5, 0, QtWidgets.QTableWidgetItem("DepolarizationBlockTest"))
+        self.hippounit_test_specific_settings_table.setItem(5, 1, QtWidgets.QTableWidgetItem(""))
+        self.hippounit_test_specific_settings_table.setItem(5, 2, QtWidgets.QTableWidgetItem("NA"))
+        #set its color to gray
+        self.hippounit_test_specific_settings_table.item(5, 2).setBackground(QtGui.QColor(192,192,192))
+        
+        #make it non editable and non selectable
+        self.hippounit_test_specific_settings_table.item(5, 2).setFlags(QtCore.Qt.NoItemFlags)
+        self.hippounit_test_specific_settings_table.resizeRowsToContents()
+
+        #create new table under it
+        self.hippounit_test_sections_names_table = QtWidgets.QTableWidget(self.fittab)
+        self.hippounit_test_sections_names_table.setObjectName("hippounit_test_sections_names_table")
+        self.hippounit_test_sections_names_table.setColumnCount(2)
+        self.hippounit_test_sections_names_table.setHorizontalHeaderLabels(["Section", "Name"])
+        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.hippounit_test_sections_names_table.verticalHeader().setVisible(False)
+        self.hippounit_test_sections_names_table.setRowCount(0)
+        self.hippounit_test_sections_names_table.setAlternatingRowColors(False)
+        self.hippounit_test_sections_names_table.setSortingEnabled(False)
+        self.hippounit_test_sections_names_table.setShowGrid(True)
+        self.hippounit_test_sections_names_table.setWordWrap(True)
+        self.hippounit_test_sections_names_table.setCornerButtonEnabled(True)
+        self.hippounit_test_sections_names_table.horizontalHeader().setStretchLastSection(True)
+        #column size resizeable with dragging the column border
+        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
+        self.hippounit_test_sections_names_table.horizontalHeader().setStretchLastSection(True)
+        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        
+        
+        
+        #add it to the grid layout
+        grid.addWidget(self.hippounit_test_sections_names_table, 7, 3, 2, 6)
+        #stretch it to fill the available space
+        # grid.setColumnStretch(5, 2)
+        # grid.setRowStretch(5, 1)
+
+        #populating SomaSecList_name,  TrunkSecList_name, ObliqueSecList_name
+        # row 0 SomaSecList_name
+        self.hippounit_test_sections_names_table.insertRow(0)
+        self.hippounit_test_sections_names_table.setItem(0, 0, QtWidgets.QTableWidgetItem("SomaSecList_name"))
+        self.hippounit_test_sections_names_table.setItem(0, 1, QtWidgets.QTableWidgetItem(""))
+        # row 1 TrunkSecList_name
+        self.hippounit_test_sections_names_table.insertRow(1)
+        self.hippounit_test_sections_names_table.setItem(1, 0, QtWidgets.QTableWidgetItem("TrunkSecList_name"))
+        self.hippounit_test_sections_names_table.setItem(1, 1, QtWidgets.QTableWidgetItem(""))
+
+        # row 2 ObliqueSecList_name
+        self.hippounit_test_sections_names_table.insertRow(2)
+        self.hippounit_test_sections_names_table.setItem(2, 0, QtWidgets.QTableWidgetItem("ObliqueSecList_name"))
+        self.hippounit_test_sections_names_table.setItem(2, 1, QtWidgets.QTableWidgetItem(""))
+
+        #non selectable first column
+        for i in range(0, self.hippounit_test_sections_names_table.rowCount()):
+            self.hippounit_test_sections_names_table.item(i, 0).setFlags(QtCore.Qt.NoItemFlags)
+            #black color
+            self.hippounit_test_sections_names_table.item(i, 0).setForeground(QtGui.QColor(0,0,0))
+            font = QtGui.QFont()
+            #white color
+            font.setWeight(50)
+            font.setBold(True)
+            self.hippounit_test_sections_names_table.item(i, 0).setFont(font)
+            # self.hippounit_test_sections_names_table.item(i, 0).setBackground(QtGui.QColor(0,0,250))
+
+       
+
+        #table lengght be exactly the size of the content
+        self.hippounit_test_specific_settings_table.resizeRowsToContents()
+        self.hippounit_test_specific_settings_table.horizontalHeader().setStretchLastSection(True)
+        #bold first column cells
+        for i in range(0, self.hippounit_test_specific_settings_table.rowCount()):
+            font = QtGui.QFont()
+            font.setWeight(50)
+            font.setBold(True)
+            self.hippounit_test_specific_settings_table.item(i, 0).setFont(font)
+            self.hippounit_test_specific_settings_table.item(i, 0).setFlags(QtCore.Qt.NoItemFlags)
+            self.hippounit_test_specific_settings_table.item(i, 0).setForeground(QtGui.QColor(0,0   ,0))
+
+        
+
+
+        #appending these components to  hippounit_test_specific_settings_widgets
+        self.hippounit_settings_widgets.append(self.hippounit_test_specific_settings_label)
+        self.hippounit_settings_widgets.append(self.hippounit_test_specific_settings_table)
+        self.hippounit_settings_widgets.append(self.hippounit_test_specific_settings_browse_button)
+        self.hippounit_settings_widgets.append(self.hippounit_test_sections_names_table)
+
+        self.set_widgets_in_list(self.hippounit_settings_widgets, False)
+
+        self.spike_group_box.setAlignment(QtCore.Qt.AlignCenter)
+        self.spike_group_box.setStyleSheet("QGroupBox {font-weight: bold;}")
+
+
+
+        self.hippounit_test_specific_settings_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.hippounit_test_specific_settings_label.setStyleSheet("QGroupBox {font-weight: bold;}")
+
+        
+        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
+        self.hippounit_test_sections_names_table.horizontalHeader().setStretchLastSection(True)
+        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        
+
+
+
+
+
+
+
+
+
+
+
 
 
         self.fittab.setLayout(grid)
@@ -1130,7 +1336,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.type_selector.setItemText(3, _translate("Neuroptimus", "HippoUnit"))
         self.type_selector.setItemText(4, _translate("Neuroptimus", "Other"))
 
-        self.type_selector.currentTextChanged.connect(self.unitchange)
+        self.type_selector.currentTextChanged.connect(self.type_change)
         #if current tab changed to second tab, then call the function
         self.tabwidget.currentChanged.connect(self.tabchange)
 
@@ -1573,23 +1779,32 @@ class Ui_Neuroptimus(QMainWindow):
             self.pushButton_14.setEnabled(False)
 
 
-    def unitchange(self):
+
+    def type_change(self):
         """
         Sets units for drop down widget selecting simulation type.
         """
         self.dropdown.clear()
-        for component in self.target_data_ui_components:
-                component.setEnabled(True)
-                self.pushButton_3.setEnabled(False)
-        if self.type_selector.currentIndex()==0:
-            self.dropdown.addItems(["uV","mV","V"])
-        elif self.type_selector.currentIndex()==1:
-            self.dropdown.addItems(["pA","nA","uA"])
-        elif self.type_selector.currentIndex()==2:
-            self.dropdown.addItems(["uV","mV","V","pA","nA","uA"])
-        elif self.type_selector.currentIndex()==3:
-            for component in self.target_data_ui_components:
-                component.setEnabled(False)
+        self.set_widgets_in_list(self.target_data_ui_components,True)
+        self.set_widgets_in_list(self.simtab_neuroptimus_group_boxes,True)
+        type_index=self.type_selector.currentIndex()
+        if type_index in [0,1,2]:
+            self.hippounit_group.setEnabled(False)
+            self.spike_group_box.setEnabled(True)
+            self.set_widgets_in_list(self.hippounit_settings_widgets,False)
+            if self.type_selector.currentIndex()==0:
+                self.dropdown.addItems(["uV","mV","V"])
+            elif self.type_selector.currentIndex()==1:
+                self.dropdown.addItems(["pA","nA","uA"])
+            elif self.type_selector.currentIndex()==2:
+                self.dropdown.addItems(["uV","mV","V","pA","nA","uA"])
+        elif self.type_selector.currentIndex()==3: #Hippounit
+            self.set_widgets_in_list(self.target_data_ui_components,False) #first tab
+            self.set_widgets_in_list(self.simtab_neuroptimus_group_boxes,False) #settings tab (3rd)
+            self.hippounit_group.setEnabled(True)
+            self.set_widgets_in_list(self.hippounit_settings_widgets,True)
+            self.spike_group_box.setEnabled(False)
+
         else:
             self.dropdown.addItems(["none"])
         self.dropdown.setCurrentIndex(1)
@@ -2071,6 +2286,23 @@ class Ui_Neuroptimus(QMainWindow):
         except:
             self.fitlist.item(row, 1).setText("0")
         
+    def browse_file_for_hippounit_test_specific_settings_table(self):
+        """
+        File dialog for the file tab to open file.
+        """
+        row = self.hippounit_test_specific_settings_table.currentRow() #get the selected row
+        column = self.hippounit_test_specific_settings_table.currentColumn() #get the selected column
+        if column == 0: #if the selected cell is the first column
+            return #do nothing
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Data files (*.json);;All Files (*);;", options=options)
+        if fileName:
+            
+            #set the file name to the selected cell
+            self.hippounit_test_specific_settings_table.setItem(self.hippounit_test_specific_settings_table.currentRow(),self.hippounit_test_specific_settings_table.currentColumn(), QTableWidgetItem(fileName))
+
+
 
     def Fit_normalize(self, e):
         """
