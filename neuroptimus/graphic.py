@@ -22,6 +22,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox
 from PyQt5.QtGui import *
 from PyQt5.QtCore import QThread, pyqtSignal
+import json
+from collections import OrderedDict
+
 import warnings
 warnings.simplefilter("ignore", UserWarning)
 
@@ -174,6 +177,8 @@ class Ui_Neuroptimus(QMainWindow):
         self.lineEdit_file.setObjectName("lineEdit")
 
         self.model = QStandardItemModel(0, 1)
+        
+        
 
         self.widget = QtWidgets.QWidget(self.filetab)
         self.widget.setObjectName("widget")
@@ -764,16 +769,17 @@ class Ui_Neuroptimus(QMainWindow):
         self.fittab_help.setGeometry(350, 260, 30, 30)"""
         self.pushButton_normalize.setToolTip("<p>Rescale the active fitness weights sum to 1</p>")
         self.fitlist.setToolTip("<p>Fitness functions with 0 weights considered inactive</p>")
-
-        # Create a new QGridLayout
+        self.core=Core.coreModul()
         grid = QtWidgets.QGridLayout(self.fittab)
 
         grid.addWidget(self.pushButton_normalize, 0, 1)
         grid.addWidget(self.fitlist, 1, 0, 10, 3)
         #make the table widget stretch to fill the available space
         grid.setColumnStretch(0, 1)
-        # grid.setRowStretch(0, 1)
+        grid.setRowStretch(0, 1)
 
+        #when a cell value  changes in the table, call fitchanged function
+        # self.fitlist.itemChanged.connect(self.fitchanged)
 
 
         # Create a new QGroupBox for the spike detection parameters
@@ -805,7 +811,7 @@ class Ui_Neuroptimus(QMainWindow):
 
 
         #HippoUnit: Test specific settings
-        #Create a table with 2 columns and a label above the table HippoUnit Test-Specific Settings
+        #Create a table with 3 columns and a label above the table HippoUnit Test-Specific Settings
         self.hippounit_test_specific_settings_label = QtWidgets.QLabel(self.fittab)
         self.hippounit_test_specific_settings_label.setGeometry(QtCore.QRect(330, 260, 300, 16))
         self.hippounit_test_specific_settings_label.setFont(font)
@@ -878,7 +884,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.hippounit_test_specific_settings_table.setItem(3, 2, QtWidgets.QTableWidgetItem(""))
         #BackpropagatingAPTest
         self.hippounit_test_specific_settings_table.insertRow(4)
-        self.hippounit_test_specific_settings_table.setItem(4, 0, QtWidgets.QTableWidgetItem("BackpropagatingAPTest"))
+        self.hippounit_test_specific_settings_table.setItem(4, 0, QtWidgets.QTableWidgetItem("DepolarizationBlockTest"))
         self.hippounit_test_specific_settings_table.setItem(4, 1, QtWidgets.QTableWidgetItem(""))
         self.hippounit_test_specific_settings_table.setItem(4, 2, QtWidgets.QTableWidgetItem("NA"))
 
@@ -892,7 +898,7 @@ class Ui_Neuroptimus(QMainWindow):
 
         #DepolarizationBlockTest
         self.hippounit_test_specific_settings_table.insertRow(5)
-        self.hippounit_test_specific_settings_table.setItem(5, 0, QtWidgets.QTableWidgetItem("DepolarizationBlockTest"))
+        self.hippounit_test_specific_settings_table.setItem(5, 0, QtWidgets.QTableWidgetItem("ObliqueIntegrationTest"))
         self.hippounit_test_specific_settings_table.setItem(5, 1, QtWidgets.QTableWidgetItem(""))
         self.hippounit_test_specific_settings_table.setItem(5, 2, QtWidgets.QTableWidgetItem("NA"))
         #set its color to gray
@@ -1378,8 +1384,8 @@ class Ui_Neuroptimus(QMainWindow):
 #                                 self.tspike_t ,
 #                                 self.tother,
                                   self.tfeatures]
-        self.core=Core.coreModul()
-
+        # self.core=Core.coreModul()
+        
         #optiontab 3
         self.tabwidget.setTabText(self.tabwidget.indexOf(self.modeltab), _translate("Neuroptimus", "Model"))
         self.label_44.setText(_translate("Neuroptimus", "Delay (ms)"))
@@ -1423,7 +1429,7 @@ class Ui_Neuroptimus(QMainWindow):
         #self.fitlist.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.fitlist.setColumnWidth(0,200)
         self.fitlist.setColumnWidth(1,80)
-        self.fitlist.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.fitlist.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         #self.fitlist.itemSelectionChanged.connect(self.fitselect)
         #self.fitlist.cellClicked.connect(self.fitselect)
         self.fitlist.horizontalHeader().setStretchLastSection(True)
@@ -1435,7 +1441,8 @@ class Ui_Neuroptimus(QMainWindow):
         #runtab 5
         self.tabwidget.setTabText(self.tabwidget.indexOf(self.fittab), _translate("Neuroptimus", "Fitness"))
         self.pushButton_30.setText(_translate("Neuroptimus", "Run"))
-        self.pushButton_30.clicked.connect(self.startFittingThread)
+        # self.pushButton_30.clicked.connect(self.startFittingThread)
+        self.pushButton_30.clicked.connect(self.runsim)    
         # self.pushButton_31.setText(_translate("Neuroptimus", "Starting points"))
         # self.pushButton_31.clicked.connect(self.startingpoints)
         # self.pushButton_31.setEnabled(False)
@@ -1458,7 +1465,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.pushButton_Bluepyopt.clicked.connect(partial(self.packageselect,"Bluepyopt"))
         self.pushButton_Scipy.setText(_translate("Neuroptimus", "Scipy"))
         self.pushButton_Scipy.clicked.connect(partial(self.packageselect,"Scipy"))
-        self.algolist.setColumnCount(1)
+        self.algolist.setColumnCount(2)
         self.algolist.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.algolist.clicked.connect(self.algoselect)
         self.algolist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -1467,7 +1474,6 @@ class Ui_Neuroptimus(QMainWindow):
         self.algorithm_parameter_list.setColumnCount(2)
         self.algorithm_parameter_list.horizontalHeader().setStretchLastSection(True)
         self.algorithm_parameter_list.setHorizontalHeaderLabels(["Option","Value"])
-        self.algorithm_parameter_list.cellChanged.connect(self.aspect_changed)
         self.seed = []
         self.resolution=0
         self.Recom=["Classical Evolution Strategy (CES) - Inspyred","Covariance Matrix Adaptation ES (CMAES) - Cmaes", "Covariance Matrix Adaptation ES (CMAES) - Pygmo",
@@ -1549,7 +1555,6 @@ class Ui_Neuroptimus(QMainWindow):
 
 
         self.algo_dict=self.core.option_handler.algorithm_parameters_dict.copy()
-
         self.tabwidget.setTabText(self.tabwidget.indexOf(self.results_tab), _translate("Neuroptimus", "Results"))
         self.label_72.setText(_translate("Neuroptimus", "Final Result"))
         self.figure2, self.results_tab_axes = plt.subplots( dpi=80)
@@ -1584,6 +1589,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.tabwidget.setTabEnabled(5,False)
         self.tabwidget.setTabEnabled(6,False)
         self.result_labels = []
+        self.algorithm_parameter_list.cellChanged.connect(self.aspect_changed)
 
         for curr_tab in [self.results_tab,self.stat_tab]:
             label = QtWidgets.QLabel()
@@ -1964,7 +1970,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.fitlist.setRowCount(len(self.my_list))
         for index,elems in enumerate(self.my_list):  
             item = QTableWidgetItem(elems)
-            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
+            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable)      
             self.fitlist.setItem(index, 0, item)
             if self.core.option_handler.type[-1]=="features":
                 itemv = QTableWidgetItem(str(self.core.data_handler.features_data[self.my_list[index]]["weight"]))
@@ -1997,6 +2003,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.lineEdit_delay.setText(str(self.core.data_handler.features_data["stim_delay"]))
             self.lineEdit_duration.setText(str(self.core.data_handler.features_data["stim_duration"]))    
 
+        
 
         
         
@@ -2156,7 +2163,7 @@ class Ui_Neuroptimus(QMainWindow):
         else:
             self.spec_file = None
 
-        if self.type_selector.currentText().lower() == "Hippounit":
+        if self.type_selector.currentText().lower() == "hippounit":
             self.model_name = self.model_name_input.text()
 
         try:
@@ -2275,16 +2282,23 @@ class Ui_Neuroptimus(QMainWindow):
         """
         Calls when the weights changed for the fitness functions. Stores the weights in a list.
         """
-        self.weights=[]
-        try:
-            allRows = self.fitlist.rowCount()
-            for row in range(0,allRows):
-                current_fun=str(self.fitlist.item(row, 0).text())
-                current_weight=float(self.fitlist.item(row, 1).text())
-                if current_weight:
-                    self.weights.append(current_weight) 
-        except:
-            self.fitlist.item(row, 1).setText("0")
+        allRows = self.fitlist.rowCount()
+        self.weights=[float(self.fitlist.item(row, 1).text()) for row in range(0,allRows)] 
+        sum_o_weights = float(sum(self.weights))
+        for row in range(0,allRows):
+            current_fun=str(self.fitlist.item(row, 0).text())
+            current_weight=float(str(self.fitlist.item(row, 1).text()))
+            if current_weight:
+                try:
+                    self.fitlist.item(row, 1).setText(str(round(current_weight / sum_o_weights,4)))
+                except:
+                    continue
+            else:
+                try:
+                    self.fitlist.item(row, 1).setText("0")
+                except:
+                    continue
+        
         
     def browse_file_for_hippounit_test_specific_settings_table(self):
         """
@@ -2354,14 +2368,14 @@ class Ui_Neuroptimus(QMainWindow):
         try:
             selected_algo = self.algolist.selectionModel().selectedRows()[0].row()
             algo_name = str(self.algolist.item(selected_algo, 0).text()).upper()
-            aspects = self.algo_dict[algo_name[algo_name.find("(")+1:].replace(")","").replace(" - ","_").replace("-","_").replace(" ","_")]
-            self.algorithm_parameter_list.setRowCount(len(aspects)+1)
+            self.aspects = self.algo_dict[algo_name[algo_name.find("(")+1:].replace(")","").replace(" - ","_").replace("-","_").replace(" ","_")]
+            self.algorithm_parameter_list.setRowCount(len(self.aspects)+1)
             item = QTableWidgetItem('Seed')
             item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
             self.algorithm_parameter_list.setItem(0, 0, item)
             item2 = QTableWidgetItem('1234')   
             self.algorithm_parameter_list.setItem(0, 1, item2)
-            for index, (key, value) in enumerate(aspects.items()):
+            for index, (key, value) in enumerate(self.aspects.items()):
                 item = QTableWidgetItem(key)
                 if self.algo_param_dict.get(key):
                     item.setToolTip(str(self.algo_param_dict.get(key)).rjust(30))
@@ -2370,7 +2384,8 @@ class Ui_Neuroptimus(QMainWindow):
                 item2 = QTableWidgetItem(str(value))
                 if str(value)=='True' or str(value)=='False':
                     item2 = QTableWidgetItem()
-                    item2.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+                    #select the cell if checked
+                    item2.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
                     if str(value)=='True':
                         item2.setCheckState(QtCore.Qt.Checked) 
                     else:
@@ -2388,14 +2403,237 @@ class Ui_Neuroptimus(QMainWindow):
         Clears selection, because if other algorithm clicked after change, it's counts as a change again.
         So the same value is going to be stored for the next algorirhm selection.
         """
+        #get current cell focused in self.algorithm_parameter_list
+        current_row = self.algorithm_parameter_list.currentRow()
+        item = self.algorithm_parameter_list.item(current_row, 1)
+        if item is not None:
+            val = item.text()
+            # handling a cell that has checkbox
+            if val == "":
+                val = item.checkState()
+                if val == 0:
+                    val = False
+                else:
+                    val = True
+                self.aspects[str(self.algorithm_parameter_list.item(0, 0).text())] = val
+                return
+            # if val is numeric
+            if val.isnumeric():
+                val = float(val)
+            else: #string
+                val = str(val)
+                if val.lower()== "none" or val.lower() == "null":
+                    val = None
+            # store the value
+            self.aspects[str(self.algorithm_parameter_list.item(0, 0).text())] = val
+            self.algorithm_parameter_list.clearSelection()
+
+
+       
+    
+    def hippounit_gui_to_json(self):
+        self.hippounit_config = {"model":{}, "tests":{}}
+
+        #collect the following information from the GUI, the info found in this json config file
+        
+        #the model name
+        self.hippounit_config["model"]["name"] = self.model_name_input.text()
+        #the model path
+        self.hippounit_config["model"]["mod_files_path"] = self.lineEdit_folder2.text()
+
+
+        #the output path
+        self.hippounit_config["model"]["output_dir"] = self.output_dir_input.text()
+        #the template name
+        self.hippounit_config["model"]["template_name"] = self.template_name_input.text() if self.template_name_input.text() != "" else None
+        #v_init
         try:
-            selected_algo = self.algolist.selectionModel().selectedRows()
-            selected_asp = self.algorithm_parameter_list.selectionModel().selectedIndexes()
-            if selected_asp[0].row():
-                self.algo_dict[str(self.algolist.item(selected_algo[0].row(), 0).text())][selected_asp[0].row()-1][str(self.algorithm_parameter_list.item(selected_asp[0].row(), 0).text())]=float(self.algorithm_parameter_list.item(selected_asp[0].row(), 1).text())
-                self.algorithm_parameter_list.clearSelection()
+            self.hippounit_config["model"]["v_init"] = float(self.v_init_input.text())
         except:
-            "ok"
+            #error popup
+            popup("v_init must be set to a number")
+
+        try:
+            #celsius
+            self.hippounit_config["model"]["celsius"] = float(self.celsius_input.text())
+        except:
+            #error popup
+            popup("celsius must be set to a number")
+
+        #the soma section name
+        self.hippounit_config["model"]["soma"] = self.soma_input.text() if self.soma_input.text() != "" else "soma"
+
+
+        # #the soma section list name
+        self.hippounit_config["model"]["SomaSecList_name"] = self.hippounit_test_sections_names_table.item(0,1).text() if self.hippounit_test_sections_names_table.item(0,1).text() != "" else None
+
+        # #the trunk section list name
+        self.hippounit_config["model"]["TrunkSecList_name"] = self.hippounit_test_sections_names_table.item(1,1).text() if self.hippounit_test_sections_names_table.item(1,1).text() != "" else None
+
+        # #the oblique section list name
+
+        self.hippounit_config["model"]["ObliqueSecList_name"] = self.hippounit_test_sections_names_table.item(2,1).text() if self.hippounit_test_sections_names_table.item(2,1).text() != "" else None
+
+        
+        self.hippounit_config["model"]["tests"] = []
+
+        #fil tests from fitlist  1st row cellls whoose 2nd columns are not 0 or empty
+        for row in range(0,self.fitlist.rowCount()):
+            if float(self.fitlist.item(row,1).text()) != 0 and self.fitlist.item(row,1).text() != "":
+                self.hippounit_config["model"]["tests"].append(self.fitlist.item(row,0).text())
+        
+        self.hippounit_config["model"]["dataset"] = "test_dataset"
+
+
+        
+
+
+        # from hippounit_test_specific_settings_table get the test name and the path to the json file of tests that are in self.hippounit_config["tests"]
+        for row in range(0,self.hippounit_test_specific_settings_table.rowCount()):
+            if self.hippounit_test_specific_settings_table.item(row,0).text() in  self.hippounit_config["model"]["tests"]:
+                test_name = self.hippounit_test_specific_settings_table.item(row,0).text()
+                test_path = self.hippounit_test_specific_settings_table.item(row,1).text()
+                stimuli_path = self.hippounit_test_specific_settings_table.item(row,2).text()
+                self.hippounit_config["tests"][test_name] = {}
+                self.hippounit_config["tests"][test_name]["target_data_path"] = test_path
+                if test_name not in ["DepolarizationBlockTest","ObliqueIntegrationTest"]:
+                    self.hippounit_config["tests"][test_name]["stimuli_file_path"] = stimuli_path
+        # print(self.hippounit_config)
+
+        # ---------------------------------------------------------------------------- #
+        # Now we form neuroptimus json
+        # get paramaters from self.BW.boundary_table save them to ordered dict
+        self.adjusted_params_boundaries = OrderedDict()
+        try : 
+            for row in range(0,self.BW.boundary_table.rowCount()):
+                try:
+                    self.adjusted_params_boundaries[self.BW.boundary_table.item(row,0).text()] = [float(self.BW.boundary_table.item(row,1).text()),float(self.BW.boundary_table.item(row,2).text())]
+                except:
+                    popup("You Boundary values must be numbers")
+                    return
+        except:
+            popup("You must set boundaries for all parameters")
+            return
+        base_dir = self.lineEdit_folder.text()
+        #boundaries is a list of 2 lists, the first list contains the lower boundaries, the second list contains the upper boundaries
+        boundaries = [list(self.adjusted_params_boundaries.values())[i][0] for i in range(len(self.adjusted_params_boundaries.values()))] , [list(self.adjusted_params_boundaries.values())[i][1] for i in range(len(self.adjusted_params_boundaries.values()))]
+        num_params = len(boundaries[0])
+        algo_ui_name = self.algolist.item(self.algolist.selectionModel().selectedRows()[0].row(),0).text()
+        algo_name = algo_ui_name[algo_ui_name.find("(")+1:].replace(")","").replace(" - ","_").replace("-","_").replace(" ","_")
+        model_path = self.model_file
+        mods_path = self.spec_file
+        type_ = "hippounit"
+        u_fun_string = self.SW.plaintext.toPlainText()
+        simulator = "hippounit"
+        algo_param_dict = {}
+        weights = [float(self.fitlist.item(row,1).text()) for row in range(0,self.fitlist.rowCount())]
+        #get parameters from self.algorithm_parameter_list
+        for row in range(1,self.algorithm_parameter_list.rowCount()):
+            val = self.algorithm_parameter_list.item(row,1).text()
+            # handling cell has checkbox
+            if val == "": #bool
+                val = self.algorithm_parameter_list.item(row,1).checkState()
+                if val == 0:
+                    val = False
+                else:
+                    val = True
+            elif val.isnumeric():
+                val = float(val)
+            else: #string
+                val = str(val)
+                if val.lower()== "none" or val.lower() == "null":
+                    val = None
+            algo_param_dict[self.algorithm_parameter_list.item(row,0).text()] = val
+
+        
+
+           
+
+
+        # print them to check if they are correct
+        # print("boundaries:----->",boundaries)
+        # print("num_params:----->",num_params)
+        # print("model_path:----->",model_path)
+        # print("mods_path:----->",mods_path)
+        # print("u_fun_string:----->",u_fun_string)
+        # print("weights:----->",weights)
+        # print("base_dir:----->",base_dir)
+        # print("type_:----->",type_)
+        # print("simulator:----->",simulator)
+        # print("algo_name:----->",algo_name)
+        # print("algo_param_dict:----->",algo_param_dict)
+
+        
+
+
+
+
+
+        #save to json file
+        hippounit_settings_path = "hippounit_config_from_gui.json"
+        with open(hippounit_settings_path, 'w+') as out:
+            json.dump(self.hippounit_config,out,indent=4)
+            print("hippounit_config_from_gui.json saved")
+
+
+        neuroptimus_settings_path = "neuroptimus_config_from_gui.json"
+
+        
+    
+        #create a dictionary with the above structure from my variables
+
+        neuroptimus_settings = {"attributes":{}}
+        neuroptimus_settings["attributes"]["adjusted_params"] = list(self.adjusted_params_boundaries.keys())
+        neuroptimus_settings["attributes"]["boundaries"] = boundaries
+        neuroptimus_settings["attributes"]["num_params"] = num_params
+        neuroptimus_settings["attributes"]["base_dir"] = base_dir
+        neuroptimus_settings["attributes"]["model_path"] = model_path
+        neuroptimus_settings["attributes"]["model_spec_dir"] = mods_path
+        neuroptimus_settings["attributes"]["u_fun_string"] = u_fun_string
+        neuroptimus_settings["attributes"]["weights"] = weights
+        neuroptimus_settings["attributes"]["type"] = [type_]
+        neuroptimus_settings["attributes"]["simulator"] = simulator
+        neuroptimus_settings["attributes"]["hippounit_settings_path"] = hippounit_settings_path
+        neuroptimus_settings["attributes"]["param_vals"] = [0.1 for i in range(num_params)]
+        neuroptimus_settings["attributes"]["current_algorithm"] = {algo_name:algo_param_dict}
+
+        #save to json file
+        with open(neuroptimus_settings_path, 'w+') as out:
+            json.dump(neuroptimus_settings,out,indent=4)
+            print("neuroptimus_config_from_gui.json saved")
+
+        # print(neuroptimus_settings)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        return neuroptimus_settings_path
+        
+        
+        
 
 
     def runsim(self,singlerun=False): 
@@ -2407,9 +2645,21 @@ class Ui_Neuroptimus(QMainWindow):
         If an error happens, stores the number of tab in a list and it's error string in an other list.
         Switch to the tab, where the error happened and popup the erro.
         """
+        if self.core.option_handler.type[-1].lower() == "hippounit":
+            json_filename =  self.hippounit_gui_to_json()
+            try:
+                with open(json_filename, "r") as f:
+                    json_data = json.load(f)
+            except IOError as ioe:
+                popup("File not found!\n")
+                print(ioe)
+                sys.exit("File not found!\n")
+
+        self.core.option_handler.ReadJson(json_data['attributes'])
+        
         err=[]
         errpop=[]
-        if not self.dd_type.currentIndex():
+        if self.core.option_handler.type[-1].lower() != "hippounit" and (not self.dd_type.currentIndex()):
             try:
                 self.core.SecondStep({"stim" : [str(self.stimprot.currentText()), float(self.lineEdit_pos.text()), str(self.section_rec.currentText())],
                                     "stimparam" : [self.container, float(self.lineEdit_delay.text()), float(self.lineEdit_duration.text())]})
@@ -2739,7 +2989,7 @@ class SecondWindow(QtWidgets.QMainWindow):
         self.pushButton_47.setObjectName("pushButton_47")
         self.pushButton_47.setText(_translate("Ufun", "Cancel"))
         self.pushButton_47.clicked.connect(self.close)
-        self.option_handler=parent.core.option_handler 
+        self.option_handler= parent.core.option_handler 
         self.modellist=parent.modellist
 
         # Create the central widget

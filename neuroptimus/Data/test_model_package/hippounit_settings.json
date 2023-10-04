@@ -10,7 +10,7 @@
     "soma": "soma[0]",
     "v_init": -70,
     "celsius": 34,
-    "tests": ["BackpropagatingAPTest"],
+    "tests": ["SomaticFeaturesTest"],
     "dataset": "test_dataset"
   },
   "tests": {

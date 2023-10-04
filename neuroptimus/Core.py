@@ -87,7 +87,7 @@ class coreModul():
 						"AHP depth",
 						"AP width",
 						"Derivative difference"]
-		self.hippounit_tests_names = ["SomaticFeaturesTest", "PSPAttenuationTest", "DepolarizationBlockTest", "ObliqueIntegrationTest", "BackpropagatingAPTest", "PathwayInteraction" ]
+		self.hippounit_tests_names = ["SomaticFeaturesTest", "PSPAttenuationTest", "BackpropagatingAPTest", "PathwayInteraction","DepolarizationBlockTest", "ObliqueIntegrationTest",  ]
 		self.grid_result=None
 
 	def htmlStrBold(self,inp):
