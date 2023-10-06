@@ -1,0 +1,28 @@
+{
+    "model": {
+        "name": "eslam",
+        "mod_files_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/model",
+        "output_dir": ".",
+        "template_name": "EslTem",
+        "v_init": -70.0,
+        "celsius": 33.0,
+        "soma": "soma",
+        "SomaSecList_name": "somaSSec",
+        "TrunkSecList_name": null,
+        "ObliqueSecList_name": null,
+        "tests": [
+            "SomaticFeaturesTest",
+            "DepolarizationBlockTest"
+        ],
+        "dataset": "test_dataset"
+    },
+    "tests": {
+        "SomaticFeaturesTest": {
+            "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/somatic_features_hippounit.json",
+            "stimuli_file_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/somatic_features_hippounit_stim.json"
+        },
+        "DepolarizationBlockTest": {
+            "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/depol_block_target_data.json"
+        }
+    }
+}

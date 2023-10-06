@@ -489,6 +489,7 @@ class modelHandlerHippounit:
         self.model.celsius = self.settings["model"]["celsius"]
         self.model.TrunkSecList_name = self.settings["model"]["TrunkSecList_name"]
         self.model.ObliqueSecList_name = self.settings["model"]["ObliqueSecList_name"]
+        self.model.TuftSecList_name = self.settings["model"]["TuftSecList_name"]
         self.model.cvode_active = False
 
     def load_target_and_stimuli(self):

@@ -1,8 +1,8 @@
 {
-    "opt_name": "main_model_RANDOM_SEARCH_15_Sep_2023_14:31:15:478388",
+    "opt_name": "main_model_RANDOM_SEARCH_06_Oct_2023_14:21:57:885956",
     "seed": 1234,
     "final_fitness": [
-        0.7484998095405825
+        0.48923237206341275
     ],
     "number_of_evaluations": 1,
     "models": {
@@ -37,10 +37,10 @@
     ],
     "error_function": [
         {
-            "name": "PSPAttenuationTest",
-            "value": "5.237927288597498",
+            "name": "PathwayInteraction",
+            "value": "3.423599524586513",
             "weight": "0.1429",
-            "weighted_value": "0.7484998095405825"
+            "weighted_value": "0.48923237206341275"
         }
     ],
     "algorithm": [
@@ -68,15 +68,15 @@
             "stim_duration": 300.0
         }
     ],
-    "created_at": "2023-09-15T14:31:15.478412Z",
+    "created_at": "2023-10-06T14:21:57.885977Z",
     "statistics": [
         {
             "generation": 0,
             "population": 1,
-            "maximum": 0.7484998095405825,
-            "minimum": 0.7484998095405825,
-            "median": 0.7484998095405825,
-            "mean": 0.7484998095405825,
+            "maximum": 0.48923237206341275,
+            "minimum": 0.48923237206341275,
+            "median": 0.48923237206341275,
+            "mean": 0.48923237206341275,
             "std": 0.0
         }
     ]

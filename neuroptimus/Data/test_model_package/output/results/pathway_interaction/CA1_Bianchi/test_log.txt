@@ -1,0 +1,12 @@
+The built in Exp2Syn is used as the AMPA component. Tau1 = 0.1, Tau2 = 2.0.
+---------------------------------------------------------------------------------------------------
+The default NMDA model of HippoUnit is used with Jahr, Stevens voltage dependence.
+---------------------------------------------------------------------------------------------------
+SC AMPA weight: 0.012171453441221987
+PP AMPA weight: 1.2020903847528526
+current_amp_final: 0.019883476527174405
+SC dencd_loc: [['apical_dendrite[118]', 0.5], ['apical_dendrite[102]', 0.75], ['apical_dendrite[93]', 0.5], ['apical_dendrite[36]', 0.16666666666666666], ['apical_dendrite[57]', 0.7], ['apical_dendrite[51]', 0.75], ['apical_dendrite[76]', 0.75], ['apical_dendrite[97]', 0.16666666666666666], ['apical_dendrite[11]', 0.75], ['apical_dendrite[3]', 0.75], ['apical_dendrite[113]', 0.25], ['apical_dendrite[33]', 0.25], ['apical_dendrite[73]', 0.75], ['apical_dendrite[97]', 0.5], ['apical_dendrite[40]', 0.25], ['apical_dendrite[31]', 0.5], ['apical_dendrite[53]', 0.5], ['apical_dendrite[67]', 0.5], ['apical_dendrite[55]', 0.5], ['apical_dendrite[36]', 0.5], ['apical_dendrite[12]', 0.5], ['apical_dendrite[114]', 0.25], ['apical_dendrite[45]', 0.1], ['apical_dendrite[61]', 0.125], ['apical_dendrite[21]', 0.75], ['apical_dendrite[80]', 0.75], ['apical_dendrite[110]', 0.75], ['apical_dendrite[19]', 0.5], ['apical_dendrite[113]', 0.75], ['apical_dendrite[112]', 0.125], ['apical_dendrite[87]', 0.5], ['apical_dendrite[45]', 0.7], ['apical_dendrite[91]', 0.75], ['apical_dendrite[12]', 0.8333333333333334], ['apical_dendrite[63]', 0.5], ['apical_dendrite[63]', 0.16666666666666666], ['apical_dendrite[2]', 0.25], ['apical_dendrite[10]', 0.25], ['apical_dendrite[61]', 0.625], ['apical_dendrite[43]', 0.5]]
+PP dencd_loc: [['apical_dendrite[89]', 0.75]]
+---------------------------------------------------------------------------------------------------
+ZScore_avg = 3.42
+---------------------------------------------------------------------------------------------------

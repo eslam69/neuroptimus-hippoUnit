@@ -1,0 +1,160 @@
+./cad.c: ../cad.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "cad.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./cad.o: ./cad.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./cagk.c: ../cagk.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "cagk.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./cagk.o: ./cagk.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./calH.c: ../calH.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "calH.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./calH.o: ./calH.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./cal.c: ../cal.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "cal.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./cal.o: ./cal.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./car.c: ../car.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "car.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./car.o: ./car.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./cat.c: ../cat.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "cat.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./cat.o: ./cat.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./d3.c: ../d3.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "d3.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./d3.o: ./d3.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./h.c: ../h.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "h.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./h.o: ./h.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./kadist.c: ../kadist.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "kadist.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./kadist.o: ./kadist.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./kaprox.c: ../kaprox.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "kaprox.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./kaprox.o: ./kaprox.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./kca.c: ../kca.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "kca.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./kca.o: ./kca.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./kdr.c: ../kdr.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "kdr.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./kdr.o: ./kdr.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./km.c: ../km.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "km.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./km.o: ./km.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./na3dend.c: ../na3dend.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "na3dend.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./na3dend.o: ./na3dend.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./na3.c: ../na3.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "na3.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./na3.o: ./na3.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./na3notrunk.c: ../na3notrunk.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "na3notrunk.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./na3notrunk.o: ./na3notrunk.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./nap.c: ../nap.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "nap.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./nap.o: ./nap.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./nax.c: ../nax.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "nax.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./nax.o: ./nax.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./somacar.c: ../somacar.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "somacar.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./somacar.o: ./somacar.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./vmax.c: ../vmax.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "vmax.mod" -o "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/Pathway_Data/model/experiment/x86_64")
+
+./vmax.o: ./vmax.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+

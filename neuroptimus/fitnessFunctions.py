@@ -19,7 +19,7 @@ except:
 
 from types import MethodType
 import os
-
+import pkg_resources
 
 """try:
     import cPickle as pickle
@@ -1281,7 +1281,7 @@ class fF_HippoUnit(fF):
     def __init__(self, reader_object, option_object):
         super().__init__(reader_object, option_object)
         self.model_trace = []
-        self.is_figures_saved = False
+        self.is_figures_saved = True
         self.model=modelHandler.modelHandlerHippounit(self.option)
         self.tests_selected = self.model.settings["model"]["tests"]
         self.tests_fitness = {}
@@ -1330,6 +1330,15 @@ class fF_HippoUnit(fF):
             return tests.ObliqueIntegrationTest(observation=observation, save_all=self.is_figures_saved,
                                                 force_run_synapse=True, force_run_bin_search=True, show_plot=False,
                                                 base_directory=self.model.output_directory, serialized=True)
+        elif test_name =="PathwayInteraction" :
+            with open(self.model.settings["tests"]["PathwayInteraction"]["target_data_path"], "r") as f:
+                observation = json.load(f, object_pairs_hook=collections.OrderedDict)
+            stim_file = pkg_resources.resource_filename("hippounit", "tests/stimuli/PathwayInteraction_stim/stim_PathwayInteraction_test.json")
+            with open(stim_file, 'r') as f:
+                config = json.load(f, object_pairs_hook=collections.OrderedDict)
+            return tests.PathwayInteraction(num_of_dend_locations = 15, observation = observation, config = config, 
+                                            save_all = self.is_figures_saved, force_run=True, force_run_adjust_syn_weight=False, 
+                                            show_plot = False, base_directory = self.model.output_directory,serialized=True)
 
     def single_objective_fitness(self, candidates, args={}, delete_model=True):
         os.chdir(self.option.base_dir)

@@ -1,39 +1,44 @@
 {
-    "model": {
-        "name": "detailed_CA1_pyramidal_neuron",
-        "mod_files_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/model/",
-        "output_dir": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/output/HippoUnit_penalty/",
-        "template_name": null,
-        "SomaSecList_name": null,
-        "TrunkSecList_name": "trunk",
-        "ObliqueSecList_name": "oblique_dendrites",
-        "soma": "soma",
-        "v_init": -70,
-        "celsius": 33,
-        "tests": [
-                    "BackpropagatingAPTest"
-                 ],
-        "dataset": "test_dataset"
+  "model": {
+    "name": "detailed_CA1_pyramidal_neuron",
+    "mod_files_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/model/",
+    "output_dir": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/output/HippoUnit_penalty/",
+    "template_name": null,
+    "SomaSecList_name": null,
+    "TrunkSecList_name": "trunk",
+    "ObliqueSecList_name": "oblique_dendrites",
+    "soma": "soma",
+    "v_init": -70,
+    "celsius": 33,
+    "tests": ["PathwayInteraction"],
+    "dataset": "test_dataset"
+  },
+  "tests": {
+    "SomaticFeaturesTest": {
+      "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/somatic_features_hippounit.json",
+      "stimuli_file_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/somatic_features_hippounit_stim.json"
     },
-    "tests": {
-        "SomaticFeaturesTest": {
-            "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/somatic_features_hippounit.json",
-            "stimuli_file_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/somatic_features_hippounit_stim.json"
-        },
-        "DepolarizationBlockTest": {
-            "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/depol_block_target_data.json"
-        },
-        "BackpropagatingAPTest": {
-            "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/feat_backpropagating_AP_target_data.json",
-            "stimuli_file_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/stim_bAP_test.json"
-        },
-        "PSPAttenuationTest": {
-            "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/feat_PSP_attenuation_target_data.json",
-            "stimuli_file_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/stim_PSP_attenuation_test.json",
-            "num_of_dend_locations": 15
-        },
-        "ObliqueIntegrationTest": {
-            "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/oblique_target_data.json"
-        }
+    "DepolarizationBlockTest": {
+      "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/depol_block_target_data.json"
+    },
+    "BackpropagatingAPTest": {
+      "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/feat_backpropagating_AP_target_data.json",
+      "stimuli_file_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/stim_bAP_test.json"
+    },
+    "PSPAttenuationTest": {
+      "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/feat_PSP_attenuation_target_data.json",
+      "stimuli_file_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/stim_PSP_attenuation_test.json",
+      "num_of_dend_locations": 15
+    },
+    "ObliqueIntegrationTest": {
+      "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/oblique_target_data.json"
+    },
+    "PathwayInteraction": {
+      "num_of_dend_locations": 15,
+
+      "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/pathway_interaction_target_data.json",
+
+      "stimuli_file_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/stim_pathway_interaction_test.json"
     }
+  }
 }
