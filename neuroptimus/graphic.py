@@ -352,6 +352,8 @@ class Ui_Neuroptimus(QMainWindow):
         self.remover.setObjectName("remover")
         self.remover.setEnabled(False)
 
+
+
         #model name label
         self.model_name_label = QtWidgets.QLabel(self.modeltab)
         self.model_name_label.setGeometry(QtCore.QRect(10, 10, 300, 16))
@@ -372,47 +374,65 @@ class Ui_Neuroptimus(QMainWindow):
         self.hippoUnit_only_widgets.append(self.model_name_input)
 
 
+        #Simulator label 
+        self.simulator_label = QtWidgets.QLabel(self.modeltab)
+        self.simulator_label.setGeometry(QtCore.QRect(10, 10, 300, 16))
+        font.setWeight(50)
+        self.simulator_label.setFont(font)
+        self.simulator_label.setObjectName("simulator_label")
+        self.simulator_label.setText("Simulator")
+
+        #Simulator input        
+
+
 
 
        
 
         self.layout = QtWidgets.QGridLayout(self.modeltab)
         
-        self.layout.addWidget(self.dd_type, 0, 0, 1, 3) #simulator
-        self.layout.addWidget(self.model_name_label, 0, 3, 1, 1)
-        self.layout.addWidget(self.model_name_input, 0, 4, 1, 2)
+        #1st row
+        # Modelname label , input
+        self.layout.addWidget(self.model_name_label, 0, 0, 1, 1)
+        self.layout.addWidget(self.model_name_input, 0, 1, 1, 4)
 
 
 
         #2nd row
-        self.layout.addWidget(self.label_24, 1, 0, 1, 1) #label Model file
-        self.layout.addWidget(self.lineEdit_file2, 1, 1, 1, 2)
-        self.layout.addWidget(self.pushButton_15, 1, 3, 1, 1) #first browse non hidden 
-        self.layout.addWidget(self.pushButton_13, 1, 4, 1, 1) #load
+        #simualtor label , dd_type
+        self.layout.addWidget(self.simulator_label, 1, 0, 1, 1)
+        self.layout.addWidget(self.dd_type, 1, 1, 1, 4) 
+        
 
+        #3rd row
+        # label_24 , lineEdit_file2 , pushButton_15 , pushButton_13
+        self.layout.addWidget(self.label_24, 2, 0, 1, 1) # label Model file
+        self.layout.addWidget(self.lineEdit_file2, 2, 1, 1, 3) #line edit hoc file
+        self.layout.addWidget(self.pushButton_15, 2, 4, 1, 1) # browse model file (non-hidden)
+        self.layout.addWidget(self.pushButton_13, 2, 5, 2, 1) # load model file
+        
+        #4th row
+        # label_23 , load_mods_checkbox , lineEdit_folder2 , pushButton_14
 
-
-       
-       
-        hbox = QtWidgets.QHBoxLayout()
+        hbox_load_mod = QtWidgets.QHBoxLayout()
 
         # Add the checkbox and label to the layout
-        hbox.addWidget(self.load_mods_checkbox, 0, QtCore.Qt.AlignLeft)
-        hbox.addWidget(self.label_23, 1, QtCore.Qt.AlignLeft)
+        hbox_load_mod.addWidget(self.load_mods_checkbox, 0, QtCore.Qt.AlignLeft)
+        hbox_load_mod.addWidget(self.label_23, 1, QtCore.Qt.AlignLeft)
         # Set the horizontal stretch factor of the checkbox to 0 and the label to 1
-        hbox.setStretch(0, 0)
-        hbox.setStretch(1, 1)
-        self.layout.addLayout(hbox, 2, 0, 1, 2)
+        hbox_load_mod.setStretch(0, 0)
+        hbox_load_mod.setStretch(1, 1)
+        self.layout.addLayout(hbox_load_mod, 3, 0, 1, 2)
 
 
 
-        self.layout.addWidget(self.lineEdit_folder2, 2, 2, 1, 2)
-        self.layout.addWidget(self.pushButton_14, 2, 4, 1, 1)
+        self.layout.addWidget(self.lineEdit_folder2, 3, 2, 1, 2)
+        self.layout.addWidget(self.pushButton_14, 3, 4, 1, 1)
 
         
         
-        self.layout.addWidget(self.modellist, 3, 0, 10, 3)
-        self.layout.addWidget(self.pushButton_16, 3, 3, 2, 2) #define function
+        self.layout.addWidget(self.modellist, 4, 0, 10, 3)
+        self.layout.addWidget(self.pushButton_16, 5, 3, 2, 2) #define function
         self.layout.addWidget(self.sim_param, 5, 2, 1, 1)
         self.layout.addWidget(self.setter, 14, 0, 1, 1)
         self.layout.addWidget(self.remover, 14, 1, 1, 1)
@@ -424,6 +444,9 @@ class Ui_Neuroptimus(QMainWindow):
         for widget in self.modeltab.findChildren(QtWidgets.QPushButton):
             widget.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
 
+        #editing self.pushButton_13 to have double vertical size
+        self.pushButton_13.setMinimumSize(QtCore.QSize(0, 40))
+        self.pushButton_13.setMaximumSize(QtCore.QSize(16777215, 80))
 
 
 
