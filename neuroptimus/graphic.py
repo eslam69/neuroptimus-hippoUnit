@@ -651,14 +651,41 @@ class Ui_Neuroptimus(QMainWindow):
         self.output_dir_label.setFont(font)
         self.output_dir_label.setObjectName("output_dir_label")
         self.output_dir_label.setText("HippoUnit Output Directory")
+
+        
         
         self.output_dir_input = QtWidgets.QLineEdit(self.simtab)
         self.output_dir_input.setGeometry(QtCore.QRect(10, 50, 221, 22))
         self.output_dir_input.setObjectName("output_dir_input")
-        # self.output_dir_input.setPlaceholderText("(for HippoUnit)")
+
+        #add browse button next to the output input
+        self.output_dir_browse = QtWidgets.QPushButton(self.simtab)
+        self.output_dir_browse.setGeometry(QtCore.QRect(240, 50, 80, 22))
+        self.output_dir_browse.setObjectName("output_dir_browse")
+        self.output_dir_browse.setText("Browse")
+
+        #connect the browse button to the browsse function to get the output directory
+        self.output_dir_browse.clicked.connect(self.set_hippounit_output_dir)
+
         
+         
+        #add output_dir_input and output_dir_browse to horizental group box 
+        self.output_dir_group = QtWidgets.QGroupBox("")
+        output_dir_layout = QtWidgets.QHBoxLayout()
+        output_dir_layout.addWidget(self.output_dir_input)
+        output_dir_layout.addWidget(self.output_dir_browse)
+        self.output_dir_group.setLayout(output_dir_layout)
+        
+        #add output_dir_label to the hippounit_settings_widgets list
+
+
+
         self.hippounit_settings_widgets.append(self.output_dir_label)
-        self.hippounit_settings_widgets.append(self.output_dir_input)
+        # self.hippounit_settings_widgets.append(self.output_dir_input)
+        #add  output_dir_browse to the hippounit_settings_widgets list
+        # self.hippounit_settings_widgets.append(self.output_dir_browse)
+        self.hippounit_settings_widgets.append(self.output_dir_group)
+
 
         #HippoUnit: template name
         self.template_name_label = QtWidgets.QLabel(self.simtab)
@@ -1797,6 +1824,20 @@ class Ui_Neuroptimus(QMainWindow):
             if self.type_selector.currentText() == "HippoUnit" :
                 self.pushButton_3.setEnabled(True)
 
+
+    def set_hippounit_output_dir(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        folderName = QFileDialog.getExistingDirectory(None, options=options, caption="Select HippoUnit output folder")
+        if folderName:
+            # Add a trailing slash to the folder name based on the operating system
+            if os.name == 'posix':
+                if not folderName.endswith('/'):
+                    folderName += '/'
+            elif os.name == 'nt':
+                if not folderName.endswith('\\'):
+                    folderName += '\\'
+            self.output_dir_input.setText(folderName)
 
     def disable_mod_path(self):
         """
