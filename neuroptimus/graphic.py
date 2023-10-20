@@ -365,7 +365,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.model_name_input.setGeometry(QtCore.QRect(10, 30, 221, 22))
         self.model_name_input.setObjectName("model_name_input")
         #text placeholder
-        self.model_name_input.setPlaceholderText("(for HippoUnit)")
+        # self.model_name_input.setPlaceholderText("(for HippoUnit)")
 
 
         self.hippoUnit_only_widgets.append(self.model_name_label)
@@ -1678,8 +1678,7 @@ class Ui_Neuroptimus(QMainWindow):
 
         else:
             self.dd_type.setEnabled(True)
-            self.model_name_label.setEnabled(False)
-            self.model_name_input.setEnabled(False)
+            
 
     def startFittingThread(self):
         # Create a new thread for optimization
