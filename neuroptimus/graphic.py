@@ -564,48 +564,50 @@ class Ui_Neuroptimus(QMainWindow):
 
 
         # Create a new QGridLayout layout
-        grid = QtWidgets.QGridLayout(self.simtab)
+        self.settings_tab_grid = QtWidgets.QGridLayout(self.simtab)
 
         # Create a group box for the stimulus protocol widgets
-        stim_group = QtWidgets.QGroupBox("Stimulus Mode")
+        self.stim_group = QtWidgets.QGroupBox("Stimulus Mode")
         stim_layout = QtWidgets.QVBoxLayout()
         stim_layout.addWidget(self.label_55) #stim protocol
         stim_layout.addWidget(self.stimprot)
         stim_layout.addWidget(self.label_49) #stim type
         stim_layout.addWidget(self.stimulus_type) 
         stim_layout.addWidget(self.base_dir_controll9) #amplitude(s) push button
-        stim_group.setLayout(stim_layout)
+        self.stim_group.setLayout(stim_layout)
 
-        # Add the stimulus protocol group box to the grid layout
-        grid.addWidget(stim_group, 0, 0, 5, 1)
+        # Add the stimulus protocol group box to the self.settings_tab_grid layout
+        self.settings_tab_grid.addWidget(self.stim_group, 0, 0, 5, 1)
 
-       
+        #hide stim_group but keep its place in the grid
+        # stim_group.hide()
+
         # Create a group box for the delay and duration widgets
-        time_group = QtWidgets.QGroupBox("Stimulation Time Settings")
+        self.time_group = QtWidgets.QGroupBox("Stimulation Time Settings")
         time_layout = QtWidgets.QVBoxLayout()
         time_layout.addWidget(self.label_44)
         time_layout.addWidget(self.lineEdit_delay)
         time_layout.addWidget(self.label_46)
         time_layout.addWidget(self.lineEdit_duration)
-        time_group.setLayout(time_layout)
+        self.time_group.setLayout(time_layout)
 
-        # Add the time group box to the grid layout
-        grid.addWidget(time_group, 5, 0, 4, 1)
+        # Add the time group box to the self.settings_tab_grid layout
+        self.settings_tab_grid.addWidget(self.time_group, 5, 0, 4, 1)
 
         # Create a group box for the section and position widgets
-        pos_group = QtWidgets.QGroupBox("Stimulus Position Configuration")
+        self.pos_group = QtWidgets.QGroupBox("Stimulus Position Configuration")
         pos_layout = QtWidgets.QVBoxLayout()
         pos_layout.addWidget(self.label_45)
         pos_layout.addWidget(self.section_stim)
         pos_layout.addWidget(self.label_71)
         pos_layout.addWidget(self.lineEdit_posins)
-        pos_group.setLayout(pos_layout)
+        self.pos_group.setLayout(pos_layout)
 
-        # Add the position group box to the grid layout
-        grid.addWidget(pos_group, 9, 0, 4, 1)
+        # Add the position group box to the self.settings_tab_grid layout
+        self.settings_tab_grid.addWidget(self.pos_group, 9, 0, 4, 1)
 
         # Create a group box for the recording widgets
-        rec_group = QtWidgets.QGroupBox("Recording Settings")
+        self.rec_group = QtWidgets.QGroupBox("Recording Settings")
         rec_layout = QtWidgets.QVBoxLayout()
         rec_layout.addWidget(self.label_52)
         rec_layout.addWidget(self.param_to_record)
@@ -613,13 +615,13 @@ class Ui_Neuroptimus(QMainWindow):
         rec_layout.addWidget(self.section_rec)
         rec_layout.addWidget(self.label_51)
         rec_layout.addWidget(self.lineEdit_pos)
-        rec_group.setLayout(rec_layout)
+        self.rec_group.setLayout(rec_layout)
 
-        # Add the recording group box to the grid layout
-        grid.addWidget(rec_group, 0, 1, 6, 1)
+        # Add the recording group box to the self.settings_tab_grid layout
+        self.settings_tab_grid.addWidget(self.rec_group, 0, 1, 6, 1)
 
         # Create a group box for the initv, tstop, and time step widgets
-        sim_group = QtWidgets.QGroupBox("Simulation Settings")
+        self.sim_group = QtWidgets.QGroupBox("Simulation Settings")
         sim_layout = QtWidgets.QVBoxLayout()
         sim_layout.addWidget(self.label_66)
         sim_layout.addWidget(self.lineEdit_initv)
@@ -627,10 +629,13 @@ class Ui_Neuroptimus(QMainWindow):
         sim_layout.addWidget(self.lineEdit_tstop)
         sim_layout.addWidget(self.label_68)
         sim_layout.addWidget(self.lineEdit_dt)
-        sim_group.setLayout(sim_layout)
+        self.sim_group.setLayout(sim_layout)
 
-        # Add the simulation group box to the grid layout
-        grid.addWidget(sim_group, 0, 2, 6, 1)
+        # Add the simulation group box to the self.settings_tab_grid layout
+        self.settings_tab_grid.addWidget(self.sim_group, 0, 2, 6, 1)
+
+        ## container for the groups that are only used for Neuroptimus
+        self.neuroptimus_settings_widgets = [self.stim_group, self.time_group, self.pos_group, self.rec_group, self.sim_group]
 
        
 
@@ -676,7 +681,7 @@ class Ui_Neuroptimus(QMainWindow):
         font.setWeight(50)
         self.v_init_label.setFont(font)
         self.v_init_label.setObjectName("v_init_label")
-        self.v_init_label.setText("V_init")
+        self.v_init_label.setText("Initial Voltage (mV)")
 
         self.v_init_input = QtWidgets.QLineEdit(self.simtab)
         self.v_init_input.setGeometry(QtCore.QRect(10, 130, 221, 22))
@@ -691,7 +696,7 @@ class Ui_Neuroptimus(QMainWindow):
         font.setWeight(50)
         self.celsius_label.setFont(font)
         self.celsius_label.setObjectName("celsius_label")
-        self.celsius_label.setText("Celsius")
+        self.celsius_label.setText("Temperature (°C)")
 
         self.celsius_input = QtWidgets.QLineEdit(self.simtab)
         self.celsius_input.setGeometry(QtCore.QRect(10, 170, 221, 22))
@@ -707,7 +712,7 @@ class Ui_Neuroptimus(QMainWindow):
         font.setWeight(50)
         self.soma_label.setFont(font)
         self.soma_label.setObjectName("soma_label")
-        self.soma_label.setText("Soma")
+        self.soma_label.setText("Soma Section Name")
 
         self.soma_input = QtWidgets.QLineEdit(self.simtab)
         self.soma_input.setGeometry(QtCore.QRect(10, 210, 221, 22))
@@ -725,12 +730,12 @@ class Ui_Neuroptimus(QMainWindow):
             hippounit_layout.addWidget(widget)
         self.hippounit_group.setLayout(hippounit_layout)
 
-        #add the hippounit group box to the grid layout
-        grid.addWidget(self.hippounit_group, 6, 1, 7, 1)
-
+        #add the hippounit group box to the self.settings_tab_grid layout
+        self.settings_tab_grid.addWidget(self.hippounit_group, 6, 1, 7, 1)
+        self.hippounit_group.hide()
 
         #add these group boxes except hippounit_group to a list
-        self.simtab_neuroptimus_group_boxes = [stim_group, time_group, pos_group, rec_group, sim_group]
+        self.simtab_neuroptimus_group_boxes = [self.stim_group, self.time_group, self.pos_group, self.rec_group, self.sim_group]
 
 
         for widget in self.simtab.findChildren(QtWidgets.QPushButton):
@@ -740,11 +745,9 @@ class Ui_Neuroptimus(QMainWindow):
         for widget in self.simtab.findChildren(QtWidgets.QGroupBox):
             widget.setAlignment(QtCore.Qt.AlignCenter)
             widget.setStyleSheet("QGroupBox {font-weight: bold;}")
-            
-
 
         # Set the layout of the widget to the new QGridLayout
-        self.simtab.setLayout(grid)
+        self.simtab.setLayout(self.settings_tab_grid)
             
         #fit tab 4
         self.tabwidget.addTab(self.simtab, "")
@@ -1827,6 +1830,7 @@ class Ui_Neuroptimus(QMainWindow):
                 self.dropdown.addItems(["pA","nA","uA"])
             elif self.type_selector.currentIndex()==2:
                 self.dropdown.addItems(["uV","mV","V","pA","nA","uA"])
+   
         elif self.type_selector.currentIndex()==3: #Hippounit
             self.pushButton_3.setText("Confirm")
             self.set_widgets_in_list(self.target_data_ui_components,False) #first tab
@@ -1834,11 +1838,26 @@ class Ui_Neuroptimus(QMainWindow):
             self.hippounit_group.setEnabled(True)
             self.set_widgets_in_list(self.hippounit_settings_widgets,True)
             self.spike_group_box.setEnabled(False)
-
+      
         else:
             self.dropdown.addItems(["none"])
         self.dropdown.setCurrentIndex(1)
-
+        self.settings_tab_mode_change()
+    
+    def settings_tab_mode_change(self):
+        if self.type_selector.currentText() == "HippoUnit" :
+            #hide all group boxes in self.neuroptimus_settings_widgets list
+            for widget in self.neuroptimus_settings_widgets:
+                widget.hide()
+            #add self.hippounit_group to first place  self.settings_tab_grid  and hide the rest
+            self.settings_tab_grid.addWidget(self.hippounit_group, 0, 0, 1, 2)
+            self.hippounit_group.show()
+        elif self.type_selector.currentIndex() in [0,1,2]:
+            #unhide all group boxes in self.neuroptimus_settings_widgets list
+            for widget in self.neuroptimus_settings_widgets:
+                widget.show()
+            self.settings_tab_grid.addWidget(self.hippounit_group, 6, 1, 7, 1)
+            self.hippounit_group.hide()
         
     def add_data_dict(self,data_dict):
         """
