@@ -1795,6 +1795,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.set_widgets_in_list(self.simtab_neuroptimus_group_boxes,True)
         type_index=self.type_selector.currentIndex()
         if type_index in [0,1,2]:
+            self.pushButton_3.setText("Load data")
             self.hippounit_group.setEnabled(False)
             self.spike_group_box.setEnabled(True)
             self.set_widgets_in_list(self.hippounit_settings_widgets,False)
@@ -1805,6 +1806,7 @@ class Ui_Neuroptimus(QMainWindow):
             elif self.type_selector.currentIndex()==2:
                 self.dropdown.addItems(["uV","mV","V","pA","nA","uA"])
         elif self.type_selector.currentIndex()==3: #Hippounit
+            self.pushButton_3.setText("Confirm")
             self.set_widgets_in_list(self.target_data_ui_components,False) #first tab
             self.set_widgets_in_list(self.simtab_neuroptimus_group_boxes,False) #settings tab (3rd)
             self.hippounit_group.setEnabled(True)
