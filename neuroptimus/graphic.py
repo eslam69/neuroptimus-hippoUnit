@@ -1942,6 +1942,11 @@ class Ui_Neuroptimus(QMainWindow):
                         else:
                             self.fitlist.item(row, column).setToolTip("Double click to Browse")
             self.fitlist.horizontalHeader().setStretchLastSection(True)
+
+            #first row of test_specific_settings_table value be -20 
+            self.test_specific_settings_table.setItem(0, 1, QtWidgets.QTableWidgetItem("-20"))
+
+
             #populating SomaSecList_name,  TrunkSecList_name, ObliqueSecList_name
             # row 2 SomaSecList_name
             self.test_specific_settings_table.insertRow(2)
@@ -2005,12 +2010,22 @@ class Ui_Neuroptimus(QMainWindow):
             #self.fitlist.itemSelectionChanged.connect(self.fitselect)
             #self.fitlist.cellClicked.connect(self.fitselect)
             self.fitlist.horizontalHeader().setStretchLastSection(True)
+            #set value of the first row to 0
+            self.test_specific_settings_table.setItem(0, 1, QtWidgets.QTableWidgetItem("0.0"))
             #if hippounit_test_sections_names_table has more than 2 rows, remove them
             if self.test_specific_settings_table.rowCount() > 2:
                 for row in range(self.test_specific_settings_table.rowCount()-1,1,-1):
                     self.test_specific_settings_table.removeRow(row)
+    
+        self._disable_column_editing(self.fitlist, 0)
 
-        
+    def _disable_column_editing(self, table_widget, column_index):
+        """
+        Disables editing of a column in a table widget
+        """
+        for row in range(table_widget.rowCount()):
+            table_widget.item(row, column_index).setFlags(QtCore.Qt.NoItemFlags)
+            table_widget.item(row, column_index).setForeground(QtGui.QColor(0,0   ,0))
 
     def disable_mod_path(self):
         """
@@ -2139,7 +2154,7 @@ class Ui_Neuroptimus(QMainWindow):
         
         self.core.FirstStep(kwargs)
         self.tabwidget.setTabEnabled(1,True)
-        if self.type_selector.currentText().lower() in ["voltage", "current"]:
+        if self.type_selector.currentText().lower() in ["voltage trace", "current trace"]:
             
             f = self.core.option_handler.input_freq
             t = self.core.option_handler.input_length
@@ -2235,7 +2250,7 @@ class Ui_Neuroptimus(QMainWindow):
             else:
                 itemv = QTableWidgetItem("0")
             self.fitlist.setItem(index, 1, itemv)
-
+        self._disable_column_editing(self.fitlist, 0)
         if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
             self.kwargs={"runparam" : [self.core.data_handler.data.t_length,
                                         self.core.data_handler.data.step,
@@ -2779,6 +2794,8 @@ class Ui_Neuroptimus(QMainWindow):
                     #error popup
                     popup(param+" must be set")
                     return None
+            else:
+                self.hippounit_config["model"][param] = None
              
         self.hippounit_config["model"]["tests"] = []
 
@@ -2803,6 +2820,12 @@ class Ui_Neuroptimus(QMainWindow):
                 self.hippounit_config["tests"][test_name]["target_data_path"] = test_path
                 if test_name not in ["DepolarizationBlockTest","ObliqueIntegrationTest","PathwayInteraction"]:
                     self.hippounit_config["tests"][test_name]["stimuli_file_path"] = stimuli_path
+                #get penalty of missing feature for the test, the 5th column of the row
+                try:
+                    self.hippounit_config["tests"][test_name]["unevaluated_feature_penalty"] = float(self.fitlist.item(row,4).text())
+                except:
+                    popup("Missing feature penalty must be set to a number!")
+                    return None
         # print(self.hippounit_config)
 
         # ---------------------------------------------------------------------------- #
