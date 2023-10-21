@@ -959,44 +959,44 @@ class Ui_Neuroptimus(QMainWindow):
         # self.hippounit_test_specific_settings_table.resizeRowsToContents()
 
         #create new table under it
-        self.hippounit_test_sections_names_table = QtWidgets.QTableWidget(self.fittab)
-        self.hippounit_test_sections_names_table.setObjectName("hippounit_test_sections_names_table")
-        self.hippounit_test_sections_names_table.setColumnCount(2)
-        self.hippounit_test_sections_names_table.setHorizontalHeaderLabels(["Property", "Value"])
-        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-        self.hippounit_test_sections_names_table.verticalHeader().setVisible(False)
-        self.hippounit_test_sections_names_table.setRowCount(6)
-        self.hippounit_test_sections_names_table.setAlternatingRowColors(False)
-        self.hippounit_test_sections_names_table.setSortingEnabled(False)
-        self.hippounit_test_sections_names_table.setShowGrid(True)
-        self.hippounit_test_sections_names_table.setWordWrap(True)
-        self.hippounit_test_sections_names_table.setCornerButtonEnabled(True)
-        self.hippounit_test_sections_names_table.horizontalHeader().setStretchLastSection(True)
+        self.test_specific_settings_table = QtWidgets.QTableWidget(self.fittab)
+        self.test_specific_settings_table.setObjectName("hippounit_test_sections_names_table")
+        self.test_specific_settings_table.setColumnCount(2)
+        self.test_specific_settings_table.setHorizontalHeaderLabels(["Property", "Value"])
+        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.test_specific_settings_table.verticalHeader().setVisible(False)
+        self.test_specific_settings_table.setRowCount(6)
+        self.test_specific_settings_table.setAlternatingRowColors(False)
+        self.test_specific_settings_table.setSortingEnabled(False)
+        self.test_specific_settings_table.setShowGrid(True)
+        self.test_specific_settings_table.setWordWrap(True)
+        self.test_specific_settings_table.setCornerButtonEnabled(True)
+        self.test_specific_settings_table.horizontalHeader().setStretchLastSection(True)
         #column size resizeable with dragging the column border
-        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
-        self.hippounit_test_sections_names_table.horizontalHeader().setStretchLastSection(True)
-        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
+        self.test_specific_settings_table.horizontalHeader().setStretchLastSection(True)
+        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
         
         
         
         #add it to the self.fit_tab_grid layout
-        self.fit_tab_grid.addWidget(self.hippounit_test_sections_names_table, 8, 0, 2, 7)
+        self.fit_tab_grid.addWidget(self.test_specific_settings_table, 8, 0, 2, 7)
         #stretch it to fill the available space
         # self.fit_tab_grid.setColumnStretch(5, 2)
         # self.fit_tab_grid.setRowStretch(5, 1)
         # row 0 Spike detection threshold
-        self.hippounit_test_sections_names_table.insertRow(0)
-        self.hippounit_test_sections_names_table.setItem(0, 0, QtWidgets.QTableWidgetItem("Spike detection threshold (mV) "))
-        self.hippounit_test_sections_names_table.setItem(0, 1, QtWidgets.QTableWidgetItem("0"))
-        self.hippounit_test_sections_names_table.item(0, 0).setFlags(QtCore.Qt.NoItemFlags)
-        self.hippounit_test_sections_names_table.item(0, 0).setForeground(QtGui.QColor(0,0   ,0))
+        self.test_specific_settings_table.insertRow(0)
+        self.test_specific_settings_table.setItem(0, 0, QtWidgets.QTableWidgetItem("Spike detection threshold (mV) "))
+        self.test_specific_settings_table.setItem(0, 1, QtWidgets.QTableWidgetItem("0"))
+        self.test_specific_settings_table.item(0, 0).setFlags(QtCore.Qt.NoItemFlags)
+        self.test_specific_settings_table.item(0, 0).setForeground(QtGui.QColor(0,0   ,0))
         # row 1 Spike Window (ms)
-        self.hippounit_test_sections_names_table.insertRow(1)
-        self.hippounit_test_sections_names_table.setItem(1, 0, QtWidgets.QTableWidgetItem("Spike Window (ms)"))
-        self.hippounit_test_sections_names_table.setItem(1, 1, QtWidgets.QTableWidgetItem("1.0"))
-        self.hippounit_test_sections_names_table.item(1, 0).setFlags(QtCore.Qt.NoItemFlags)
-        self.hippounit_test_sections_names_table.item(1, 0).setForeground(QtGui.QColor(0,0   ,0))
+        self.test_specific_settings_table.insertRow(1)
+        self.test_specific_settings_table.setItem(1, 0, QtWidgets.QTableWidgetItem("Spike Window (ms)"))
+        self.test_specific_settings_table.setItem(1, 1, QtWidgets.QTableWidgetItem("1.0"))
+        self.test_specific_settings_table.item(1, 0).setFlags(QtCore.Qt.NoItemFlags)
+        self.test_specific_settings_table.item(1, 0).setForeground(QtGui.QColor(0,0   ,0))
 
         
 
@@ -1030,7 +1030,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.hippounit_settings_widgets.append(self.hippounit_test_specific_settings_label)
         # self.hippounit_settings_widgets.append(self.hippounit_test_specific_settings_table)
         # self.hippounit_settings_widgets.append(self.hippounit_test_specific_settings_browse_button)
-        self.hippounit_settings_widgets.append(self.hippounit_test_sections_names_table)
+        self.hippounit_settings_widgets.append(self.test_specific_settings_table)
 
         # self.set_widgets_in_list(self.hippounit_settings_widgets, False)
 
@@ -1043,10 +1043,10 @@ class Ui_Neuroptimus(QMainWindow):
         self.hippounit_test_specific_settings_label.setStyleSheet("QGroupBox {font-weight: bold;}")
 
         
-        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
-        self.hippounit_test_sections_names_table.horizontalHeader().setStretchLastSection(True)
-        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-        self.hippounit_test_sections_names_table.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
+        self.test_specific_settings_table.horizontalHeader().setStretchLastSection(True)
+        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
        
             
         self.prepare_fitnessFunctions_table()
@@ -1944,30 +1944,30 @@ class Ui_Neuroptimus(QMainWindow):
             self.fitlist.horizontalHeader().setStretchLastSection(True)
             #populating SomaSecList_name,  TrunkSecList_name, ObliqueSecList_name
             # row 2 SomaSecList_name
-            self.hippounit_test_sections_names_table.insertRow(2)
-            self.hippounit_test_sections_names_table.setItem(2, 0, QtWidgets.QTableWidgetItem("SomaSecList_name"))
-            self.hippounit_test_sections_names_table.setItem(2, 1, QtWidgets.QTableWidgetItem(""))
-            self.hippounit_test_sections_names_table.item(2, 0).setFlags(QtCore.Qt.NoItemFlags)
-            self.hippounit_test_sections_names_table.item(2, 0).setForeground(QtGui.QColor(0,0   ,0))
+            self.test_specific_settings_table.insertRow(2)
+            self.test_specific_settings_table.setItem(2, 0, QtWidgets.QTableWidgetItem("SomaSecList_name"))
+            self.test_specific_settings_table.setItem(2, 1, QtWidgets.QTableWidgetItem(""))
+            self.test_specific_settings_table.item(2, 0).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.item(2, 0).setForeground(QtGui.QColor(0,0   ,0))
             # row 3 TrunkSecList_name
-            self.hippounit_test_sections_names_table.insertRow(3)
-            self.hippounit_test_sections_names_table.setItem(3, 0, QtWidgets.QTableWidgetItem("TrunkSecList_name"))
-            self.hippounit_test_sections_names_table.setItem(3, 1, QtWidgets.QTableWidgetItem(""))
-            self.hippounit_test_sections_names_table.item(3, 0).setFlags(QtCore.Qt.NoItemFlags)
-            self.hippounit_test_sections_names_table.item(3, 0).setForeground(QtGui.QColor(0,0   ,0))
+            self.test_specific_settings_table.insertRow(3)
+            self.test_specific_settings_table.setItem(3, 0, QtWidgets.QTableWidgetItem("TrunkSecList_name"))
+            self.test_specific_settings_table.setItem(3, 1, QtWidgets.QTableWidgetItem(""))
+            self.test_specific_settings_table.item(3, 0).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.item(3, 0).setForeground(QtGui.QColor(0,0   ,0))
 
             # row 4 ObliqueSecList_name
-            self.hippounit_test_sections_names_table.insertRow(4)
-            self.hippounit_test_sections_names_table.setItem(4, 0, QtWidgets.QTableWidgetItem("ObliqueSecList_name"))
-            self.hippounit_test_sections_names_table.setItem(4, 1, QtWidgets.QTableWidgetItem(""))
-            self.hippounit_test_sections_names_table.item(4, 0).setFlags(QtCore.Qt.NoItemFlags)
-            self.hippounit_test_sections_names_table.item(4, 0).setForeground(QtGui.QColor(0,0   ,0))
+            self.test_specific_settings_table.insertRow(4)
+            self.test_specific_settings_table.setItem(4, 0, QtWidgets.QTableWidgetItem("ObliqueSecList_name"))
+            self.test_specific_settings_table.setItem(4, 1, QtWidgets.QTableWidgetItem(""))
+            self.test_specific_settings_table.item(4, 0).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.item(4, 0).setForeground(QtGui.QColor(0,0   ,0))
             # row 5 TuftSecList_name
-            self.hippounit_test_sections_names_table.insertRow(5)
-            self.hippounit_test_sections_names_table.setItem(5, 0, QtWidgets.QTableWidgetItem("TuftSecList_name"))
-            self.hippounit_test_sections_names_table.setItem(5, 1, QtWidgets.QTableWidgetItem(""))
-            self.hippounit_test_sections_names_table.item(5, 0).setFlags(QtCore.Qt.NoItemFlags)
-            self.hippounit_test_sections_names_table.item(5, 0).setForeground(QtGui.QColor(0,0   ,0))
+            self.test_specific_settings_table.insertRow(5)
+            self.test_specific_settings_table.setItem(5, 0, QtWidgets.QTableWidgetItem("TuftSecList_name"))
+            self.test_specific_settings_table.setItem(5, 1, QtWidgets.QTableWidgetItem(""))
+            self.test_specific_settings_table.item(5, 0).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.item(5, 0).setForeground(QtGui.QColor(0,0   ,0))
 
             #make these rows gray  TrunkSecList_name ObliqueSecList_name TuftSecList_name  rows and make them non editable
             # self.hippounit_test_sections_names_table.item(2, 1).setFlags(QtCore.Qt.NoItemFlags)
@@ -1975,17 +1975,17 @@ class Ui_Neuroptimus(QMainWindow):
             # self.hippounit_test_sections_names_table.item(2, 0).setBackground(QtGui.QColor(192,192,192))
 
 
-            self.hippounit_test_sections_names_table.item(3, 1).setFlags(QtCore.Qt.NoItemFlags)
-            self.hippounit_test_sections_names_table.item(3, 1).setBackground(QtGui.QColor(192,192,192))
-            self.hippounit_test_sections_names_table.item(3, 0).setBackground(QtGui.QColor(192,192,192))
+            self.test_specific_settings_table.item(3, 1).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.item(3, 1).setBackground(QtGui.QColor(192,192,192))
+            self.test_specific_settings_table.item(3, 0).setBackground(QtGui.QColor(192,192,192))
 
-            self.hippounit_test_sections_names_table.item(4, 1).setFlags(QtCore.Qt.NoItemFlags)
-            self.hippounit_test_sections_names_table.item(4, 1).setBackground(QtGui.QColor(192,192,192))
-            self.hippounit_test_sections_names_table.item(4, 0).setBackground(QtGui.QColor(192,192,192))
+            self.test_specific_settings_table.item(4, 1).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.item(4, 1).setBackground(QtGui.QColor(192,192,192))
+            self.test_specific_settings_table.item(4, 0).setBackground(QtGui.QColor(192,192,192))
 
-            self.hippounit_test_sections_names_table.item(5, 1).setFlags(QtCore.Qt.NoItemFlags)
-            self.hippounit_test_sections_names_table.item(5, 1).setBackground(QtGui.QColor(192,192,192))
-            self.hippounit_test_sections_names_table.item(5, 0).setBackground(QtGui.QColor(192,192,192))
+            self.test_specific_settings_table.item(5, 1).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.item(5, 1).setBackground(QtGui.QColor(192,192,192))
+            self.test_specific_settings_table.item(5, 0).setBackground(QtGui.QColor(192,192,192))
 
             
             
@@ -2006,9 +2006,9 @@ class Ui_Neuroptimus(QMainWindow):
             #self.fitlist.cellClicked.connect(self.fitselect)
             self.fitlist.horizontalHeader().setStretchLastSection(True)
             #if hippounit_test_sections_names_table has more than 2 rows, remove them
-            if self.hippounit_test_sections_names_table.rowCount() > 2:
-                for row in range(self.hippounit_test_sections_names_table.rowCount()-1,1,-1):
-                    self.hippounit_test_sections_names_table.removeRow(row)
+            if self.test_specific_settings_table.rowCount() > 2:
+                for row in range(self.test_specific_settings_table.rowCount()-1,1,-1):
+                    self.test_specific_settings_table.removeRow(row)
 
         
 
@@ -2561,17 +2561,17 @@ class Ui_Neuroptimus(QMainWindow):
                     #make  its corresponding property row in the table to the selected row be editable amd non grayed
                     #get the row of the property
                     property_row = self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]]
-                    self.hippounit_test_sections_names_table.item(property_row, 1).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+                    self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
                     
-                    self.hippounit_test_sections_names_table.item(property_row, 1).setBackground(QtGui.QColor(255,255,255))
-                    self.hippounit_test_sections_names_table.item(property_row, 0).setBackground(QtGui.QColor(255,255,255))
+                    self.test_specific_settings_table.item(property_row, 1).setBackground(QtGui.QColor(255,255,255))
+                    self.test_specific_settings_table.item(property_row, 0).setBackground(QtGui.QColor(255,255,255))
                    
                    
                 else : #make uneditable and grayed out rows if the weight is 0 or none
                     
-                    self.hippounit_test_sections_names_table.item(self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]], 1).setFlags(QtCore.Qt.NoItemFlags)
-                    self.hippounit_test_sections_names_table.item(self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]], 1).setBackground(QtGui.QColor(192,192,192))
-                    self.hippounit_test_sections_names_table.item(self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]], 0).setBackground(QtGui.QColor(192,192,192))
+                    self.test_specific_settings_table.item(self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]], 1).setFlags(QtCore.Qt.NoItemFlags)
+                    self.test_specific_settings_table.item(self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]], 1).setBackground(QtGui.QColor(192,192,192))
+                    self.test_specific_settings_table.item(self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]], 0).setBackground(QtGui.QColor(192,192,192))
                     
             except Exception as e:
                 # print(e)
@@ -2727,6 +2727,15 @@ class Ui_Neuroptimus(QMainWindow):
         self.hippounit_config["model"]["output_dir"] = self.output_dir_input.text()
         #the template name
         self.hippounit_config["model"]["template_name"] = self.template_name_input.text() if self.template_name_input.text() != "" else None
+        #threshold
+        try:
+            #first row, second column
+            self.hippounit_config["model"]["threshold"] = float(self.test_specific_settings_table.item(0,1).text())
+        except:
+            #error popup
+            popup("Spike detection thres. (mV) must be set to a number")
+            return None
+        
         #v_init
         try:
             self.hippounit_config["model"]["v_init"] = float(self.v_init_input.text())
@@ -2753,16 +2762,16 @@ class Ui_Neuroptimus(QMainWindow):
 
 
         # #the soma section list name
-        self.hippounit_config["model"]["SomaSecList_name"] = self.hippounit_test_sections_names_table.item(2,1).text() if self.hippounit_test_sections_names_table.item(2,1).text() != "" else None
+        self.hippounit_config["model"]["SomaSecList_name"] = self.test_specific_settings_table.item(2,1).text() if self.test_specific_settings_table.item(2,1).text() != "" else None
 
        #the trunk section list name
         hippo_paramaters_to_check = ["TrunkSecList_name", "ObliqueSecList_name", "TuftSecList_name"]
         #Assign the values of these parameters to the config file, if they are not empty or none and was supposed to be set
         for param in hippo_paramaters_to_check:
-            value_of_param = self.hippounit_test_sections_names_table.item(self.HippoTests_parameter_location_in_table[param], 1).text()
+            value_of_param = self.test_specific_settings_table.item(self.HippoTests_parameter_location_in_table[param], 1).text()
             property_row = self.HippoTests_parameter_location_in_table[param]
             #if their cell not grayed
-            if self.hippounit_test_sections_names_table.item(property_row, 1).flags() != QtCore.Qt.NoItemFlags:
+            if self.test_specific_settings_table.item(property_row, 1).flags() != QtCore.Qt.NoItemFlags:
                 #if their cell is not empty or none
                 if value_of_param != "" and value_of_param != None:
                     self.hippounit_config["model"][param] = value_of_param
@@ -2988,16 +2997,16 @@ class Ui_Neuroptimus(QMainWindow):
                     self.fitfun_list.append(current_fun)
                     self.weights.append(current_weight) 
             if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
-                spike_threshold = self.hippounit_test_sections_names_table.item(0,1).text()
-                spike_window = self.hippounit_test_sections_names_table.item(1,1).text() 
+                spike_threshold = self.test_specific_settings_table.item(0,1).text()
+                spike_window = self.test_specific_settings_table.item(1,1).text() 
                 self.kwargs.update({"feat":
-                                    [{"Spike Detection Thres. (mv)": float(self.hippounit_test_sections_names_table.item(0,1).text()), "Spike Window (ms)":float(self.hippounit_test_sections_names_table.item(1,1).text())},
+                                    [{"Spike Detection Thres. (mv)": float(self.test_specific_settings_table.item(0,1).text()), "Spike Window (ms)":float(self.test_specific_settings_table.item(1,1).text())},
                                     self.fitfun_list]
                                     })
                 self.kwargs.update({"weights" : self.weights})
             elif self.core.option_handler.type[-1].lower() == "features":
                 self.kwargs.update({"feat":
-                                    [{"Spike Detection Thres. (mv)": float(self.hippounit_test_sections_names_table.item(0,1).text()), "Spike Window (ms)":float(self.hippounit_test_sections_names_table.item(1,1).text())},
+                                    [{"Spike Detection Thres. (mv)": float(self.test_specific_settings_table.item(0,1).text()), "Spike Window (ms)":float(self.test_specific_settings_table.item(1,1).text())},
                                     self.fitfun_list]
                                     })
                 self.kwargs.update({"weights" : self.weights})
