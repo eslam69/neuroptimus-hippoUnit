@@ -2911,6 +2911,12 @@ class Ui_Neuroptimus(QMainWindow):
         #create a dictionary with the above structure from my variables
 
         neuroptimus_settings = {"attributes":{}}
+        #seed
+        try:
+            neuroptimus_settings["attributes"]["seed"] = int(self.algorithm_parameter_list.item(0,1).text())
+        except:
+            popup("Seed must be set to a number!")
+            return None
         neuroptimus_settings["attributes"]["adjusted_params"] = list(self.adjusted_params_boundaries.keys())
         neuroptimus_settings["attributes"]["boundaries"] = boundaries
         neuroptimus_settings["attributes"]["num_params"] = num_params
