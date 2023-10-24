@@ -869,94 +869,12 @@ class Ui_Neuroptimus(QMainWindow):
         self.hippounit_test_specific_settings_label.setText("Test-Specific Settings")
 
 
-        # self.hippounit_test_specific_settings_table = QtWidgets.QTableWidget(self.fittab)
-        # self.hippounit_test_specific_settings_table.setObjectName("hippounit_test_specific_settings_table")
-        # self.hippounit_test_specific_settings_table.setColumnCount(3)
-        # self.hippounit_test_specific_settings_table.setHorizontalHeaderLabels(["Test", "target_data_path","stimuli_file_path"])
-        # self.hippounit_test_specific_settings_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-        # self.hippounit_test_specific_settings_table.verticalHeader().setVisible(False)
-        # self.hippounit_test_specific_settings_table.setRowCount(0)
-        # self.hippounit_test_specific_settings_table.setAlternatingRowColors(False)
-        # self.hippounit_test_specific_settings_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        # self.hippounit_test_specific_settings_table.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        # self.hippounit_test_specific_settings_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        # self.hippounit_test_specific_settings_table.setSortingEnabled(False)
-        # self.hippounit_test_specific_settings_table.setShowGrid(True)
-        # self.hippounit_test_specific_settings_table.setWordWrap(False)
-        # self.hippounit_test_specific_settings_table.setCornerButtonEnabled(True)
-        # self.hippounit_test_specific_settings_table.horizontalHeader().setStretchLastSection(True)
-        
         # #add the label and the table to the self.fit_tab_grid layout
         self.fit_tab_grid.addWidget(self.hippounit_test_specific_settings_label, 7, 0, 1, 7)
-        # self.fit_tab_grid.addWidget(self.hippounit_test_specific_settings_table, 5, 3, 2, 6)
         # #stretch the table to fill the available space
         self.fit_tab_grid.setColumnStretch(5, 2)
         self.fit_tab_grid.setRowStretch(5, 1)
 
-
-        # #add a browse button to the self.fit_tab_grid layout, to to fill get a location of file to be used as a fill to the second column of the table in the corrresponding selected row
-        # self.hippounit_test_specific_settings_browse_button = QtWidgets.QPushButton(self.fittab)
-        # self.hippounit_test_specific_settings_browse_button.setGeometry(QtCore.QRect(330, 290, 80, 22))
-        # self.hippounit_test_specific_settings_browse_button.setObjectName("hippounit_test_specific_settings_browse_button")
-        # self.hippounit_test_specific_settings_browse_button.setText("Browse")
-        # self.hippounit_test_specific_settings_browse_button.setToolTip("<p>Get a location of the configuration file</p>")
-        # self.fit_tab_grid.addWidget(self.hippounit_test_specific_settings_browse_button, 0, 3, 1, 1)
-
-
-        # #the second column of the table to be filled with a browse dialog
-        # self.hippounit_test_specific_settings_browse_button.clicked.connect(self.browse_file_for_hippounit_test_specific_settings_table)
-
-        # #selection is by cell not row
-        # self.hippounit_test_specific_settings_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectItems)
-
-        # #fill the table with the test specific settings configurations paths
-        # self.hippounit_test_specific_settings_table.setRowCount(0)
-        # #row 0 SomaticFeaturesTest target_data_path , second column to be filled with stimuli_file_path
-        # self.hippounit_test_specific_settings_table.insertRow(0)
-        # self.hippounit_test_specific_settings_table.setItem(0, 0, QtWidgets.QTableWidgetItem("SomaticFeaturesTest"))
-        # self.hippounit_test_specific_settings_table.setItem(0, 1, QtWidgets.QTableWidgetItem(""))
-        # self.hippounit_test_specific_settings_table.setItem(0, 2, QtWidgets.QTableWidgetItem(""))
-
-        # #row 1 PSPAttenuationTest
-        # self.hippounit_test_specific_settings_table.insertRow(1)
-        # self.hippounit_test_specific_settings_table.setItem(1, 0, QtWidgets.QTableWidgetItem("PSPAttenuationTest"))
-        # self.hippounit_test_specific_settings_table.setItem(1, 1, QtWidgets.QTableWidgetItem(""))
-        # self.hippounit_test_specific_settings_table.setItem(1, 2, QtWidgets.QTableWidgetItem(""))
-        # #BackpropagatingAPTest
-        # self.hippounit_test_specific_settings_table.insertRow(2)
-        # self.hippounit_test_specific_settings_table.setItem(2, 0, QtWidgets.QTableWidgetItem("BackpropagatingAPTest"))
-        # self.hippounit_test_specific_settings_table.setItem(2, 1, QtWidgets.QTableWidgetItem(""))
-        # self.hippounit_test_specific_settings_table.setItem(2, 2, QtWidgets.QTableWidgetItem(""))
-        # #PathwayInteraction
-        # self.hippounit_test_specific_settings_table.insertRow(3)
-        # self.hippounit_test_specific_settings_table.setItem(3, 0, QtWidgets.QTableWidgetItem("PathwayInteraction"))
-        # self.hippounit_test_specific_settings_table.setItem(3, 1, QtWidgets.QTableWidgetItem(""))
-        # self.hippounit_test_specific_settings_table.setItem(3, 2, QtWidgets.QTableWidgetItem(""))
-        # #BackpropagatingAPTest
-        # self.hippounit_test_specific_settings_table.insertRow(4)
-        # self.hippounit_test_specific_settings_table.setItem(4, 0, QtWidgets.QTableWidgetItem("DepolarizationBlockTest"))
-        # self.hippounit_test_specific_settings_table.setItem(4, 1, QtWidgets.QTableWidgetItem(""))
-        # self.hippounit_test_specific_settings_table.setItem(4, 2, QtWidgets.QTableWidgetItem("NA"))
-
-    
-        # #non editable and non selectable cell
-        # self.hippounit_test_specific_settings_table.item(4, 2).setFlags(QtCore.Qt.NoItemFlags)
-        # #setting color to gray rgb(192,192,192)
-        # self.hippounit_test_specific_settings_table.item(4, 2).setBackground(QtGui.QColor(192,192,192))
-
-        
-
-        # #DepolarizationBlockTest
-        # self.hippounit_test_specific_settings_table.insertRow(5)
-        # self.hippounit_test_specific_settings_table.setItem(5, 0, QtWidgets.QTableWidgetItem("ObliqueIntegrationTest"))
-        # self.hippounit_test_specific_settings_table.setItem(5, 1, QtWidgets.QTableWidgetItem(""))
-        # self.hippounit_test_specific_settings_table.setItem(5, 2, QtWidgets.QTableWidgetItem("NA"))
-        # #set its color to gray
-        # self.hippounit_test_specific_settings_table.item(5, 2).setBackground(QtGui.QColor(192,192,192))
-        
-        # #make it non editable and non selectable
-        # self.hippounit_test_specific_settings_table.item(5, 2).setFlags(QtCore.Qt.NoItemFlags)
-        # self.hippounit_test_specific_settings_table.resizeRowsToContents()
 
         #create new table under it
         self.test_specific_settings_table = QtWidgets.QTableWidget(self.fittab)
@@ -999,43 +917,13 @@ class Ui_Neuroptimus(QMainWindow):
         self.test_specific_settings_table.item(1, 0).setForeground(QtGui.QColor(0,0   ,0))
 
         
-
-
-
-        
-        #non editabel first column
-        # for i in range(0, self.hippounit_test_sections_names_table.rowCount()):
-
-
-
-
-       
-
-        #table lengght be exactly the size of the content
-        # self.hippounit_test_specific_settings_table.resizeRowsToContents()
-        # self.hippounit_test_specific_settings_table.horizontalHeader().setStretchLastSection(True)
-        # #bold first column cells
-        # for i in range(0, self.hippounit_test_specific_settings_table.rowCount()):
-        #     font = QtGui.QFont()
-        #     font.setWeight(50)
-        #     font.setBold(True)
-        #     self.hippounit_test_specific_settings_table.item(i, 0).setFont(font)
-        #     self.hippounit_test_specific_settings_table.item(i, 0).setFlags(QtCore.Qt.NoItemFlags)
-        #     self.hippounit_test_specific_settings_table.item(i, 0).setForeground(QtGui.QColor(0,0   ,0))
-
         
 
 
         #appending these components to  hippounit_test_specific_settings_widgets
         self.hippounit_settings_widgets.append(self.hippounit_test_specific_settings_label)
-        # self.hippounit_settings_widgets.append(self.hippounit_test_specific_settings_table)
-        # self.hippounit_settings_widgets.append(self.hippounit_test_specific_settings_browse_button)
+       
         self.hippounit_settings_widgets.append(self.test_specific_settings_table)
-
-        # self.set_widgets_in_list(self.hippounit_settings_widgets, False)
-
-        # self.spike_group_box.setAlignment(QtCore.Qt.AlignCenter)
-        # self.spike_group_box.setStyleSheet("QGroupBox {font-weight: bold;}")
 
 
 
@@ -2872,26 +2760,6 @@ class Ui_Neuroptimus(QMainWindow):
                 if val.lower()== "none" or val.lower() == "null":
                     val = None
             algo_param_dict[self.algorithm_parameter_list.item(row,0).text()] = val
-
-        
-
-           
-
-
-        # print them to check if they are correct
-        # print("boundaries:----->",boundaries)
-        # print("num_params:----->",num_params)
-        # print("model_path:----->",model_path)
-        # print("mods_path:----->",mods_path)
-        # print("u_fun_string:----->",u_fun_string)
-        # print("weights:----->",weights)
-        # print("base_dir:----->",base_dir)
-        # print("type_:----->",type_)
-        # print("simulator:----->",simulator)
-        # print("algo_name:----->",algo_name)
-        # print("algo_param_dict:----->",algo_param_dict)
-
-        
 
 
 

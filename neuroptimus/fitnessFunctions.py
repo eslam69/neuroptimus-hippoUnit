@@ -1285,7 +1285,14 @@ class fF_HippoUnit(fF):
         self.model=modelHandler.modelHandlerHippounit(self.option)
         self.tests_selected = self.model.settings["model"]["tests"]
         self.tests_fitness = {}
+        self.tests_penalties = self.get_tests_penalties()
 
+    def get_tests_penalties(self):
+        self.tests_penalties = {}
+        for test in self.tests_selected:
+            self.tests_penalties[test] = self.model.settings["tests"][test]["unevaluated_feature_penalty"]
+        return self.tests_penalties
+        
     def select_test(self, test_name):
         from hippounit import tests
 
@@ -1339,7 +1346,43 @@ class fF_HippoUnit(fF):
         #                                     force_run_FindCurrentStim=True, show_plot=False,
         #                                     save_all=self.is_figures_saved, base_directory=self.model.output_directory,
         #                                     serialized=True)
+        
+    def penalize_bad_features(self, score, test_name):
+        from hippounit import tests ,scores
+        penalty = self.tests_penalties[test_name]
 
+        if  test_name == "SomaticFeaturesTest":
+            observation = score.observation 
+            prediction = score.prediction
+            feature_errors=[ ]
+            for features_name in  observation.keys():
+                model_mean = prediction[features_name]['feature mean']
+                observation_mean = float(observation[features_name]['Mean'])
+                observation_std = float(observation[features_name]['Std'])
+
+                if (np.isnan(model_mean) or np.isinf(model_mean) ) and ( (not np.isnan(observation_mean))  and (not np.isnan(observation_std)) ):
+                    feature_error = penalty
+                else:
+                    try:
+                        feature_error = abs(model_mean - observation_mean)/observation_std
+                        if not np.isscalar(feature_error):
+                            feature_error = np.asscalar(feature_error)  
+                    except ZeroDivisionError:
+                        feature_error = float("inf")
+                feature_errors.append(feature_error)
+            score_avg=np.mean(feature_errors)
+            return score_avg
+        
+        elif test_name == "BackpropagatingAPTest":
+            if score == scores.ZScore_backpropagatingAP.never_fired_penalty: #internal(never_fired_penalty) of BackpropagatingAPTest, meaning that that that model never fired during that evaluation
+                return penalty
+            else:
+                score.summarize()
+                return score.norm_score
+        else: #TODO: Handle penalization of other tests
+                score.summarize()
+                return score.norm_score   
+             
     def single_objective_fitness(self, candidates, args={}, delete_model=True):
         os.chdir(self.option.base_dir)
 
@@ -1350,18 +1393,15 @@ class fF_HippoUnit(fF):
         error = 0
         for idx, test_name in enumerate(self.tests_selected):
             test = self.select_test(test_name)
-            test.specify_data_set = self.model.settings["model"]["dataset"]
-            score = self.model.run(test)
-            error += self.option.weights[idx] * score
-            self.tests_fitness[test_name] = score
-            # try:
-            #     score = self.model.run(test)
-            #     error += self.option.weights[idx] * score
-            #     self.tests_fitness[test_name] = score
-            # except Exception as e:
-            #     print('Model: ' + self.model.model.name + ' could not be run')
-            #     traceback.print_stack()
-        # print(self.tests_selected)
+            test.specify_data_set = self.model.settings["model"]["dataset"] #TODO: GUI support for specifying dataset
+            try:
+                score = self.model.run(test)
+                score = self.penalize_bad_features(score, test_name)
+                error += self.option.weights[idx] * score
+                self.tests_fitness[test_name] = score
+            except Exception as e:
+                print('Model: ' + self.model.model.name + ' could not be run')
+                traceback.print_stack()
         self.fitnes.append(error)
         with open("eval.txt", "a") as f: 
             f.write(str([error,[x for x in candidates]])+" \n")
@@ -1402,10 +1442,6 @@ class fF_HippoUnit(fF):
 
     def getTestErrorComponents(self):
         fit_list = []
-        print("%%%%%%%%%%%%%%%%%%%%")
-        print(self.tests_fitness)
-        print("%%%%%%%%%%%%%%%%%%%%")
-
         for i in range(len(self.tests_selected)):
             f = self.tests_selected[i]
             w = self.option.weights[i]

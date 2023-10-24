@@ -581,13 +581,17 @@ class coreModul():
 		tmp_str+="<center><p>"+self.htmlStrBold("Fitness: ")
 		tmp_str+=self.htmlStrBold(str(self.best_fit))+"</p></center>\n"
 
-		if self.option_handler.type[-1] == "hippounit":
+		if self.option_handler.type[-1] == "hippounit": # TODO: what to plot in the html in the case of hippounit for each test type?
 			hippounit_settings = self.optimizer.fit_obj.model.settings
 			model_name = hippounit_settings["model"]["name"]
-			test_name = 'somaticfeat'
+			# test_name = 'somaticfeat' 
+			test_name =  ""
+			tests = hippounit_settings["model"]["tests"]
+			for test in tests: #filling test_name
+					test_name += test + "_"
+			test_name = test_name[:-1]
 			dataset_name = hippounit_settings["model"]["dataset"]
 			pdf_path = "output/figs/{}_{}/{}/traces.pdf".format(test_name, dataset_name, model_name)
-			print(pdf_path)
 			tmp_str+=self.htmlPdf(pdf_path)+"\n"
 		else:
 			tmp_str+=self.htmlPciture("result_trace.png")+"\n"
