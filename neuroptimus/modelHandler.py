@@ -487,6 +487,7 @@ class modelHandlerHippounit:
         self.model.soma = self.settings["model"]["soma"]
         self.model.v_init = self.settings["model"]["v_init"]
         self.model.celsius = self.settings["model"]["celsius"]
+        self.model.threshold = self.settings["model"].get("threshold", -20)
         self.model.TrunkSecList_name = self.settings["model"]["TrunkSecList_name"]
         self.model.ObliqueSecList_name = self.settings["model"]["ObliqueSecList_name"]
         self.model.TuftSecList_name = self.settings["model"]["TuftSecList_name"]
@@ -503,28 +504,5 @@ class modelHandlerHippounit:
 
     def run(self,test):
         score = test.judge(self.model)
-        if not isinstance(test, tests.SomaticFeaturesTest):
-            score.summarize()
-            return score.norm_score 
-        else:
-            observation = score.observation 
-            prediction = score.prediction
-            feature_errors=[ ]
-            PENALTY = 250
-            for features_name in  observation.keys():
-                model_mean = prediction[features_name]['feature mean']
-                observation_mean = float(observation[features_name]['Mean'])
-                observation_std = float(observation[features_name]['Std'])
-
-                if (np.isnan(model_mean) or np.isinf(model_mean) ) and ( (not np.isnan(observation_mean))  and (not np.isnan(observation_std)) ):
-                    feature_error = PENALTY
-                else:
-                    try:
-                        feature_error = abs(model_mean - observation_mean)/observation_std
-                        if not np.isscalar(feature_error):
-                            feature_error = np.asscalar(feature_error)  
-                    except ZeroDivisionError:
-                        feature_error = float("inf")
-                feature_errors.append(feature_error)
-            score_avg=np.mean(feature_errors)
-            return score_avg
+        return score
+        

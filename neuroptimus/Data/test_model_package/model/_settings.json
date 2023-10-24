@@ -23,7 +23,7 @@
         ],
         "current_algorithm": {
             "RANDOM_SEARCH": {
-                "number_of_cpu": 3,
+                "number_of_cpu": 1,
                 "size_of_population": 1
             }
         },
