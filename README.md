@@ -1,4 +1,4 @@
-#Neuroptimus
+# Neuroptimus
 Neuroptimus is a graphical tool for fitting the parameters of neuronal models
 
 Installation
