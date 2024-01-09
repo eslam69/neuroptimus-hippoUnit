@@ -28,6 +28,17 @@ from collections import OrderedDict
 import warnings
 warnings.simplefilter("ignore", UserWarning)
 
+import importlib.util
+
+
+
+
+def is_hippounit_installed():
+    hippounit_spec = importlib.util.find_spec('hippounit')
+    return hippounit_spec is not None
+
+
+
 class QHLine(QtWidgets.QFrame):
             def __init__(self):
                 super(QHLine, self).__init__()
@@ -1301,8 +1312,16 @@ class Ui_Neuroptimus(QMainWindow):
         self.type_selector.setItemText(0, _translate("Neuroptimus", "Voltage trace"))
         self.type_selector.setItemText(1, _translate("Neuroptimus", "Current trace"))
         self.type_selector.setItemText(2, _translate("Neuroptimus", "Features"))
-        self.type_selector.setItemText(3, _translate("Neuroptimus", "HippoUnit"))
-        self.type_selector.setItemText(4, _translate("Neuroptimus", "Other"))
+        if  is_hippounit_installed():
+            self.type_selector.setItemText(3, _translate("Neuroptimus", "HippoUnit"))
+        else:
+            self.type_selector.setItemText(3, _translate("Neuroptimus", "HippoUnit (not installed)"))
+            #remove last item
+            self.type_selector.removeItem(3)
+        # self.type_selector.setItemText(4, _translate("Neuroptimus", "Other"))
+
+
+
 
         self.type_selector.currentTextChanged.connect(self.type_change)
         #if current tab changed to second tab, then call the function
@@ -1956,6 +1975,8 @@ class Ui_Neuroptimus(QMainWindow):
         Sets units for drop down widget selecting simulation type.
         """
         self.dropdown.clear()
+        # if not is_hippounit_installed():
+        #     self.type_selector[2] = None
         self.set_widgets_in_list(self.target_data_ui_components,True)
         self.set_widgets_in_list(self.simtab_neuroptimus_group_boxes,True)
         type_index=self.type_selector.currentIndex()

@@ -9,7 +9,6 @@ import collections
 first_hoc_cls = neuron.h.__class__
 first_hoc_dict = neuron.h.__dict__
 import trace
-from hippounit import tests
 import numpy as np
 
 try:
