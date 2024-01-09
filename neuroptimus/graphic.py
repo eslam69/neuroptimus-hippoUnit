@@ -28,6 +28,15 @@ from collections import OrderedDict
 import warnings
 warnings.simplefilter("ignore", UserWarning)
 
+class QHLine(QtWidgets.QFrame):
+            def __init__(self):
+                super(QHLine, self).__init__()
+                self.setFrameShape(QtWidgets.QFrame.HLine)
+                self.setFrameShadow(QtWidgets.QFrame.Sunken)
+                #dark gray line
+                # self.setStyleSheet("background-color: #A9A9A9")
+
+
 class FittingThread(QThread):
     finished = pyqtSignal()
     error = pyqtSignal(str)
@@ -424,18 +433,32 @@ class Ui_Neuroptimus(QMainWindow):
         hbox_load_mod.setStretch(1, 1)
         self.layout.addLayout(hbox_load_mod, 3, 0, 1, 2)
 
+        
+
 
 
         self.layout.addWidget(self.lineEdit_folder2, 3, 2, 1, 2)
         self.layout.addWidget(self.pushButton_14, 3, 4, 1, 1)
 
+        self.param_table_label = QtWidgets.QLabel(self.modeltab)
+        self.param_table_label.setGeometry(QtCore.QRect(10, 180, 300, 16))
+        font.setWeight(50)
+        font.setPointSize(12)
+        self.param_table_label.setFont(font)
+        self.param_table_label.setObjectName("param_table_label")
+        self.param_table_label.setText("Selection of parameters to be optimized")
         
-        
-        self.layout.addWidget(self.modellist, 4, 0, 10, 3)
-        self.layout.addWidget(self.pushButton_16, 5, 3, 2, 2) #define function
+        self.pushButton_16.setMinimumSize(QtCore.QSize(0, 40))
+
+
+        self.layout.addWidget(QHLine(), 4, 0, 1, 6)  # Add horizontal line
+        self.layout.addWidget(self.param_table_label, 5, 0, 1, 6)
+
+        self.layout.addWidget(self.modellist, 6, 0, 10, 3)
+        self.layout.addWidget(self.pushButton_16, 6, 3, 2, 2) #define function
         self.layout.addWidget(self.sim_param, 5, 2, 1, 1)
-        self.layout.addWidget(self.setter, 14, 0, 1, 1)
-        self.layout.addWidget(self.remover, 14, 1, 1, 1)
+        self.layout.addWidget(self.setter, 16, 0, 1, 1)
+        self.layout.addWidget(self.remover, 16, 1, 1, 1)
 
         self.modeltab.setLayout(self.layout)
 
@@ -1233,7 +1256,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.pushButton_14.clicked.connect(self.openFolderNameDialog2)
         self.pushButton_15.setText(_translate("Neuroptimus", "Browse..."))
         self.pushButton_15.clicked.connect(self.openFileNameDialog2)
-        self.pushButton_16.setText(_translate("Neuroptimus", "Define function"))
+        self.pushButton_16.setText(_translate("Neuroptimus", "Define parameter mapping"))
         self.pushButton_16.clicked.connect(self.UF)
         self.label_26.setText(_translate("Neuroptimus", "Command"))
         self.label_26.hide()

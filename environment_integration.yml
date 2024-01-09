@@ -1,8 +1,10 @@
-name: integration
+name: neuroptimus
 channels:
   - conda-forge
   - defaults
 dependencies:
+  - python=3.7
+  - pip
   - _libgcc_mutex=0.1=main
   - _openmp_mutex=5.1=1_gnu
   - _r-mutex=1.0.0=anacondar_1
@@ -199,4 +201,4 @@ dependencies:
       - wcwidth==0.2.6
       - webencodings==0.5.1
       - zipp==3.15.0
-prefix: ${CONDA_PREFIX}/envs/integration
+prefix: ${CONDA_PREFIX}/envs/neuroptimus

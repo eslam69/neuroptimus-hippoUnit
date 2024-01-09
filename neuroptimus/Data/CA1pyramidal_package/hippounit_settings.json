@@ -7,10 +7,11 @@
     "SomaSecList_name": null,
     "TrunkSecList_name": "trunk",
     "ObliqueSecList_name": "oblique_dendrites",
+    "TuftSecList_name": null,
     "soma": "soma",
     "v_init": -70,
     "celsius": 33,
-    "tests": ["PathwayInteraction"],
+    "tests": ["BackpropagatingAPTest"],
     "dataset": "test_dataset"
   },
   "tests": {
@@ -23,7 +24,8 @@
     },
     "BackpropagatingAPTest": {
       "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/feat_backpropagating_AP_target_data.json",
-      "stimuli_file_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/stim_bAP_test.json"
+      "stimuli_file_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/stim_bAP_test.json",
+      "unevaluated_feature_penalty":500
     },
     "PSPAttenuationTest": {
       "target_data_path": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/feat_PSP_attenuation_target_data.json",
