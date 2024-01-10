@@ -95,7 +95,7 @@ class Ui_Neuroptimus(QMainWindow):
     def setupUi(self, Neuroptimus):
         """Implements the widgets from the PyQT package.
 
-        :param Neuroptimus: 
+        :param Neuroptimus:
 
         """
 
@@ -1219,7 +1219,7 @@ class Ui_Neuroptimus(QMainWindow):
     def retranslateUi(self, Neuroptimus):
         """Set PyQT widgets behaviors and implements functions.
 
-        :param Neuroptimus: 
+        :param Neuroptimus:
 
         """
         _translate = QtCore.QCoreApplication.translate
@@ -1757,8 +1757,8 @@ class Ui_Neuroptimus(QMainWindow):
     def set_widgets_in_list(self, widget_list, enabled):
         """
 
-        :param widget_list: 
-        :param enabled: 
+        :param widget_list:
+        :param enabled:
 
         """
         for widget in widget_list:
@@ -2117,8 +2117,8 @@ class Ui_Neuroptimus(QMainWindow):
     def _disable_column_editing(self, table_widget, column_index):
         """Disables editing of a column in a table widget
 
-        :param table_widget: 
-        :param column_index: 
+        :param table_widget:
+        :param column_index:
 
         """
         for row in range(table_widget.rowCount()):
@@ -2210,7 +2210,7 @@ class Ui_Neuroptimus(QMainWindow):
 
     def Load(self):
         """Loads the model after the 'Load Trace' clicked
-        
+
         First creates a dictionary with the paths and options and call the First step, giving these as argument
         Plots the trace in matplotlib on the file tab.
 
@@ -2445,10 +2445,10 @@ class Ui_Neuroptimus(QMainWindow):
 
     def Set(self, e):
         """Set the selected parameters to optimize on the model.
-        
+
         Loop through every selected line.
 
-        :param e: 
+        :param e:
 
         """
         items = self.modellist.selectionModel().selectedRows()
@@ -2485,7 +2485,7 @@ class Ui_Neuroptimus(QMainWindow):
         """Remove the selected parameters to optimize on the model.
         Loop through every selected line.
 
-        :param e: 
+        :param e:
 
         """
         items = self.modellist.selectionModel().selectedRows()
@@ -2598,7 +2598,7 @@ class Ui_Neuroptimus(QMainWindow):
     def Loadpython(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         options = QtWidgets.QFileDialog.Options()
@@ -2616,7 +2616,7 @@ class Ui_Neuroptimus(QMainWindow):
     def Load2(self, e):
         """Load the selected Neuron model and displays the sections in a tablewidget
 
-        :param e: 
+        :param e:
 
         """
         self.model_file = self.lineEdit_file2.text()
@@ -2715,7 +2715,7 @@ class Ui_Neuroptimus(QMainWindow):
     def recursive_len(self, item):
         """
 
-        :param item: 
+        :param item:
 
         """
         if type(item) == list:
@@ -2759,7 +2759,7 @@ class Ui_Neuroptimus(QMainWindow):
     def _check_fitlist_weight(self, selected_row):
         """
 
-        :param selected_row: 
+        :param selected_row:
 
         """
         if (
@@ -2917,7 +2917,7 @@ class Ui_Neuroptimus(QMainWindow):
         """Normalize the weigths of only the selected fitness functions.
         Iterates through all fitness functions and scans the ones contained in the fitness set (selected ones) with an 'if' statement.
 
-        :param e: 
+        :param e:
 
         """
         try:
@@ -2951,7 +2951,7 @@ class Ui_Neuroptimus(QMainWindow):
         Iterates through the selected algorithms options list and writes the names of it to the first column and sets the cell immutable,
         and the values to the second row.
 
-        :param pack_name: 
+        :param pack_name:
 
         """
 
@@ -3582,7 +3582,7 @@ class Ui_Neuroptimus(QMainWindow):
     def SaveParam(self, e):
         """Saves the found values in a file.
 
-        :param e: 
+        :param e:
 
         """
         try:
@@ -3672,7 +3672,7 @@ class Ui_Neuroptimus(QMainWindow):
     def PlotGen(self, e):
         """Creates the Generation plot from the statistics file.
 
-        :param e: 
+        :param e:
 
         """
         plt.close("all")
@@ -3722,7 +3722,7 @@ class Ui_Neuroptimus(QMainWindow):
     def PlotGrid(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         self.prev_bounds = copy(self.core.option_handler.boundaries)
@@ -3734,7 +3734,7 @@ class Ui_Neuroptimus(QMainWindow):
     def ShowErrorDialog(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         self.extra_error_dialog = ErrorDialog(self)
@@ -3845,7 +3845,7 @@ class SecondWindow(QtWidgets.QMainWindow):
     def OnOk(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         try:
@@ -3976,7 +3976,7 @@ class StimuliWindow(QtWidgets.QMainWindow):
     def Set(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         try:
@@ -3988,7 +3988,7 @@ class StimuliWindow(QtWidgets.QMainWindow):
     def Accept(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         self.parent.container = []
@@ -4062,7 +4062,7 @@ class BoundaryWindow(QtWidgets.QMainWindow):
     def Set(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         try:
@@ -4092,7 +4092,7 @@ class BoundaryWindow(QtWidgets.QMainWindow):
     def Save(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         save_bound = QtWidgets.QFileDialog.getSaveFileName(self, "Save File")
@@ -4107,7 +4107,7 @@ class BoundaryWindow(QtWidgets.QMainWindow):
     def Load(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         options = QtWidgets.QFileDialog.Options()
@@ -4198,7 +4198,7 @@ class Startingpoints(QtWidgets.QMainWindow):
     def OnOk(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         self.parent.seed = []
@@ -4225,7 +4225,7 @@ class Startingpoints(QtWidgets.QMainWindow):
     def OnLoadPop(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         self.size_of_pop = 0
@@ -4250,8 +4250,8 @@ class Startingpoints(QtWidgets.QMainWindow):
         def lastlines(hugefile, n, bsize=2048):
             """
 
-            :param hugefile: 
-            :param n: 
+            :param hugefile:
+            :param n:
             :param bsize:  (Default value = 2048)
 
             """
@@ -4353,7 +4353,7 @@ class EvaluateSingle(QtWidgets.QMainWindow):
     def OnEvaluate(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         self.parent.core.optimal_params = []
@@ -4445,7 +4445,7 @@ class gridwindow(QtWidgets.QMainWindow):
     def Set(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         try:
