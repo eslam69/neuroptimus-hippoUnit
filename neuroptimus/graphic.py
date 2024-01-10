@@ -844,7 +844,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.pushButton_normalize = QtWidgets.QPushButton(self.fittab)
         self.pushButton_normalize.setGeometry(QtCore.QRect(220, 50, 80, 22))
         self.pushButton_normalize.setObjectName("pushButton_normalize")
-        self.pushButton_normalize.setText("Normalize")
+        self.pushButton_normalize.setText("Normalize Weights")
         font.setPointSize(13)
         QToolTip.setFont(font)
         """self.fittab_help_icon = QtWidgets.QLabel("?",self.fittab)
@@ -859,13 +859,19 @@ class Ui_Neuroptimus(QMainWindow):
         self.core=Core.coreModul()
         self.fit_tab_grid = QtWidgets.QGridLayout(self.fittab)
 
-        self.fit_tab_grid.addWidget(self.pushButton_normalize, 0, 1)
+        self.fit_tab_grid.addWidget(self.pushButton_normalize, 0, 2, 1, 1)
         self.fit_tab_grid.addWidget(self.fitlist, 1, 0, 5, 7)
         #make the table widget stretch to fill the available space
-        self.fit_tab_grid.setColumnStretch(0, 1)
-        self.fit_tab_grid.setRowStretch(0, 1)
+        # self.fit_tab_grid.setColumnStretch(0, 1)
+        # self.fit_tab_grid.setRowStretch(0, 1)
+        self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        #decrease size of 2nd column to be small
+        # self.fit_tab_grid.setColumnMinimumWidth(0, 200)
 
+        
 
+        #stretch first column to fill text
+        
 
         # Create a new QGroupBox for the spike detection parameters
         # self.spike_group_box = QtWidgets.QGroupBox("Spike Detection Parameters")
@@ -900,7 +906,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.hippounit_test_specific_settings_label.setGeometry(QtCore.QRect(330, 260, 300, 16))
         self.hippounit_test_specific_settings_label.setFont(font)
         self.hippounit_test_specific_settings_label.setObjectName("test_specific_settings_label")
-        self.hippounit_test_specific_settings_label.setText("Test-Specific Settings")
+        self.hippounit_test_specific_settings_label.setText("Fitness function settings")
 
 
         # #add the label and the table to the self.fit_tab_grid layout
@@ -1800,30 +1806,39 @@ class Ui_Neuroptimus(QMainWindow):
             # #selection is by cell not row
             self.fitlist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectItems)
 
+            self.tests_ui_names = {"SomaticFeaturesTest":"Somatic Features Test",
+                                    "PSPAttenuationTest":"PSP Attenuation Test",
+                                    "BackpropagatingAPTest":"Backpropagating AP Test",
+                                    "PathwayInteraction":"Pathway Interaction Test",
+                                    "DepolarizationBlockTest":"Depolarization Block Test",
+                                    "ObliqueIntegrationTest":"Oblique Integration Test"}
+            #inverse of the above dictionary
+            self.tests_real_names = {v: k for k, v in self.tests_ui_names.items()}
+
             # #fill the table with the test specific settings configurations paths
             # self.fitlist.setRowCount(0)
             # #row 0 SomaticFeaturesTest target_data_path , second column to be filled with stimuli_file_path
             self.fitlist.insertRow(0)
-            self.fitlist.setItem(0, 0, QtWidgets.QTableWidgetItem("SomaticFeaturesTest"))
+            self.fitlist.setItem(0, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["SomaticFeaturesTest"]))
             self.fitlist.setItem(0, 2, QtWidgets.QTableWidgetItem(""))
             self.fitlist.setItem(0, 3, QtWidgets.QTableWidgetItem(""))
             self.fitlist.setItem(0, 4, QtWidgets.QTableWidgetItem("250"))
 
             #row 1 PSPAttenuationTest
             self.fitlist.insertRow(1)
-            self.fitlist.setItem(1, 0, QtWidgets.QTableWidgetItem("PSPAttenuationTest"))
+            self.fitlist.setItem(1, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["PSPAttenuationTest"]))
             self.fitlist.setItem(1, 2, QtWidgets.QTableWidgetItem(""))
             self.fitlist.setItem(1, 3, QtWidgets.QTableWidgetItem(""))
             self.fitlist.setItem(1, 4, QtWidgets.QTableWidgetItem("250"))
             #BackpropagatingAPTest
             self.fitlist.insertRow(2)
-            self.fitlist.setItem(2, 0, QtWidgets.QTableWidgetItem("BackpropagatingAPTest"))
+            self.fitlist.setItem(2, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["BackpropagatingAPTest"]))
             self.fitlist.setItem(2, 2, QtWidgets.QTableWidgetItem(""))
             self.fitlist.setItem(2, 3, QtWidgets.QTableWidgetItem(""))
             self.fitlist.setItem(2, 4, QtWidgets.QTableWidgetItem("250"))
             #PathwayInteraction
             self.fitlist.insertRow(3)
-            self.fitlist.setItem(3, 0, QtWidgets.QTableWidgetItem("PathwayInteraction"))
+            self.fitlist.setItem(3, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["PathwayInteraction"]))
             self.fitlist.setItem(3, 2, QtWidgets.QTableWidgetItem(""))
             self.fitlist.setItem(3, 3, QtWidgets.QTableWidgetItem("NA"))
             self.fitlist.setItem(3, 4, QtWidgets.QTableWidgetItem("250"))
@@ -1834,7 +1849,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.fitlist.item(3, 3).setBackground(QtGui.QColor(192,192,192))
             #BackpropagatingAPTest
             self.fitlist.insertRow(4)
-            self.fitlist.setItem(4, 0, QtWidgets.QTableWidgetItem("DepolarizationBlockTest"))
+            self.fitlist.setItem(4, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["DepolarizationBlockTest"]))
             self.fitlist.setItem(4, 2, QtWidgets.QTableWidgetItem(""))
             self.fitlist.setItem(4, 3, QtWidgets.QTableWidgetItem("NA"))
             self.fitlist.setItem(4, 4, QtWidgets.QTableWidgetItem("250"))
@@ -1845,12 +1860,12 @@ class Ui_Neuroptimus(QMainWindow):
             #setting color to gray rgb(192,192,192)
             self.fitlist.item(4, 3).setBackground(QtGui.QColor(192,192,192))
             #non clickable cell
-
+            self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
             
 
-            #DepolarizationBlockTest
+            #ObliqueIntegrationTest
             self.fitlist.insertRow(5)
-            self.fitlist.setItem(5, 0, QtWidgets.QTableWidgetItem("ObliqueIntegrationTest"))
+            self.fitlist.setItem(5, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["ObliqueIntegrationTest"]))
             self.fitlist.setItem(5, 2, QtWidgets.QTableWidgetItem(""))
             self.fitlist.setItem(5, 3, QtWidgets.QTableWidgetItem("NA"))
             self.fitlist.setItem(5, 4, QtWidgets.QTableWidgetItem("250"))
@@ -2174,7 +2189,7 @@ class Ui_Neuroptimus(QMainWindow):
 
         self.fitlist.setRowCount(len(self.my_list))
         for index,elems in enumerate(self.my_list):  
-            item = QTableWidgetItem(elems)
+            item = QTableWidgetItem(self.tests_ui_names[elems] if self.core.option_handler.type[-1].lower() == "hippounit" else elems)
             item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable)      
             self.fitlist.setItem(index, 0, item)
             if self.core.option_handler.type[-1]=="features":
@@ -2481,7 +2496,13 @@ class Ui_Neuroptimus(QMainWindow):
                 else:
                     self.fitlist.item(item_selected.row(),0).setBackground(QtGui.QColor(0,255,0))
                     self.fitset.add(current_item)
-    
+
+
+    def _check_fitlist_weight(self,selected_row):
+        if self.fitlist.item(selected_row, 1) != None and self.fitlist.item(selected_row, 1).text() != ""  and float(self.fitlist.item(selected_row, 1).text()) != 0:
+            return True
+
+
 
     def fitchanged(self):
         """
@@ -2492,20 +2513,25 @@ class Ui_Neuroptimus(QMainWindow):
         #first check if hippounit test is selected
         if self.type_selector.currentText().lower() == "hippounit":
             
-            self.HippoTests_required_parameters = {"PSPAttenuationTest": "TrunkSecList_name",
-                                            "BackpropagatingAPTest": "TrunkSecList_name",
-                                            "ObliqueIntegrationTest": "ObliqueSecList_name",
-                                            "PathwayInteraction": "TuftSecList_name"}
+            # self.HippoTests_required_parameters = {"PSP Attenuation Test": "TrunkSecList_name",
+            #                                 "Back propagatingAP Test": "TrunkSecList_name",
+            #                                 "Oblique Integration Test": "ObliqueSecList_name",
+            #                                 "Pathway Interaction Test": "TuftSecList_name"}
+            self.HippoTests_required_parameters = {self.tests_ui_names["PSPAttenuationTest"]: "TrunkSecList_name",
+                                            self.tests_ui_names["BackpropagatingAPTest"]: "TrunkSecList_name",
+                                            self.tests_ui_names["ObliqueIntegrationTest"]: "ObliqueSecList_name",
+                                            self.tests_ui_names["PathwayInteraction"]: "TuftSecList_name"}
+            
+            
             self.HippoTests_parameter_location_in_table = {"TrunkSecList_name":3 , "ObliqueSecList_name":4 , "TuftSecList_name":5}
             #get currently selected row 
             selected_row = self.fitlist.currentRow()
 
             #get the name of the test if not its's weight (2nd column) is not none and not empty and not 0
             try:
-                
                 test_name = self.fitlist.item(selected_row, 0).text()
-                if self.fitlist.item(selected_row, 1) != None and self.fitlist.item(selected_row, 1).text() != ""  and float(self.fitlist.item(selected_row, 1).text()) != 0:
-                    #make  its corresponding property row in the table to the selected row be editable amd non grayed
+                if self._check_fitlist_weight(selected_row):
+                    #make  its corresponding property row in the table to the selected row be editable and non grayed
                     #get the row of the property
                     property_row = self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]]
                     self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
@@ -2515,7 +2541,9 @@ class Ui_Neuroptimus(QMainWindow):
                    
                    
                 else : #make uneditable and grayed out rows if the weight is 0 or none
-                    
+                    if test_name in [self.tests_ui_names["PSPAttenuationTest"], self.tests_ui_names["BackpropagatingAPTest"]]:
+                        if self._check_fitlist_weight(1) or self._check_fitlist_weight(2): #if any of the first two tests have weight, return
+                            return
                     self.test_specific_settings_table.item(self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]], 1).setFlags(QtCore.Qt.NoItemFlags)
                     self.test_specific_settings_table.item(self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]], 1).setBackground(QtGui.QColor(192,192,192))
                     self.test_specific_settings_table.item(self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]], 0).setBackground(QtGui.QColor(192,192,192))
@@ -2734,7 +2762,7 @@ class Ui_Neuroptimus(QMainWindow):
         #fil tests from fitlist  1st row cellls whoose 2nd columns are not 0 or empty
         for row in range(0,self.fitlist.rowCount()):
             if float(self.fitlist.item(row,1).text()) != 0 and self.fitlist.item(row,1).text() != "":
-                self.hippounit_config["model"]["tests"].append(self.fitlist.item(row,0).text())
+                self.hippounit_config["model"]["tests"].append(self.tests_real_names[self.fitlist.item(row,0).text()])
         
         self.hippounit_config["model"]["dataset"] = "test_dataset"
 
@@ -2744,17 +2772,20 @@ class Ui_Neuroptimus(QMainWindow):
 
         # from self.fitlist get the test name and the path to the json file of tests that are in self.hippounit_config["tests"]
         for row in range(0,self.fitlist.rowCount()):
-            if self.fitlist.item(row,0).text() in  self.hippounit_config["model"]["tests"]:
+            # if self.fitlist.item(row,0).text() in  self.hippounit_config["model"]["tests"]:
+            test_name = self.fitlist.item(row,0).text()
+            test_real_name = self.tests_real_names[test_name]
+            if test_real_name in  self.hippounit_config["model"]["tests"]:
                 test_name = self.fitlist.item(row,0).text()
                 test_path = self.fitlist.item(row,2).text()
                 stimuli_path = self.fitlist.item(row,3).text()
-                self.hippounit_config["tests"][test_name] = {}
-                self.hippounit_config["tests"][test_name]["target_data_path"] = test_path
-                if test_name not in ["DepolarizationBlockTest","ObliqueIntegrationTest","PathwayInteraction"]:
-                    self.hippounit_config["tests"][test_name]["stimuli_file_path"] = stimuli_path
+                self.hippounit_config["tests"][test_real_name] = {}
+                self.hippounit_config["tests"][test_real_name]["target_data_path"] = test_path
+                if test_real_name not in ["DepolarizationBlockTest","ObliqueIntegrationTest","PathwayInteraction"]:
+                    self.hippounit_config["tests"][test_real_name]["stimuli_file_path"] = stimuli_path
                 #get penalty of missing feature for the test, the 5th column of the row
                 try:
-                    self.hippounit_config["tests"][test_name]["unevaluated_feature_penalty"] = float(self.fitlist.item(row,4).text())
+                    self.hippounit_config["tests"][test_real_name]["unevaluated_feature_penalty"] = float(self.fitlist.item(row,4).text())
                 except:
                     popup("Missing feature penalty must be set to a number!")
                     return None
