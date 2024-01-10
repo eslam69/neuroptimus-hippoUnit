@@ -976,8 +976,10 @@ class Ui_Neuroptimus(QMainWindow):
         self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
        
-            
+        #block signals of the table to prevent the user from editing it
+        self.fitlist.blockSignals(True)
         self.prepare_fitnessFunctions_table()
+        self.fitlist.blockSignals(False)
 
         #when a cell value  is edited in the table, call fitchanged function
         # self.fitlist.itemChanged.connect(self.fitchanged)
@@ -1419,7 +1421,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.fitlist.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         #self.fitlist.itemSelectionChanged.connect(self.fitselect)
         #self.fitlist.cellClicked.connect(self.fitselect)
-        self.fitlist.horizontalHeader().setStretchLastSection(True)
+        # self.fitlist.horizontalHeader().setStretchLastSection(True)
         # self.label_69.setText(_translate("Neuroptimus", "Spike detection tresh. (mV)"))
         # self.label_70.setText(_translate("Neuroptimus", "Spike window (ms)"))
         self.pushButton_normalize.clicked.connect(self.Fit_normalize)
@@ -1794,7 +1796,8 @@ class Ui_Neuroptimus(QMainWindow):
             self.fitlist.setShowGrid(True)
             self.fitlist.setWordWrap(False)
             self.fitlist.setCornerButtonEnabled(True)
-            self.fitlist.horizontalHeader().setStretchLastSection(True)
+            # self.fitlist.horizontalHeader().setStretchLastSection(True)
+
 
             # if cell in column 2 or 3  doubel clicked, open file dialog 
             self.fitlist.cellDoubleClicked.connect(self.browse_file_for_hippounit_test_specific_settings_table)
@@ -1840,7 +1843,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.fitlist.insertRow(3)
             self.fitlist.setItem(3, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["PathwayInteraction"]))
             self.fitlist.setItem(3, 2, QtWidgets.QTableWidgetItem(""))
-            self.fitlist.setItem(3, 3, QtWidgets.QTableWidgetItem("NA"))
+            self.fitlist.setItem(3, 3, QtWidgets.QTableWidgetItem(""))
             self.fitlist.setItem(3, 4, QtWidgets.QTableWidgetItem("250"))
 
             #non editable and non selectable cell
@@ -1851,7 +1854,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.fitlist.insertRow(4)
             self.fitlist.setItem(4, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["DepolarizationBlockTest"]))
             self.fitlist.setItem(4, 2, QtWidgets.QTableWidgetItem(""))
-            self.fitlist.setItem(4, 3, QtWidgets.QTableWidgetItem("NA"))
+            self.fitlist.setItem(4, 3, QtWidgets.QTableWidgetItem(""))
             self.fitlist.setItem(4, 4, QtWidgets.QTableWidgetItem("250"))
 
         
@@ -1861,6 +1864,12 @@ class Ui_Neuroptimus(QMainWindow):
             self.fitlist.item(4, 3).setBackground(QtGui.QColor(192,192,192))
             #non clickable cell
             self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+            # column 2 3 have fixed width enough for the header text
+            self.fitlist.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Fixed)
+            self.fitlist.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.Fixed)
+            #set the width of column 2 3 to 200
+            self.fitlist.setColumnWidth(2, 130)
+            self.fitlist.setColumnWidth(3, 130)
             
 
             #ObliqueIntegrationTest
@@ -1886,7 +1895,24 @@ class Ui_Neuroptimus(QMainWindow):
                             self.fitlist.item(row, column).setToolTip("NA")
                         else:
                             self.fitlist.item(row, column).setToolTip("Double click to Browse")
-            self.fitlist.horizontalHeader().setStretchLastSection(True)
+            # self.fitlist.horizontalHeader().setStretchLastSection(True)
+            
+            #gray #4th 5th 6th columns
+            self.fitlist.blockSignals(True)
+            for row in range(self.fitlist.rowCount()):
+                for column in range(2,5):
+                    self.fitlist.item(row, column).setFlags(QtCore.Qt.NoItemFlags)
+                    self.fitlist.item(row, column).setBackground(QtGui.QColor(192,192,192))
+            self.fitlist.blockSignals(False)
+
+
+            #4th 5th 6th columns to be non editable and gray
+            # self.fitlist.blockSignals(True)
+            # for row in range(self.fitlist.rowCount()):
+            #     for column in range(2,5):
+            #         self.fitlist.item(row, column).setFlags(QtCore.Qt.NoItemFlags)
+            #         self.fitlist.item(row, column).setBackground(QtGui.QColor(192,192,192))
+            # self.fitlist.blockSignals(False)
 
             #first row of test_specific_settings_table value be -20 
             self.test_specific_settings_table.setItem(0, 1, QtWidgets.QTableWidgetItem("-20"))
@@ -1954,7 +1980,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.fitlist.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
             #self.fitlist.itemSelectionChanged.connect(self.fitselect)
             #self.fitlist.cellClicked.connect(self.fitselect)
-            self.fitlist.horizontalHeader().setStretchLastSection(True)
+            # self.fitlist.horizontalHeader().setStretchLastSection(True)
             #set value of the first row to 0
             self.test_specific_settings_table.setItem(0, 1, QtWidgets.QTableWidgetItem("0.0"))
             #if hippounit_test_sections_names_table has more than 2 rows, remove them
@@ -1963,6 +1989,8 @@ class Ui_Neuroptimus(QMainWindow):
                     self.test_specific_settings_table.removeRow(row)
     
         self._disable_column_editing(self.fitlist, 0)
+        #stretch the last column
+        self.fitlist.horizontalHeader().setStretchLastSection(True)
 
     def _disable_column_editing(self, table_widget, column_index):
         """
@@ -1995,7 +2023,10 @@ class Ui_Neuroptimus(QMainWindow):
         self.set_widgets_in_list(self.target_data_ui_components,True)
         self.set_widgets_in_list(self.simtab_neuroptimus_group_boxes,True)
         type_index=self.type_selector.currentIndex()
+        #block signals to avoid triggering the signal handler
+        self.fitlist.blockSignals(True)
         self.prepare_fitnessFunctions_table()
+        self.fitlist.blockSignals(False)
         if type_index in [0,1,2]:
             self.pushButton_3.setText("Load data")
             self.hippounit_group.setEnabled(False)
@@ -2530,23 +2561,58 @@ class Ui_Neuroptimus(QMainWindow):
             #get the name of the test if not its's weight (2nd column) is not none and not empty and not 0
             try:
                 test_name = self.fitlist.item(selected_row, 0).text()
-                if self._check_fitlist_weight(selected_row):
+                if self._check_fitlist_weight(selected_row): #Weight is a number and not 0
                     #make  its corresponding property row in the table to the selected row be editable and non grayed
                     #get the row of the property
-                    property_row = self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]]
-                    self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
                     
-                    self.test_specific_settings_table.item(property_row, 1).setBackground(QtGui.QColor(255,255,255))
-                    self.test_specific_settings_table.item(property_row, 0).setBackground(QtGui.QColor(255,255,255))
+
+                    #enable the row in fitlist and make it white columns 2 , 3 ,4
+                    self.fitlist.blockSignals(True)
+                    for column in range(2,5): #do this except cells (5,2) , (5,3), (4,2) , (4,3)
+                        if column == 4:#set value to 255
+                            self.fitlist.item(selected_row, column).setText("250") 
+                        if (column == 3 and selected_row == 4) or (column == 3 and selected_row == 5)  :
+                            continue
+                        
+                        self.fitlist.item(selected_row, column).setBackground(QtGui.QColor(255,255,255))
+                        self.fitlist.item(selected_row, column).setForeground(QtGui.QColor(0,0,0))
+                        self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+                    self.fitlist.blockSignals(False)
+                    #disable callbacks for the table
+                    
+
+                    if test_name in self.HippoTests_required_parameters.keys():
+                        property_row = self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]]
+                        self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+                        self.test_specific_settings_table.item(property_row, 1).setBackground(QtGui.QColor(255,255,255))
+                        self.test_specific_settings_table.item(property_row, 0).setBackground(QtGui.QColor(255,255,255))
                    
                    
-                else : #make uneditable and grayed out rows if the weight is 0 or none
+                else : # Weight is 0 or none
+                    #make uneditable and grayed out rows if the weight is 0 or none
+                    
+                    
+                    self.fitlist.blockSignals(True)
+                    for column in range(2,5): 
+                        if (column == 3 and selected_row == 4) or (column == 3 and selected_row == 5)  :
+                            continue
+                        if column == 4:#set value to empty
+                            self.fitlist.item(selected_row, column).setText("") 
+                        self.fitlist.item(selected_row, column).setBackground(QtGui.QColor(192,192,192))
+                        self.fitlist.item(selected_row, column).setForeground(QtGui.QColor(0,0,0))
+                        self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+                        self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.NoItemFlags)
+                    self.fitlist.blockSignals(False)
                     if test_name in [self.tests_ui_names["PSPAttenuationTest"], self.tests_ui_names["BackpropagatingAPTest"]]:
                         if self._check_fitlist_weight(1) or self._check_fitlist_weight(2): #if any of the first two tests have weight, return
                             return
-                    self.test_specific_settings_table.item(self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]], 1).setFlags(QtCore.Qt.NoItemFlags)
-                    self.test_specific_settings_table.item(self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]], 1).setBackground(QtGui.QColor(192,192,192))
-                    self.test_specific_settings_table.item(self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]], 0).setBackground(QtGui.QColor(192,192,192))
+                    if test_name in self.HippoTests_required_parameters.keys():
+                        property_row = self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]]
+                        self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.NoItemFlags)
+                        self.test_specific_settings_table.item(property_row, 1).setBackground(QtGui.QColor(192,192,192))
+                        self.test_specific_settings_table.item(property_row, 0).setBackground(QtGui.QColor(192,192,192))
+                    
+                    
                     
             except Exception as e:
                 # print(e)
