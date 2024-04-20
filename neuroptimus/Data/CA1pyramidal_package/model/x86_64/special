@@ -1,4 +1,4 @@
-#!/home/eslam/anaconda3/envs/integration/bin/python
+#!/home/eslam/anaconda3/envs/neuroptimus/bin/python
 """
 A generic wrapper to access nrn binaries from a python installation
 Please create a softlink with the binary name to be called.

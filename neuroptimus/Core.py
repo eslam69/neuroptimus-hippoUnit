@@ -159,7 +159,9 @@ class coreModul():
 		:param args: dictionary with keys "file" and "input"
 
 		"""
-		self.option_handler.SetFileOptions(args.get("file"))
+		# print("args inside first step: ")
+		# print(args)
+		self.option_handler.SetFileOptions(args.get("file")) 
 		self.option_handler.SetInputOptions(args.get("input"))
 
 		stim_type = self.option_handler.type[-1]
@@ -180,11 +182,14 @@ class coreModul():
 
 		"""
 		self.model_handler=None
+		# print("args inside load model: ")
+		# print(args)
 		self.option_handler.SetSimParam([args.get("simulator","Neuron"),args.get("sim_command"),None])
 		if self.option_handler.GetSimParam()[0]=="Neuron":
 			self.option_handler.SetModelOptions(args.get("model"))
 			self.model_handler=modelHandlerNeuron(self.option_handler.model_path,self.option_handler.model_spec_dir,self.option_handler.base_dir)
 		elif self.option_handler.GetSimParam()[0] == "hippounit":
+			self.option_handler.SetModelOptions(args.get("model"))
 			return
 		else:
 			self.model_handler=externalHandler(self.option_handler.GetSimParam()[1])
@@ -194,6 +199,7 @@ class coreModul():
 			else:
 				k_range=len(self.data_handler.features_data["stim_amp"])
 			self.option_handler.SetModelStimParam([[0]*k_range,0,0])
+
 	
 	def ReturnSections(self):
 		"""
@@ -361,7 +367,11 @@ class coreModul():
 					* starting_points
 		"""
 		self.grid_result=None
+		# print("args inside third step: ")
+		# print(args)
 		if args!=None:
+			# print("args inside third step: ")
+			# print(args)
 			self.option_handler.SetModelRun(args.get("runparam"))
 			fit_par=[]
 			fit_par.append(args.get("feat",[]))
@@ -405,7 +415,7 @@ class coreModul():
 				self.option_handler.run_controll_dt=self.data_handler.data.step
 
 		exec("self.optimizer="+self.option_handler.algorithm_name+"(self.data_handler,self.option_handler)")
-
+		# self.optimizer=RANDOM_SEARCH(self.data_handler,self.option_handler)
 		if self.option_handler.type[-1] == 'hippounit':
 			self.option_handler.feat_str = ""  # TODO
 		elif self.option_handler.type[-1]!= 'features':
@@ -570,7 +580,10 @@ class coreModul():
 		f_handler=open(self.name+"_results.html","w+")
 		tmp_str="<!DOCTYPE html>\n<html>\n<body>\n"
 		tmp_str+=self.htmlStr(str(time.asctime( time.localtime(time.time()) )))+"\n"
-		tmp_str+="<p>"+self.htmlStyle("Optimization of <b>"+self.name+".hoc</b> based on: "+self.option_handler.input_dir,self.htmlAlign("center"))+"</p>\n"
+		if not self.option_handler.type[-1] == 'hippounit':
+			tmp_str+="<p>"+self.htmlStyle("Optimization of <b>"+self.name+".hoc</b> based on: "+self.option_handler.input_dir,self.htmlAlign("center"))+"</p>\n"
+		else: #TODO: Add more infromative text for hippounit
+			tmp_str+="<p>"+self.htmlStyle("Optimization of <b>"+self.name+".hoc</b>  ",self.htmlAlign("center"))+"</p>\n"
 		tmp_list=[]
 		tmp_fit=self.optimal_params
 		for name,mmin,mmax,f in zip(self.option_handler.GetObjTOOpt(),self.option_handler.boundaries[0],self.option_handler.boundaries[1],tmp_fit):

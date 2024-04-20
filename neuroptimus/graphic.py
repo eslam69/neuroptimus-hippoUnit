@@ -24,11 +24,12 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import QThread, pyqtSignal
 import json
 from collections import OrderedDict
-
+import traceback
 import warnings
 warnings.simplefilter("ignore", UserWarning)
 
 import importlib.util
+
 
 
 
@@ -38,6 +39,13 @@ def is_hippounit_installed():
     return hippounit_spec is not None
 
 
+def add_trailing_slash(path):
+    """
+    Adds a trailing slash to a path if it doesn't already have one.
+    """
+    if path[-1] != "/":
+        return path + "/"
+    return path
 
 class QHLine(QtWidgets.QFrame):
             def __init__(self):
@@ -2110,10 +2118,12 @@ class Ui_Neuroptimus(QMainWindow):
                 
             except ValueError as ve:
                 print(ve)
-        elif self.type_selector.currentIndex()==3: 
+        elif self.type_selector.currentIndex()==3:  #Hippounit
             self.tabwidget.setTabEnabled(1,True)
             kwargs = {"file" : str(self.lineEdit_folder.text()),
-            "input": [ None]*6 + ["hippounit"]}
+            "input": [ ""]*6 + ["hippounit"]}
+            # "input":[str(self.lineEdit_file.text()),None,None,None,None,None,"hippounit"]}
+            self.kwargs = kwargs
             pass  #TODO load_neuroptimus()
         else:
             try:
@@ -2413,13 +2423,16 @@ class Ui_Neuroptimus(QMainWindow):
             self.spec_file = self.lineEdit_folder2.text()
         else:
             self.spec_file = None
-
-        if self.type_selector.currentText().lower() == "hippounit":
+        current_mode = self.type_selector.currentText().lower()
+        simulator_selected = self.dd_type.currentText()
+        if current_mode == "hippounit":
+            simulator_selected = "hippounit"
             self.model_name = self.model_name_input.text()
+            return
 
         try:
             self.core.LoadModel({"model" : [self.model_file, self.spec_file],
-                                 "simulator" : self.dd_type.currentText(),
+                                 "simulator" : simulator_selected,
                                  "sim_command" : self.sim_path.text() if not self.dd_type else self.sim_path.text()+" "+self.sim_param.text()})
             temp = self.core.model_handler.GetParameters()
             if temp!=None:
@@ -2444,6 +2457,9 @@ class Ui_Neuroptimus(QMainWindow):
 
         except OSError as oe:
             print(oe)
+        except Exception as e:
+            print("Error in Load2:")
+            traceback.print_exc()
         if not self.dd_type.currentIndex():  
             try:
                 tmp=self.core.ReturnSections()
@@ -2761,7 +2777,7 @@ class Ui_Neuroptimus(QMainWindow):
         #the model name
         self.hippounit_config["model"]["name"] = self.model_name_input.text()
         #the model path
-        self.hippounit_config["model"]["mod_files_path"] = self.lineEdit_folder2.text()
+        self.hippounit_config["model"]["mod_files_path"] = add_trailing_slash(self.lineEdit_folder2.text())
 
 
         #the output path
@@ -2875,6 +2891,7 @@ class Ui_Neuroptimus(QMainWindow):
         #boundaries is a list of 2 lists, the first list contains the lower boundaries, the second list contains the upper boundaries
         boundaries = [list(self.adjusted_params_boundaries.values())[i][0] for i in range(len(self.adjusted_params_boundaries.values()))] , [list(self.adjusted_params_boundaries.values())[i][1] for i in range(len(self.adjusted_params_boundaries.values()))]
         num_params = len(boundaries[0])
+        # print("algos list", self.algolist.selectionModel().selectedRows())
         algo_ui_name = self.algolist.item(self.algolist.selectionModel().selectedRows()[0].row(),0).text()
         algo_name = algo_ui_name[algo_ui_name.find("(")+1:].replace(")","").replace(" - ","_").replace("-","_").replace(" ","_")
         model_path = self.model_file
@@ -2907,14 +2924,17 @@ class Ui_Neuroptimus(QMainWindow):
 
 
         #save to json file
-        hippounit_settings_path = "hippounit_config_from_gui.json"
+        #base directory path
+        base_dir = self.lineEdit_folder.text()
+        hippounit_settings_file_name = "hippounit_config_from_gui.json"
+        hippounit_settings_path = os.path.join(base_dir,hippounit_settings_file_name)
         with open(hippounit_settings_path, 'w+') as out:
             json.dump(self.hippounit_config,out,indent=4)
-            print("hippounit_config_from_gui.json saved")
+            print(f"hippounit_config_from_gui.json saved to {hippounit_settings_path}")
 
 
-        neuroptimus_settings_path = "neuroptimus_config_from_gui.json"
-
+        neuroptimus_settings_name = "neuroptimus_config_from_gui.json"
+        neuroptimus_settings_path = os.path.join(base_dir,neuroptimus_settings_name)
         
     
         #create a dictionary with the above structure from my variables
@@ -2944,6 +2964,7 @@ class Ui_Neuroptimus(QMainWindow):
         with open(neuroptimus_settings_path, 'w+') as out:
             json.dump(neuroptimus_settings,out,indent=4)
             # print("neuroptimus_config_from_gui.json saved")
+            print(f"neuroptimus_config_from_gui.json saved to {neuroptimus_settings_path}")
 
 
 
@@ -2995,12 +3016,19 @@ class Ui_Neuroptimus(QMainWindow):
             try:
                 with open(json_filename, "r") as f:
                     json_data = json.load(f)
+                    
             except IOError as ioe:
                 popup("File not found!\n")
                 print(ioe)
                 sys.exit("File not found!\n")
-
-        self.core.option_handler.ReadJson(json_data['attributes'])
+            try:
+                self.core.option_handler.ReadJson(json_data['attributes'])
+            except Exception as e:
+                # print(e)
+                traceback.print_exc()
+                popup("Error in reading json file")
+                return
+        # self.core.option_handler.ReadJson(json_data['attributes'])
         
         err=[]
         errpop=[]
@@ -3103,23 +3131,41 @@ class Ui_Neuroptimus(QMainWindow):
         else:
             try:
                 self.seed = None
-                self.core.ThirdStep(self.kwargs)
-            except:
+                #set None input to third step if the type is  hippounit
+                if self.core.option_handler.type[-1].lower() == "hippounit":
+                    empty_args = None
+                    self.core.ThirdStep(empty_args)
+                else:
+                    self.core.ThirdStep(self.kwargs)
+            except Exception as e:
+                    print("Run step error")
+                    print("#"*20)
+                    traceback.print_exc()
+                    print("#"*20)
                     popup("Run step error")
+                    print(e)
+
             if self.core.option_handler.output_level=="1":
                 self.core.Print()
             
             else:
+                
+
                 try:
                     self.core.FourthStep()
                     self.tabwidget.setTabEnabled(5,True)
                     self.tabwidget.setTabEnabled(6,True)
                     self.tabwidget.setCurrentIndex(5)
-                    self.results_tab_plot()
+                    self.results_tab_plot() #TODO Handle HippoUnit
                     if not singlerun:
                         self.stat_tab_fun()
-                except:
-                    popup("Evaluation step error")
+                except Exception as e:
+                    message = "Evaluation step error"
+                    print(message)
+                    print("#"*20)
+                    traceback.print_exc()
+                    print("#"*20)
+                    popup(message)
 
 
 
@@ -3144,7 +3190,8 @@ class Ui_Neuroptimus(QMainWindow):
         model_data = []
         
         self.results_tab_axes.cla()
-        if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
+        mode = self.core.option_handler.type[-1].lower()
+        if mode in ["voltage", "current"]:
             for n in range(self.core.data_handler.number_of_traces()):
                 exp_data.extend(self.core.data_handler.data.GetTrace(n))
                 model_data.extend(self.core.final_result[n])
@@ -3165,7 +3212,7 @@ class Ui_Neuroptimus(QMainWindow):
             plt.tight_layout()
             plt.close()
 
-        else:
+        elif mode == "features":
             for n in range(len(self.core.data_handler.features_data["stim_amp"])):
                 model_data.extend(self.core.final_result[n])
             no_traces=len(self.core.data_handler.features_data["stim_amp"])
@@ -3183,6 +3230,9 @@ class Ui_Neuroptimus(QMainWindow):
             self.canvas2.draw()
             plt.tight_layout()
             plt.close()
+        elif mode == "hippounit":
+            pass
+            #TODO: ADD hippoUnit plots
         
     def SaveParam(self, e):
         """
@@ -3223,7 +3273,7 @@ class Ui_Neuroptimus(QMainWindow):
                 tmp[3]+=c[t_idx][2]*c[t_idx][0]
             if self.core.option_handler.type[-1].lower() in ["voltage","current"]:
                 tmp[0]=self.core.ffun_mapper[c[t_idx][1].__name__]
-            elif self.core.option_handler.type[-1].lower() in ["features", "hipounit"]: #TODO: Check this (is it working as expected? supposed to fill "Error functions" column with the name of the error function in the table)
+            elif self.core.option_handler.type[-1].lower() in ["features", "hippounit"]: #TODO: Check this (is it working as expected? supposed to fill "Error functions" column with the name of the error function in the table)
                 tmp[0]=(c[t_idx][1])
             else:
                 raise NotImplementedError("Unknown type: {}".format(self.core.option_handler.type[-1]))

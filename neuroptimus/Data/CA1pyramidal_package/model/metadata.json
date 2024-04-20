@@ -1,116 +1,112 @@
 {
-    "opt_name": "load_model_na_inhomo_minimal_model+KM+KA+KD_CMAES_CMAES_26_Aug_2023_05:28:13:278555",
-    "seed": 1235,
+    "opt_name": "load_model_na_inhomo_minimal_model+KM+KA+KD_RANDOM_SEARCH_20_Apr_2024_19:35:37:580212",
+    "seed": 1234,
     "final_fitness": [
-        50000.0
+        107.13085990101636
     ],
-    "number_of_evaluations": 288,
+    "number_of_evaluations": 1,
     "models": {
         "model_name": "load_model_na_inhomo_minimal_model+KM+KA+KD",
-        "model_author": "Eslam-OMEN"
+        "model_author": "omen-laptop"
     },
     "parameters": [
         {
             "name": "Na_BG_act_inact_shift 0",
             "min_boundary": "5.0",
             "max_boundary": "15.0",
-            "optimum": "14.695584287970046"
+            "optimum": "14.664535356921387"
         },
         {
             "name": "gmax_K_DRS4_params_voltage_dep_dend 1",
             "min_boundary": "0.01",
             "max_boundary": "0.2",
-            "optimum": "0.19181895007751448"
+            "optimum": "0.09373919384331701"
         },
         {
             "name": "gmax_Na_BG_soma 2",
             "min_boundary": "0.002",
             "max_boundary": "0.1",
-            "optimum": "0.002"
+            "optimum": "0.002734164065741545"
         },
         {
             "name": "gmax_K_DRS4_params_voltage_dep_soma 3",
             "min_boundary": "0.01",
             "max_boundary": "0.5",
-            "optimum": "0.01"
+            "optimum": "0.45637822160007085"
         },
         {
             "name": "gmax_K_DRS4_params_voltage_dep_axon 4",
             "min_boundary": "0.01",
             "max_boundary": "10.0",
-            "optimum": "5.4147391579176976"
+            "optimum": "9.393297283664003"
         },
         {
             "name": "gmax_Leak_pyr 5",
             "min_boundary": "1e-05",
             "max_boundary": "0.0001",
-            "optimum": "0.0001"
+            "optimum": "6.240048157530543e-05"
         },
         {
             "name": "H_ratio 6",
             "min_boundary": "0.1",
             "max_boundary": "15.0",
-            "optimum": "0.1"
+            "optimum": "10.106295874170977"
         },
         {
             "name": "e_Leak_pyr 7",
             "min_boundary": "-70.0",
             "max_boundary": "-40.0",
-            "optimum": "-50.367488075788536"
+            "optimum": "-67.48185319488748"
         },
         {
             "name": "gbar_km_soma_dend 8",
             "min_boundary": "5e-05",
             "max_boundary": "0.01",
-            "optimum": "5e-05"
+            "optimum": "0.007676485281278373"
         },
         {
             "name": "gbar_km_axon 9",
             "min_boundary": "0.0001",
             "max_boundary": "5.0",
-            "optimum": "0.0001"
+            "optimum": "1.1841251958380525"
         },
         {
             "name": "KA_ratio 10",
             "min_boundary": "0.3",
             "max_boundary": "3.0",
-            "optimum": "0.3"
+            "optimum": "0.3831978586618469"
         },
         {
             "name": "gbar_kd 11",
             "min_boundary": "1e-05",
             "max_boundary": "0.01",
-            "optimum": "0.0070156075532279635"
+            "optimum": "0.007889839445190472"
         }
     ],
     "error_function": [
         {
             "name": "SomaticFeaturesTest",
-            "value": "1000000.0",
-            "weight": "0.05",
-            "weighted_value": "50000.0"
+            "value": "107.13085990101636",
+            "weight": "1.0",
+            "weighted_value": "107.13085990101636"
         }
     ],
     "algorithm": [
         {
-            "algorithm_name": "CMAES",
-            "algorithm_package": "CMAES",
+            "algorithm_name": "RANDOM",
+            "algorithm_package": "SEARCH",
             "algorithm_parameters": [
                 {
-                    "parameter_name": "number_of_generations",
-                    "parameter_value": "12"
-                },
-                {
                     "parameter_name": "size_of_population",
-                    "parameter_value": "24"
+                    "parameter_value": "1.0"
                 },
                 {
                     "parameter_name": "number_of_cpu",
-                    "parameter_value": "6"
+                    "parameter_value": "1.0"
                 },
                 {
-                    "parameter_name": "sigma",
-                    "parameter_value": "1.3"
+                    "parameter_name": "Seed",
+                    "parameter_value": "1.0"
                 }
             ]
         }
@@ -120,118 +116,19 @@
             "data_type": "hippounit",
             "file_name": "",
             "number_of_traces": 1,
-            "stim_delay": 200.0,
-            "stim_duration": 300.0
+            "stim_delay": 0,
+            "stim_duration": 0
         }
     ],
-    "created_at": "2023-08-26T05:28:13.278579Z",
+    "created_at": "2024-04-20T19:35:37.580249Z",
     "statistics": [
         {
             "generation": 0,
-            "population": 24,
-            "maximum": 50000.0,
-            "minimum": 41.50126572535203,
-            "median": 50000.0,
-            "mean": 33383.21070176975,
-            "std": 23499.763830411488
-        },
-        {
-            "generation": 1,
-            "population": 24,
-            "maximum": 50000.0,
-            "minimum": 134.72603153206532,
-            "median": 50000.0,
-            "mean": 41745.56621063568,
-            "std": 18457.890683132075
-        },
-        {
-            "generation": 2,
-            "population": 24,
-            "maximum": 50000.0,
-            "minimum": 65.00798325379837,
-            "median": 50000.0,
-            "mean": 29229.117282202522,
-            "std": 24576.45702151642
-        },
-        {
-            "generation": 3,
-            "population": 24,
-            "maximum": 50000.0,
-            "minimum": 5.173650227707676,
-            "median": 25520.934305692375,
-            "mean": 25142.063092586937,
-            "std": 24858.627558250762
-        },
-        {
-            "generation": 4,
-            "population": 24,
-            "maximum": 50000.0,
-            "minimum": 2.0352836668214294,
-            "median": 50000.0,
-            "mean": 27161.496678172913,
-            "std": 24828.61578077022
-        },
-        {
-            "generation": 5,
-            "population": 24,
-            "maximum": 50000.0,
-            "minimum": 5.971144833278661,
-            "median": 50000.0,
-            "mean": 29217.629777674956,
-            "std": 24590.059908564523
-        },
-        {
-            "generation": 6,
-            "population": 24,
-            "maximum": 50000.0,
-            "minimum": 38.96705486678264,
-            "median": 50000.0,
-            "mean": 37539.58327814541,
-            "std": 21582.09646092421
-        },
-        {
-            "generation": 7,
-            "population": 24,
-            "maximum": 50000.0,
-            "minimum": 53.576460170952544,
-            "median": 50000.0,
-            "mean": 45842.719164129114,
-            "std": 13788.151219109852
-        },
-        {
-            "generation": 8,
-            "population": 24,
-            "maximum": 50000.0,
-            "minimum": 177.4265820582742,
-            "median": 50000.0,
-            "mean": 47924.0594409191,
-            "std": 9955.861173763637
-        },
-        {
-            "generation": 9,
-            "population": 24,
-            "maximum": 50000.0,
-            "minimum": 50000.0,
-            "median": 50000.0,
-            "mean": 50000.0,
-            "std": 0.0
-        },
-        {
-            "generation": 10,
-            "population": 24,
-            "maximum": 50000.0,
-            "minimum": 50000.0,
-            "median": 50000.0,
-            "mean": 50000.0,
-            "std": 0.0
-        },
-        {
-            "generation": 11,
-            "population": 24,
-            "maximum": 50000.0,
-            "minimum": 50000.0,
-            "median": 50000.0,
-            "mean": 50000.0,
+            "population": 1,
+            "maximum": 107.13085990101636,
+            "minimum": 107.13085990101636,
+            "median": 107.13085990101636,
+            "mean": 107.13085990101636,
             "std": 0.0
         }
     ]
