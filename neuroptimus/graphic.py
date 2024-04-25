@@ -1929,13 +1929,13 @@ class Ui_Neuroptimus(QMainWindow):
             #populating SomaSecList_name,  TrunkSecList_name, ObliqueSecList_name
             # row 2 SomaSecList_name
             self.test_specific_settings_table.insertRow(2)
-            self.test_specific_settings_table.setItem(2, 0, QtWidgets.QTableWidgetItem("SomaSecList_name"))
+            self.test_specific_settings_table.setItem(2, 0, QtWidgets.QTableWidgetItem("SomaSecList_name  (leave empty if no template is used)"))
             self.test_specific_settings_table.setItem(2, 1, QtWidgets.QTableWidgetItem(""))
             self.test_specific_settings_table.item(2, 0).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(2, 0).setForeground(QtGui.QColor(0,0   ,0))
             # row 3 TrunkSecList_name
             self.test_specific_settings_table.insertRow(3)
-            self.test_specific_settings_table.setItem(3, 0, QtWidgets.QTableWidgetItem("TrunkSecList_name"))
+            self.test_specific_settings_table.setItem(3, 0, QtWidgets.QTableWidgetItem("TrunkSecList_name  (leave empty if no template is used)"))
             self.test_specific_settings_table.setItem(3, 1, QtWidgets.QTableWidgetItem(""))
             self.test_specific_settings_table.item(3, 0).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(3, 0).setForeground(QtGui.QColor(0,0   ,0))
@@ -2428,6 +2428,10 @@ class Ui_Neuroptimus(QMainWindow):
         if current_mode == "hippounit":
             simulator_selected = "hippounit"
             self.model_name = self.model_name_input.text()
+            self._write_on_status_bar("Model loaded Successfully!")
+
+
+
             return
 
         try:
@@ -2499,7 +2503,10 @@ class Ui_Neuroptimus(QMainWindow):
         if fileName:
             self.container=[fileName]
                
-
+    def _write_on_status_bar(self, message, color="green", timeout=5000):
+        
+        self.statusbar.setStyleSheet("color: "+color)
+        self.statusbar.showMessage(message, timeout)
 
     def recursive_len(self,item):
         if type(item) == list:
