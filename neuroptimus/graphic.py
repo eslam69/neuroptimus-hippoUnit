@@ -2609,7 +2609,7 @@ class Ui_Neuroptimus(QMainWindow):
             #                                 "Pathway Interaction Test": "TuftSecList_name"}
             self.HippoTests_required_parameters = {self.tests_ui_names["PSPAttenuationTest"]: ["TrunkSecList_name","num_of_dend_locations"],
                                             self.tests_ui_names["BackpropagatingAPTest"]: ["TrunkSecList_name"],
-                                            self.tests_ui_names["ObliqueIntegrationTest"]: ["ObliqueSecList_name"],
+                                            self.tests_ui_names["ObliqueIntegrationTest"]: ["ObliqueSecList_name", "TrunkSecList_name"],
                                             self.tests_ui_names["PathwayInteraction"]: ["TuftSecList_name","num_of_dend_locations"]}
             
             
@@ -2923,7 +2923,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.hippounit_config["model"]["SomaSecList_name"] = self.test_specific_settings_table.item(2,1).text() if self.test_specific_settings_table.item(2,1).text() != "" else None
 
         #the trunk section list name
-        hippo_paramaters_to_check = ["TrunkSecList_name", "ObliqueSecList_name", "TuftSecList_name", "num_of_dend_locations"]
+        hippo_paramaters_to_check = ["TrunkSecList_name", "ObliqueSecList_name", "TuftSecList_name", "num_of_dend_locations"] 
         #Assign the values of these parameters to the config file, if they are not empty or none and was supposed to be set
         for param in hippo_paramaters_to_check:
             # get the value of the parameter based on the configuaration dictionary HippoTests_parameter_location_in_table which maps the parameter name to the row in the table
