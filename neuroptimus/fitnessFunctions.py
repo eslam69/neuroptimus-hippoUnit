@@ -1343,7 +1343,8 @@ class fF_HippoUnit(fF):
             stim_file = pkg_resources.resource_filename("hippounit", "tests/stimuli/PathwayInteraction_stim/stim_PathwayInteraction_test.json")
             with open(stim_file, 'r') as f:
                 config = json.load(f, object_pairs_hook=collections.OrderedDict)
-            return tests.PathwayInteraction(num_of_dend_locations = 15, observation = observation, config = config, 
+            num_of_dend_locations = self.model.settings["tests"]["PathwayInteraction"]["num_of_dend_locations"]
+            return tests.PathwayInteraction(num_of_dend_locations = num_of_dend_locations, observation = observation, config = config, 
                                             save_all = self.is_figures_saved, force_run=True, force_run_adjust_syn_weight=False, 
                                             show_plot = False, base_directory = self.model.output_directory,serialized=True)
         
@@ -1402,6 +1403,7 @@ class fF_HippoUnit(fF):
             except Exception as e:
                 print('Model: ' + self.model.model.name + ' could not be run')
                 traceback.print_stack()
+                print(e)
         self.fitnes.append(error)
         with open("eval.txt", "a") as f: 
             f.write(str([error,[x for x in candidates]])+" \n")

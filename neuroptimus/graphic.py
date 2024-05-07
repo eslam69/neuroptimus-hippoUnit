@@ -43,7 +43,7 @@ def add_trailing_slash(path):
     """
     Adds a trailing slash to a path if it doesn't already have one.
     """
-    if path[-1] != "/":
+    if path and path[-1] != "/":
         return path + "/"
     return path
 
@@ -361,7 +361,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.dd_type.addItem("External")
         self.dd_type.currentIndexChanged.connect(self.sim_plat)
         self.dd_type.setToolTip("Simulator type")
-        self.lineEdit_folder2 = QtWidgets.QLineEdit(self.modeltab)
+        self.lineEdit_folder2 = QtWidgets.QLineEdit(self.modeltab) #mod files line edit, next to check box
         self.lineEdit_folder2.setGeometry(QtCore.QRect(10, 150, 221, 22))
         self.lineEdit_folder2.setObjectName("lineEdit_folder2")
         self.sim_path = QtWidgets.QLineEdit(self.modeltab)
@@ -735,7 +735,7 @@ class Ui_Neuroptimus(QMainWindow):
         font.setWeight(50)
         self.template_name_label.setFont(font)
         self.template_name_label.setObjectName("template_name_label")
-        self.template_name_label.setText("Template Name")
+        self.template_name_label.setText("Template Name (leave empty if no template is used)")
 
         self.template_name_input = QtWidgets.QLineEdit(self.simtab)
         self.template_name_input.setGeometry(QtCore.QRect(10, 90, 221, 22))
@@ -1433,6 +1433,7 @@ class Ui_Neuroptimus(QMainWindow):
         # self.label_69.setText(_translate("Neuroptimus", "Spike detection tresh. (mV)"))
         # self.label_70.setText(_translate("Neuroptimus", "Spike window (ms)"))
         self.pushButton_normalize.clicked.connect(self.Fit_normalize)
+        self.HippoTests_parameter_location_in_table = {"TrunkSecList_name":3 , "ObliqueSecList_name":4 , "TuftSecList_name":5, "num_of_dend_locations":6}
         #self.fittab_help.clicked.connect(self.help_popup_fit)
 
         #runtab 5
@@ -1808,7 +1809,7 @@ class Ui_Neuroptimus(QMainWindow):
 
 
             # if cell in column 2 or 3  doubel clicked, open file dialog 
-            self.fitlist.cellDoubleClicked.connect(self.browse_file_for_hippounit_test_specific_settings_table)
+            self.fitlist.cellDoubleClicked.connect(self.browse_file_for_hippounit_data_paths)
 
            
            
@@ -1829,29 +1830,46 @@ class Ui_Neuroptimus(QMainWindow):
             # #fill the table with the test specific settings configurations paths
             # self.fitlist.setRowCount(0)
             # #row 0 SomaticFeaturesTest target_data_path , second column to be filled with stimuli_file_path
+            
+
+            class fitlistTableItem(QtWidgets.QTableWidgetItem):
+                def __init__(self, text= "Browse (Double Click)"):
+                    super().__init__(text)
+                    self.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                    browse_cell_text = text
+                    browse_cell_font = QtGui.QFont()
+                    #smaller font
+                    browse_cell_font.setPointSize(8)
+                    #set the font to the cell
+                    self.setFont(browse_cell_font)
+                    #cell dont expand
+                    self.setSizeHint(QtCore.QSize(100, 20))
+
+
+
             self.fitlist.insertRow(0)
             self.fitlist.setItem(0, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["SomaticFeaturesTest"]))
-            self.fitlist.setItem(0, 2, QtWidgets.QTableWidgetItem(""))
-            self.fitlist.setItem(0, 3, QtWidgets.QTableWidgetItem(""))
+            self.fitlist.setItem(0, 2, fitlistTableItem("Browse (Double Click)"))
+            self.fitlist.setItem(0, 3, fitlistTableItem("Browse (Double Click)"))
             self.fitlist.setItem(0, 4, QtWidgets.QTableWidgetItem("250"))
-
+            
             #row 1 PSPAttenuationTest
             self.fitlist.insertRow(1)
             self.fitlist.setItem(1, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["PSPAttenuationTest"]))
-            self.fitlist.setItem(1, 2, QtWidgets.QTableWidgetItem(""))
-            self.fitlist.setItem(1, 3, QtWidgets.QTableWidgetItem(""))
+            self.fitlist.setItem(1, 2, fitlistTableItem("Browse (Double Click)"))
+            self.fitlist.setItem(1, 3, fitlistTableItem("Browse (Double Click)"))
             self.fitlist.setItem(1, 4, QtWidgets.QTableWidgetItem("250"))
             #BackpropagatingAPTest
             self.fitlist.insertRow(2)
             self.fitlist.setItem(2, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["BackpropagatingAPTest"]))
-            self.fitlist.setItem(2, 2, QtWidgets.QTableWidgetItem(""))
-            self.fitlist.setItem(2, 3, QtWidgets.QTableWidgetItem(""))
+            self.fitlist.setItem(2, 2, fitlistTableItem("Browse (Double Click)"))
+            self.fitlist.setItem(2, 3, fitlistTableItem("Browse (Double Click)"))
             self.fitlist.setItem(2, 4, QtWidgets.QTableWidgetItem("250"))
             #PathwayInteraction
             self.fitlist.insertRow(3)
             self.fitlist.setItem(3, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["PathwayInteraction"]))
-            self.fitlist.setItem(3, 2, QtWidgets.QTableWidgetItem(""))
-            self.fitlist.setItem(3, 3, QtWidgets.QTableWidgetItem(""))
+            self.fitlist.setItem(3, 2, fitlistTableItem("Browse (Double Click)"))
+            self.fitlist.setItem(3, 3, fitlistTableItem("Browse (Double Click)"))
             self.fitlist.setItem(3, 4, QtWidgets.QTableWidgetItem("250"))
 
             #non editable and non selectable cell
@@ -1861,8 +1879,8 @@ class Ui_Neuroptimus(QMainWindow):
             #BackpropagatingAPTest
             self.fitlist.insertRow(4)
             self.fitlist.setItem(4, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["DepolarizationBlockTest"]))
-            self.fitlist.setItem(4, 2, QtWidgets.QTableWidgetItem(""))
-            self.fitlist.setItem(4, 3, QtWidgets.QTableWidgetItem(""))
+            self.fitlist.setItem(4, 2, fitlistTableItem("Browse (Double Click)"))
+            self.fitlist.setItem(4, 3, fitlistTableItem("Browse (Double Click)"))
             self.fitlist.setItem(4, 4, QtWidgets.QTableWidgetItem("250"))
 
         
@@ -1883,7 +1901,7 @@ class Ui_Neuroptimus(QMainWindow):
             #ObliqueIntegrationTest
             self.fitlist.insertRow(5)
             self.fitlist.setItem(5, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["ObliqueIntegrationTest"]))
-            self.fitlist.setItem(5, 2, QtWidgets.QTableWidgetItem(""))
+            self.fitlist.setItem(5, 2, fitlistTableItem("Browse (Double Click)"))
             self.fitlist.setItem(5, 3, QtWidgets.QTableWidgetItem("NA"))
             self.fitlist.setItem(5, 4, QtWidgets.QTableWidgetItem("250"))
             #set its color to gray
@@ -1935,7 +1953,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.test_specific_settings_table.item(2, 0).setForeground(QtGui.QColor(0,0   ,0))
             # row 3 TrunkSecList_name
             self.test_specific_settings_table.insertRow(3)
-            self.test_specific_settings_table.setItem(3, 0, QtWidgets.QTableWidgetItem("TrunkSecList_name  (leave empty if no template is used)"))
+            self.test_specific_settings_table.setItem(3, 0, QtWidgets.QTableWidgetItem("TrunkSecList_name"))
             self.test_specific_settings_table.setItem(3, 1, QtWidgets.QTableWidgetItem(""))
             self.test_specific_settings_table.item(3, 0).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(3, 0).setForeground(QtGui.QColor(0,0   ,0))
@@ -1952,6 +1970,14 @@ class Ui_Neuroptimus(QMainWindow):
             self.test_specific_settings_table.setItem(5, 1, QtWidgets.QTableWidgetItem(""))
             self.test_specific_settings_table.item(5, 0).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(5, 0).setForeground(QtGui.QColor(0,0   ,0))
+
+            #row 6 num_of_dend_locations
+            self.test_specific_settings_table.insertRow(6)
+            self.test_specific_settings_table.setItem(6, 0, QtWidgets.QTableWidgetItem("num_of_dend_locations"))
+            self.test_specific_settings_table.setItem(6, 1, QtWidgets.QTableWidgetItem("15"))
+            self.test_specific_settings_table.item(6, 0).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.item(6, 0).setForeground(QtGui.QColor(0,0   ,0))
+
 
             #make these rows gray  TrunkSecList_name ObliqueSecList_name TuftSecList_name  rows and make them non editable
             # self.hippounit_test_sections_names_table.item(2, 1).setFlags(QtCore.Qt.NoItemFlags)
@@ -1970,6 +1996,10 @@ class Ui_Neuroptimus(QMainWindow):
             self.test_specific_settings_table.item(5, 1).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(5, 1).setBackground(QtGui.QColor(192,192,192))
             self.test_specific_settings_table.item(5, 0).setBackground(QtGui.QColor(192,192,192))
+
+            self.test_specific_settings_table.item(6, 1).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.item(6, 1).setBackground(QtGui.QColor(192,192,192))
+            self.test_specific_settings_table.item(6, 0).setBackground(QtGui.QColor(192,192,192))
 
             
             
@@ -2416,6 +2446,12 @@ class Ui_Neuroptimus(QMainWindow):
         Load the selected Neuron model and displays the sections in a tablewidget
         """
         self.model_file = self.lineEdit_file2.text()
+        if not os.path.isfile(self.model_file):
+            #focus on the model path input
+            self.lineEdit_file2.setFocus()
+            #error popup
+            popup("Invalid model path")
+            return None
         self.tabwidget.setTabEnabled(2,True)
         self.tabwidget.setTabEnabled(3,True)
         self.tabwidget.setTabEnabled(4,True)
@@ -2571,13 +2607,13 @@ class Ui_Neuroptimus(QMainWindow):
             #                                 "Back propagatingAP Test": "TrunkSecList_name",
             #                                 "Oblique Integration Test": "ObliqueSecList_name",
             #                                 "Pathway Interaction Test": "TuftSecList_name"}
-            self.HippoTests_required_parameters = {self.tests_ui_names["PSPAttenuationTest"]: "TrunkSecList_name",
-                                            self.tests_ui_names["BackpropagatingAPTest"]: "TrunkSecList_name",
-                                            self.tests_ui_names["ObliqueIntegrationTest"]: "ObliqueSecList_name",
-                                            self.tests_ui_names["PathwayInteraction"]: "TuftSecList_name"}
+            self.HippoTests_required_parameters = {self.tests_ui_names["PSPAttenuationTest"]: ["TrunkSecList_name","num_of_dend_locations"],
+                                            self.tests_ui_names["BackpropagatingAPTest"]: ["TrunkSecList_name"],
+                                            self.tests_ui_names["ObliqueIntegrationTest"]: ["ObliqueSecList_name"],
+                                            self.tests_ui_names["PathwayInteraction"]: ["TuftSecList_name","num_of_dend_locations"]}
             
             
-            self.HippoTests_parameter_location_in_table = {"TrunkSecList_name":3 , "ObliqueSecList_name":4 , "TuftSecList_name":5}
+            # self.HippoTests_parameter_location_in_table = {"TrunkSecList_name":3 , "ObliqueSecList_name":4 , "TuftSecList_name":5, "num_of_dend_locations":6}
             #get currently selected row 
             selected_row = self.fitlist.currentRow()
 
@@ -2605,10 +2641,12 @@ class Ui_Neuroptimus(QMainWindow):
                     
 
                     if test_name in self.HippoTests_required_parameters.keys():
-                        property_row = self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]]
-                        self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
-                        self.test_specific_settings_table.item(property_row, 1).setBackground(QtGui.QColor(255,255,255))
-                        self.test_specific_settings_table.item(property_row, 0).setBackground(QtGui.QColor(255,255,255))
+                        required_properties_by_test = self.HippoTests_required_parameters[test_name]
+                        for property in required_properties_by_test:
+                            property_row = self.HippoTests_parameter_location_in_table[property]
+                            self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+                            self.test_specific_settings_table.item(property_row, 1).setBackground(QtGui.QColor(255,255,255))
+                            self.test_specific_settings_table.item(property_row, 0).setBackground(QtGui.QColor(255,255,255))
                    
                    
                 else : # Weight is 0 or none
@@ -2630,11 +2668,15 @@ class Ui_Neuroptimus(QMainWindow):
                         if self._check_fitlist_weight(1) or self._check_fitlist_weight(2): #if any of the first two tests have weight, return
                             return
                     if test_name in self.HippoTests_required_parameters.keys():
-                        property_row = self.HippoTests_parameter_location_in_table[self.HippoTests_required_parameters[test_name]]
-                        self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.NoItemFlags)
-                        self.test_specific_settings_table.item(property_row, 1).setBackground(QtGui.QColor(192,192,192))
-                        self.test_specific_settings_table.item(property_row, 0).setBackground(QtGui.QColor(192,192,192))
-                    
+                        required_properties_by_test = self.HippoTests_required_parameters[test_name]
+                        # print("required_properties_by_test",required_properties_by_test)
+                        for property in required_properties_by_test:
+                            # print("property",property)
+                            property_row = self.HippoTests_parameter_location_in_table[property]
+                            self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.NoItemFlags)
+                            self.test_specific_settings_table.item(property_row, 1).setBackground(QtGui.QColor(192,192,192))
+                            self.test_specific_settings_table.item(property_row, 0).setBackground(QtGui.QColor(192,192,192))
+                        
                     
                     
             except Exception as e:
@@ -2643,7 +2685,7 @@ class Ui_Neuroptimus(QMainWindow):
 
 
         
-    def browse_file_for_hippounit_test_specific_settings_table(self):
+    def browse_file_for_hippounit_data_paths(self):
         """
         File dialog for the file tab to open file.
         """
@@ -2655,11 +2697,12 @@ class Ui_Neuroptimus(QMainWindow):
             
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Data files (*.json);;All Files (*);;", options=options)
-        if fileName:
+        filePath, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Data files (*.json);;All Files (*);;", options=options)
+        if filePath:
+            #set the file name to the selected cell, do not resize the column
+            self.fitlist.setItem(self.fitlist.currentRow(),self.fitlist.currentColumn(), QTableWidgetItem(filePath))
             
-            #set the file name to the selected cell
-            self.fitlist.setItem(self.fitlist.currentRow(),self.fitlist.currentColumn(), QTableWidgetItem(fileName))
+
 
 
 
@@ -2783,12 +2826,38 @@ class Ui_Neuroptimus(QMainWindow):
         
         #the model name
         self.hippounit_config["model"]["name"] = self.model_name_input.text()
+        if self.hippounit_config["model"]["name"] == "":
+            
+            # go to the Model tab
+            self.tabwidget.setCurrentIndex(1)
+            #focus on the model name input
+            self.model_name_input.setFocus()
+            popup("Model name must be set")
+            return None
         #the model path
         self.hippounit_config["model"]["mod_files_path"] = add_trailing_slash(self.lineEdit_folder2.text())
+        #if the path is not valid or empty popup error
+        if not os.path.isdir(self.hippounit_config["model"]["mod_files_path"]): #TODO: Do we always need to have mod files path?
+            
+            # go to the Model tab
+            self.tabwidget.setCurrentIndex(1)
+            #focus on the model path input
+            self.lineEdit_folder2.setFocus()
+            popup("Mod Files Path must be set to a valid directory")
+            return None 
 
 
         #the output path
         self.hippounit_config["model"]["output_dir"] = self.output_dir_input.text()
+        #if the path is not valid or empty popup error
+        if not os.path.isdir(self.hippounit_config["model"]["output_dir"]):
+            
+            # go to the Model tab
+            self.tabwidget.setCurrentIndex(2)
+            #focus on the output path input
+            self.output_dir_input.setFocus()
+            popup("Output path must be set to a valid directory")
+            return None
         #the template name
         self.hippounit_config["model"]["template_name"] = self.template_name_input.text() if self.template_name_input.text() != "" else None
         #threshold
@@ -2796,6 +2865,11 @@ class Ui_Neuroptimus(QMainWindow):
             #first row, second column
             self.hippounit_config["model"]["threshold"] = float(self.test_specific_settings_table.item(0,1).text())
         except:
+            self.test_specific_settings_table.item(0,1).setBackground(QtGui.QColor(255,0,0))
+            #goto to tab 3
+            self.tabwidget.setCurrentIndex(3)
+            #focus on the threshold input
+            self.test_specific_settings_table.item(0,1).setSelected(True)
             #error popup
             popup("Spike detection thres. (mV) must be set to a number")
             return None
@@ -2804,6 +2878,10 @@ class Ui_Neuroptimus(QMainWindow):
         try:
             self.hippounit_config["model"]["v_init"] = float(self.v_init_input.text())
         except:
+            #goto to tab 3
+            self.tabwidget.setCurrentIndex(2)
+            #focus on the v_init input
+            self.v_init_input.setFocus()
             #error popup
             popup("v_init must be set to a number")
             return None
@@ -2812,34 +2890,56 @@ class Ui_Neuroptimus(QMainWindow):
             #celsius
             self.hippounit_config["model"]["celsius"] = float(self.celsius_input.text())
         except:
+            #goto to tab 2
+            self.tabwidget.setCurrentIndex(2)
+            #focus on the celsius input
+            self.celsius_input.setFocus()
             #error popup
-            popup("celsius must be set to a number")
+            popup("Temperature must be set to a number")
             return None
 
         #the soma section name
         try:
             self.hippounit_config["model"]["soma"] = self.soma_input.text()
         except:
+            #goto to tab 2
+            self.tabwidget.setCurrentIndex(2)
+            #focus on the soma section name input
+            self.soma_input.setFocus()
             #error popup
             popup("Soma Section Name must be set")
             return None
 
+        if self.hippounit_config["model"]["soma"] == "":
+            #goto to tab 2
+            self.tabwidget.setCurrentIndex(2)
+            #focus on the soma section name input
+            self.soma_input.setFocus()
+            #error popup
+            popup("Soma Section Name must be set")
+            return None
 
         # #the soma section list name
         self.hippounit_config["model"]["SomaSecList_name"] = self.test_specific_settings_table.item(2,1).text() if self.test_specific_settings_table.item(2,1).text() != "" else None
 
-       #the trunk section list name
-        hippo_paramaters_to_check = ["TrunkSecList_name", "ObliqueSecList_name", "TuftSecList_name"]
+        #the trunk section list name
+        hippo_paramaters_to_check = ["TrunkSecList_name", "ObliqueSecList_name", "TuftSecList_name", "num_of_dend_locations"]
         #Assign the values of these parameters to the config file, if they are not empty or none and was supposed to be set
         for param in hippo_paramaters_to_check:
-            value_of_param = self.test_specific_settings_table.item(self.HippoTests_parameter_location_in_table[param], 1).text()
+            # get the value of the parameter based on the configuaration dictionary HippoTests_parameter_location_in_table which maps the parameter name to the row in the table
             property_row = self.HippoTests_parameter_location_in_table[param]
-            #if their cell not grayed
+            value_of_param = self.test_specific_settings_table.item(property_row, 1).text()
+            
+            #if their cell not grayed, it means they are supposed to be set, the color is handled in the fitchanged function
             if self.test_specific_settings_table.item(property_row, 1).flags() != QtCore.Qt.NoItemFlags:
                 #if their cell is not empty or none
                 if value_of_param != "" and value_of_param != None:
                     self.hippounit_config["model"][param] = value_of_param
                 else:
+                    #go to tab 3 
+                    self.tabwidget.setCurrentIndex(3)
+                    #focus on the parameter input
+                    self.test_specific_settings_table.item(property_row, 1).setSelected(True)
                     #error popup
                     popup(param+" must be set")
                     return None
@@ -2850,9 +2950,20 @@ class Ui_Neuroptimus(QMainWindow):
 
         #fil tests from fitlist  1st row cellls whoose 2nd columns are not 0 or empty
         for row in range(0,self.fitlist.rowCount()):
+            #fitness weight
+            fitness_weight = self.fitlist.item(row,1).text()
+            #if not a number (int or float) or 0 or empty 
+             
+
             if float(self.fitlist.item(row,1).text()) != 0 and self.fitlist.item(row,1).text() != "":
                 self.hippounit_config["model"]["tests"].append(self.tests_real_names[self.fitlist.item(row,0).text()])
-        
+        if not self.hippounit_config["model"]["tests"]:
+            #go to tab 4 
+            self.tabwidget.setCurrentIndex(3)
+            #focus on the test list
+            self.fitlist.item(0,0).setSelected(True)
+            popup("At least one test must be selected")
+            return None
         self.hippounit_config["model"]["dataset"] = "test_dataset"
 
 
@@ -2869,13 +2980,36 @@ class Ui_Neuroptimus(QMainWindow):
                 test_path = self.fitlist.item(row,2).text()
                 stimuli_path = self.fitlist.item(row,3).text()
                 self.hippounit_config["tests"][test_real_name] = {}
+                #if not valid path, popup error
+                if not os.path.isfile(test_path):
+                    #go to tab 4 
+                    self.tabwidget.setCurrentIndex(3)
+                    #focus on the test path input
+                    self.fitlist.item(row,2).setSelected(True)
+                    self.fitlist.setCurrentCell(row,2)
+                    popup("Test path must be set to a valid file path!")
+                    return None
+                
                 self.hippounit_config["tests"][test_real_name]["target_data_path"] = test_path
                 if test_real_name not in ["DepolarizationBlockTest","ObliqueIntegrationTest","PathwayInteraction"]:
+                    #if not valid path, popup error
+                    if not os.path.isfile(stimuli_path):
+                        #go to tab 4 
+                        self.tabwidget.setCurrentIndex(3)
+                        #focus on the stimuli path input
+                        self.fitlist.item(row,3).setSelected(True)
+                        self.fitlist.setCurrentCell(row,3)
+                        popup("Stimuli path must be set to a valid file path!")
+                        return None
                     self.hippounit_config["tests"][test_real_name]["stimuli_file_path"] = stimuli_path
                 #get penalty of missing feature for the test, the 5th column of the row
                 try:
                     self.hippounit_config["tests"][test_real_name]["unevaluated_feature_penalty"] = float(self.fitlist.item(row,4).text())
                 except:
+                    #go to tab 4
+                    self.tabwidget.setCurrentIndex(3)
+                    #focus on the penalty input
+                    self.fitlist.item(row,4).setSelected(True)
                     popup("Missing feature penalty must be set to a number!")
                     return None
         # print(self.hippounit_config)
@@ -2889,11 +3023,15 @@ class Ui_Neuroptimus(QMainWindow):
                 try:
                     self.adjusted_params_boundaries[self.BW.boundary_table.item(row,0).text()] = [float(self.BW.boundary_table.item(row,1).text()),float(self.BW.boundary_table.item(row,2).text())]
                 except:
-                    popup("You Boundary values must be numbers")
-                    return
+                    #go to tab 5
+                    self.tabwidget.setCurrentIndex(4)
+                    #open boundary window
+                    self.BW.show()                   
+                    popup("Boundary values must be numbers")
+                    return None
         except:
             popup("You must set boundaries for all parameters")
-            return
+            return None
         base_dir = self.lineEdit_folder.text()
         #boundaries is a list of 2 lists, the first list contains the lower boundaries, the second list contains the upper boundaries
         boundaries = [list(self.adjusted_params_boundaries.values())[i][0] for i in range(len(self.adjusted_params_boundaries.values()))] , [list(self.adjusted_params_boundaries.values())[i][1] for i in range(len(self.adjusted_params_boundaries.values()))]
@@ -2951,8 +3089,20 @@ class Ui_Neuroptimus(QMainWindow):
         try:
             neuroptimus_settings["attributes"]["seed"] = int(self.algorithm_parameter_list.item(0,1).text())
         except:
+            #go to tab 5 
+            self.tabwidget.setCurrentIndex(4)
             popup("Seed must be set to a number!")
             return None
+        #check model_path if valid path
+        if not os.path.isfile(model_path):
+            #go to tab 1
+            self.tabwidget.setCurrentIndex(1)
+            #focus on the model path input
+            self.lineEdit_file2.setFocus()
+            #error popup
+            popup("Invalid model path")
+            return None
+        
         neuroptimus_settings["attributes"]["adjusted_params"] = list(self.adjusted_params_boundaries.keys())
         neuroptimus_settings["attributes"]["boundaries"] = boundaries
         neuroptimus_settings["attributes"]["num_params"] = num_params
@@ -3052,6 +3202,7 @@ class Ui_Neuroptimus(QMainWindow):
             except AttributeError:
                 err.append(2)
                 errpop.append("No stimulus amplitude was selected!")
+               
             except ValueError:
                 errpop.append('Some of the cells are empty. Please fill out all of them!')
                 err.append(2)
