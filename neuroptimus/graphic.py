@@ -1235,20 +1235,37 @@ class Ui_Neuroptimus(QMainWindow):
         self.menubar = QtWidgets.QMenuBar(Neuroptimus)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 771, 19))
         self.menubar.setObjectName("menubar")
-        self.menuMenu = QtWidgets.QMenu(self.menubar)
-        self.menuMenu.setObjectName("menuMenu")
+        self.fileMenu = QtWidgets.QMenu(self.menubar)
+        self.fileMenu.setObjectName("fileMenu")
         Neuroptimus.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(Neuroptimus)
         self.statusbar.setObjectName("statusbar")
         Neuroptimus.setStatusBar(self.statusbar)
         self.actionunlock = QtWidgets.QAction(Neuroptimus)
         self.actionunlock.setObjectName("actionunlock")
+        #for unlock action we place a check box in the menu left
+        self.actionunlock.setCheckable(True)
+
         self.actionexit = QtWidgets.QAction(Neuroptimus)
         self.actionexit.setObjectName("actionexit")
-        self.menuMenu.addAction(self.actionunlock)
-        self.menubar.addAction(self.menuMenu.menuAction())
-        self.menuMenu.addAction(self.actionexit)
-        self.menubar.addAction(self.menuMenu.menuAction())
+        self.actionexit.setIcon(QIcon.fromTheme("application-exit"))
+        self.actionSaveSettings = QtWidgets.QAction(Neuroptimus)
+
+        self.actionSaveSettings.setObjectName("actionSaveSettings")
+        self.actionSaveSettings.setIcon(QIcon.fromTheme("document-save"))
+
+        self.actionLoadSettings = QtWidgets.QAction(Neuroptimus)
+        self.actionLoadSettings.setObjectName("actionLoadSettings")
+        self.actionLoadSettings.setIcon(QIcon.fromTheme("document-open"))
+
+        
+        self.fileMenu.addAction(self.actionSaveSettings)
+        self.fileMenu.addAction(self.actionLoadSettings)
+        self.fileMenu.addAction(self.actionunlock)
+        self.menubar.addAction(self.fileMenu.menuAction())
+        self.fileMenu.addAction(self.actionexit)
+        self.menubar.addAction(self.fileMenu.menuAction())
+       
         self.retranslateUi(Neuroptimus)
         QtCore.QMetaObject.connectSlotsByName(Neuroptimus)
         self.tabwidget.setCurrentIndex(0)
@@ -1265,7 +1282,8 @@ class Ui_Neuroptimus(QMainWindow):
         Neuroptimus.setWindowTitle(_translate("Neuroptimus", "Neuroptimus"))
         #self.tabwidget.currentChanged.connect(self.onChange)
         #modeltab 2 disappearing
-        self.actionunlock.triggered.connect(self.unlocktabs)
+        self.actionunlock.triggered.connect(self.toggleTabLock)
+        
         self.actionexit.triggered.connect(QApplication.quit)
 
         self.tabwidget.setTabText(self.tabwidget.indexOf(self.filetab), _translate("Neuroptimus", "Target data"))
@@ -1577,9 +1595,12 @@ class Ui_Neuroptimus(QMainWindow):
         self.errorlist.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
 
-        self.menuMenu.setTitle(_translate("Neuroptimus", "Menu"))
+        self.fileMenu.setTitle(_translate("Neuroptimus", "File"))
         self.actionunlock.setText(_translate("Neuroptimus", "Unlock Tabs"))
         self.actionexit.setText(_translate("Neuroptimus", "Exit"))
+        self.actionSaveSettings.setText(_translate("Neuroptimus", "Save Settings"))
+        self.actionLoadSettings.setText(_translate("Neuroptimus", "Load Settings"))
+
         self.tabwidget.setTabEnabled(1,False)
         self.tabwidget.setTabEnabled(2,False)
         self.tabwidget.setTabEnabled(3,False)
@@ -1696,14 +1717,25 @@ class Ui_Neuroptimus(QMainWindow):
         msg.exec()
 
 
-    def unlocktabs(self): 
-        self.tabwidget.setTabEnabled(1,True)
-        self.tabwidget.setTabEnabled(2,True)
-        self.tabwidget.setTabEnabled(3,True)
-        self.tabwidget.setTabEnabled(4,True)
-        self.tabwidget.setTabEnabled(5,True)
-        self.tabwidget.setTabEnabled(6,True)
+    def toggleTabLock(self):
+        """
+        Unlock or lock the tabs in the tab widget based on the state of the 'actionunlock' checkbox.
 
+        If the 'actionunlock' checkbox is checked, all tabs in the tab widget will be enabled.
+        If the 'actionunlock' checkbox is unchecked, tabs after the currently selected tab will be disabled.
+
+        Parameters:
+            None
+        Returns:
+            None
+        """
+        if self.actionunlock.isChecked():
+            for i in range(self.tabwidget.count()):
+                self.tabwidget.setTabEnabled(i, True)
+        else:
+            for i in range(self.tabwidget.currentIndex() + 1, self.tabwidget.count()):
+                self.tabwidget.setTabEnabled(i, False)
+        
                 
 
     def openFileNameDialog(self): 
