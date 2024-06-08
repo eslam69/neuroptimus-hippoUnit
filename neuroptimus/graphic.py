@@ -31,8 +31,10 @@ warnings.simplefilter("ignore", UserWarning)
 import importlib.util
 
 
-
-
+DEBUG = True
+def verbose(*args, **kwargs):
+    if DEBUG:
+        print(*args, **kwargs)
 
 def is_hippounit_installed():
     hippounit_spec = importlib.util.find_spec('hippounit')
@@ -114,6 +116,16 @@ class Ui_Neuroptimus(QMainWindow):
         # screen = QtWidgets.QDesktopWidget().screenGeometry()
         # Neuroptimus.setMinimumSize(QtCore.QSize(screen.width() * WINDOW2SCREEN_RATIO, screen.height() * WINDOW2SCREEN_RATIO))
         
+        self.gui_elements_state = OrderedDict()
+        self.gui_elements_state["type_selector"] = {}
+        self.gui_elements_state["lineEdit_file"] = {}
+        self.gui_elements_state["time_checker"] = {}
+        self.gui_elements_state["lineEdit_folder"] = {}
+        self.gui_elements_state["size_ctrl"] = {}
+        self.gui_elements_state["dropdown"] = {}
+        self.gui_elements_state["length_ctrl"] = {}
+        self.gui_elements_state["freq_ctrl"] = {}
+        self.gui_elements_state["pushButton_3"] = {}
 
 
 
@@ -224,34 +236,36 @@ class Ui_Neuroptimus(QMainWindow):
         self.input_type_label.setObjectName("input_type_label")
         self.input_type_label.setText("Input Type")
 
+        #First tab (Target data)
 
+        #1st row: input type label, input type selector
         self.layout.addWidget(self.input_type_label, 0, 0, 1, 1)
         self.layout.addWidget(self.type_selector, 0, 1, 1, 1)
 
-
+        #2nd row: label_2, lineEdit_file, input_file_controll, time_checker
         self.layout.addWidget(self.label_2, 1, 0, 1, 1)
         self.layout.addWidget(self.lineEdit_file, 1, 1, 1, 1)
         self.layout.addWidget(self.input_file_controll, 1, 2, 1, 1)
         self.layout.addWidget(self.time_checker, 1, 3, 1, 1)
 
+        #3rd row: label_3, lineEdit_folder, base_dir_controll
         self.layout.addWidget(self.label_3, 2, 0, 1, 1) #Base Directory
         self.layout.addWidget(self.lineEdit_folder, 2, 1, 1, 2)
         self.layout.addWidget(self.base_dir_controll, 2, 3, 1, 1)
 
 
-
+        #4th row: label_5, size_ctrl, label_7,  dropdown
         self.layout.addWidget(self.label_5, 3, 0, 1, 1) #n of traces label
         self.layout.addWidget(self.size_ctrl, 3, 1, 1, 1) #n of traces input
         self.layout.addWidget(self.label_7, 3, 2, 1, 1,QtCore.Qt.AlignHCenter ) #units label, align center
-        
         self.layout.addWidget(self.dropdown, 3, 3, 1, 1) #units dropdown
 
 
-
-        self.layout.addWidget(self.label_4, 4, 0, 1, 1)
-        self.layout.addWidget(self.length_ctrl, 4, 1, 1, 1)
-        self.layout.addWidget(self.label_6, 4, 2, 1, 1)
-        self.layout.addWidget(self.freq_ctrl, 4, 3, 1, 1)
+        #5th row: label_4, length_ctrl, label_6, freq_ctrl
+        self.layout.addWidget(self.label_4, 4, 0, 1, 1) #length of traces label
+        self.layout.addWidget(self.length_ctrl, 4, 1, 1, 1) #length of traces line edit input
+        self.layout.addWidget(self.label_6, 4, 2, 1, 1) #sampling frequency label
+        self.layout.addWidget(self.freq_ctrl, 4, 3, 1, 1) #sampling frequency input
 
 
         self.layout.addWidget(self.pushButton_3, 5, 0, 1, 2) #load data button
@@ -429,7 +443,7 @@ class Ui_Neuroptimus(QMainWindow):
         #2nd row
         #simualtor label , dd_type
         self.layout.addWidget(self.simulator_label, 1, 0, 1, 1)
-        self.layout.addWidget(self.dd_type, 1, 1, 1, 4) 
+        self.layout.addWidget(self.dd_type, 1, 1, 1, 4) #Simulator Drop Down
         
 
         #3rd row
@@ -1265,13 +1279,99 @@ class Ui_Neuroptimus(QMainWindow):
         self.menubar.addAction(self.fileMenu.menuAction())
         self.fileMenu.addAction(self.actionexit)
         self.menubar.addAction(self.fileMenu.menuAction())
+
+        #when actionSaveSettings clicked call function self.save_gui_state
+        self.actionSaveSettings.triggered.connect(self.save_gui_state)
+        #when actionLoadSettings clicked call function self.load_gui_state
+        self.actionLoadSettings.triggered.connect(self.load_gui_state)
        
         self.retranslateUi(Neuroptimus)
         QtCore.QMetaObject.connectSlotsByName(Neuroptimus)
         self.tabwidget.setCurrentIndex(0)
 
 
+    def save_gui_state(self):
+        """
+        Save the current state of the GUI to a file.
+        """
+        #get the file name from the user
+        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self.centralwidget, "Save File", "", "JSON files (*.json)")
+        if file_name:
+            #save the state of the GUI to the file
+            self.serialize_gui_state(file_name)
 
+    def serialize_gui_state(self,file_name):
+        """
+        Serialize the state of the GUI to a file.
+        """
+        # self.gui_elements_state = {}
+        #first tab
+        self.gui_elements_state["type_selector"] = {"type": "QComboBox", "value": self.type_selector.currentText()}
+        self.gui_elements_state["lineEdit_file"] = {"type": "QLineEdit", "value": self.lineEdit_file.text()}
+        self.gui_elements_state["time_checker"] = {"type": "QCheckBox", "value": self.time_checker.isChecked()}
+        self.gui_elements_state["lineEdit_folder"] = {"type": "QLineEdit", "value": self.lineEdit_folder.text()}
+        self.gui_elements_state["size_ctrl"] = {"type": "QLineEdit", "value": self.size_ctrl.text()}
+        self.gui_elements_state["dropdown"] = {"type": "QComboBox", "value": self.dropdown.currentText()}
+        self.gui_elements_state["length_ctrl"] = {"type": "QLineEdit", "value": self.length_ctrl.text()}
+        self.gui_elements_state["freq_ctrl"] = {"type": "QLineEdit", "value": self.freq_ctrl.text()}
+        self.gui_elements_state["pushButton_3"]["enabled"] = self.pushButton_3.isEnabled()
+        # self.gui_elements_state["input_tree"] = {"type": "QTreeWidget", "value": self.input_tree.currentItem().text(0)}
+
+        print(self.gui_elements_state)
+        #save to json
+        file_name= "{file_name}.json" if not file_name.endswith(".json") else file_name
+        with open(file_name, "w") as file:
+            import json
+            json.dump(self.gui_elements_state, file)
+
+    # def agnostic_component_setter(self,component,component_type, value):
+    #     """
+    #     Set the value of a component regardless of its type.
+    #     """
+
+    #     if component_type == "QComboBox":
+    #         component.setCurrentText(value)
+    #     elif component_type == "QLineEdit":
+    #         component.setText(value)
+    #     elif component_type == "QCheckBox":
+    #         component.setChecked(value)
+    #     elif component_type == "QTreeWidget":
+    #         component.setCurrentItem(value)
+
+    def agnostic_component_setter(self,component, metadata):
+        """
+        Set the value of a component regardless of its type.
+        """
+        value = metadata["value"]
+        if isinstance(component,QtWidgets.QComboBox):
+            component.setCurrentText(value)
+        elif isinstance(component,QtWidgets.QLineEdit):
+            component.setText(value)
+        elif isinstance(component,QtWidgets.QCheckBox):
+            component.setChecked(value)
+        elif isinstance(component,QtWidgets.QTreeWidget):
+            component.setCurrentItem(value)
+        elif isinstance(component,QtWidgets.QPushButton):
+            if value is True:
+                #click the button
+                component.setEnabled(True)
+                component.click()
+
+    def load_gui_state(self):
+        """
+        Load the state of the GUI from a file.
+        """
+        #open file dialog to get the file name
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self.centralwidget, "Open File", "", "")
+        print(file_name)
+        if file_name:
+            with open(file_name, "r") as file:
+                import json
+                loaded_ui_element = json.load(file)
+            for key, value in loaded_ui_element.items():
+                print(key, value)
+                # self.agnostic_component_setter(getattr(self,key), value["type"],value["value"])
+                self.agnostic_component_setter(getattr(self,key), value)
 
 
     def retranslateUi(self, Neuroptimus):
@@ -2166,6 +2266,7 @@ class Ui_Neuroptimus(QMainWindow):
         Plots the trace in matplotlib on the file tab.
 
         """
+        self.gui_elements_state["pushButton_3"] = {"type": "QPushButton", "value": True}
         if (self.type_selector.currentText() == 'Features'):
             try:
 
@@ -2180,6 +2281,7 @@ class Ui_Neuroptimus(QMainWindow):
                 
             except ValueError as ve:
                 print(ve)
+                traceback.print_exc()
         elif self.type_selector.currentIndex()==3:  #Hippounit
             self.tabwidget.setTabEnabled(1,True)
             kwargs = {"file" : str(self.lineEdit_folder.text()),
@@ -2201,6 +2303,7 @@ class Ui_Neuroptimus(QMainWindow):
                 
             except ValueError as ve:
                 print(ve)
+                traceback.print_exc()
         
         self.core.FirstStep(kwargs)
         self.tabwidget.setTabEnabled(1,True)
@@ -3759,7 +3862,7 @@ class BoundaryWindow(QtWidgets.QMainWindow):
         self.boundary_table = QtWidgets.QTableWidget(self)
         self.boundary_table.setGeometry(QtCore.QRect(10, 10, 302, 361))
         self.boundary_table.setObjectName("boundary_table")
-        self.boundary_table.setColumnCount(3)
+        self.setColumnCount(3)
         self.boundary_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.boundary_table.setHorizontalHeaderLabels(("Parameters;Minimum;Maximum").split(";"))
         self.boundary_table.setRowCount(len(self.option_handler.GetObjTOOpt()))
