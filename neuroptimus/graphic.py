@@ -14,12 +14,12 @@ from copy import copy
 import Core
 import numpy
 import os.path
-from functools import partial
+from functools import partial, reduce, wraps
 import re
 import threading
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox
+from PyQt5.QtWidgets import QMainWindow, QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox,QTableWidget
 from PyQt5.QtGui import *
 from PyQt5.QtCore import QThread, pyqtSignal
 import json
@@ -90,9 +90,52 @@ def popup(message):
     msg.setWindowTitle("Warning")
     msg.exec()
 
+class TableSelections:
+    def __init__(self, table:str ):
+        self.table = table
+        self.selected_rows_indices = []
+        self.enabled = True
+    def set_table_widget(self, table):
+        self.table = table
+    def get_table_widget(self):
+        return self.table
+    def set_selected_rows_indices(self, indices):
+        self.selected_rows_indices = indices
+    def add_selected_rows_index(self,rows):
+        for row in rows:
+            if row not in self.selected_rows_indices:
+                self.selected_rows_indices.append(row)
+    def remove_selected_rows_indices(self,row_to_remove):
+        for row in row_to_remove:
+            if row in self.selected_rows_indices:
+                self.selected_rows_indices.remove(row)
+
+    def get_selected_rows_indices(self):
+        return self.selected_rows_indices
+    def is_empty(self):
+        return len(self.selected_rows_indices) == 0
+    def isEnabled(self):
+        return self.enabled
 
 
+def save_state_decorator(func):
+    @wraps(func)
+    def wrapper( *args, **kwargs):
+        # Call the slot method
+        result = func(*args, **kwargs )
 
+        # Save the state of the signal emitter
+        self = args[0]
+        self.gui_elements_state[self.sender().objectName()] = {
+            "type": type(self.sender()).__name__,
+            # "value": self.sender().isEnabled()
+            "value": True #True means the button was clicked
+        }
+        verbose(f"saving the state of the signal emitter {self.sender().objectName()}")
+
+        return result
+
+    return wrapper
 
 class Ui_Neuroptimus(QMainWindow):
     def __init__(self,*args):
@@ -126,6 +169,19 @@ class Ui_Neuroptimus(QMainWindow):
         self.gui_elements_state["length_ctrl"] = {}
         self.gui_elements_state["freq_ctrl"] = {}
         self.gui_elements_state["pushButton_3"] = {}
+        self.gui_elements_state["model_name_input"] = {}
+        self.gui_elements_state["dd_type"] = {}
+        self.gui_elements_state["lineEdit_file2"] = {}
+        self.gui_elements_state["load_mods_checkbox"] = {}
+        self.gui_elements_state["lineEdit_folder2"] = {}
+        self.gui_elements_state["pushButton_13"] = {}
+        self.gui_elements_state["modellist"] = {}
+        self.gui_elements_state["pushButton_16"] = {}
+        self.gui_elements_state["modellist_selected_rows"] = {}
+        self.modellist_selected_rows = TableSelections("modellist")
+        self.gui_elements_state["setter"] = {}
+        self.gui_elements_state["SW.plaintext"] = {}
+
 
 
 
@@ -143,6 +199,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.tabwidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.laybox.addWidget(self.tabwidget)
 
+        
 
         self.hippoUnit_only_widgets = []
         self.neuroptimus_only_widgets = []
@@ -1280,11 +1337,17 @@ class Ui_Neuroptimus(QMainWindow):
         self.fileMenu.addAction(self.actionexit)
         self.menubar.addAction(self.fileMenu.menuAction())
 
+        self.SW = SecondWindow(self) 
+        self.SW.setObjectName("Neuroptimus")
+        self.SW.resize(500, 500)
+
+
+
         #when actionSaveSettings clicked call function self.save_gui_state
         self.actionSaveSettings.triggered.connect(self.save_gui_state)
         #when actionLoadSettings clicked call function self.load_gui_state
         self.actionLoadSettings.triggered.connect(self.load_gui_state)
-       
+
         self.retranslateUi(Neuroptimus)
         QtCore.QMetaObject.connectSlotsByName(Neuroptimus)
         self.tabwidget.setCurrentIndex(0)
@@ -1300,43 +1363,50 @@ class Ui_Neuroptimus(QMainWindow):
             #save the state of the GUI to the file
             self.serialize_gui_state(file_name)
 
+    def get_deep_attribute(self, obj, attr):
+        """
+        Get a deep attribute of an object.
+        """
+        return reduce(getattr, attr.split('.'), obj)
+
+
     def serialize_gui_state(self,file_name):
         """
         Serialize the state of the GUI to a file.
         """
         # self.gui_elements_state = {}
         #first tab
-        self.gui_elements_state["type_selector"] = {"type": "QComboBox", "value": self.type_selector.currentText()}
-        self.gui_elements_state["lineEdit_file"] = {"type": "QLineEdit", "value": self.lineEdit_file.text()}
-        self.gui_elements_state["time_checker"] = {"type": "QCheckBox", "value": self.time_checker.isChecked()}
-        self.gui_elements_state["lineEdit_folder"] = {"type": "QLineEdit", "value": self.lineEdit_folder.text()}
-        self.gui_elements_state["size_ctrl"] = {"type": "QLineEdit", "value": self.size_ctrl.text()}
-        self.gui_elements_state["dropdown"] = {"type": "QComboBox", "value": self.dropdown.currentText()}
-        self.gui_elements_state["length_ctrl"] = {"type": "QLineEdit", "value": self.length_ctrl.text()}
-        self.gui_elements_state["freq_ctrl"] = {"type": "QLineEdit", "value": self.freq_ctrl.text()}
-        self.gui_elements_state["pushButton_3"]["enabled"] = self.pushButton_3.isEnabled()
+        # self.gui_elements_state["type_selector"] = {"type": "QComboBox", "value": self.type_selector.currentText()}
+        # self.gui_elements_state["lineEdit_file"] = {"type": "QLineEdit", "value": self.lineEdit_file.text()}
+        # self.gui_elements_state["time_checker"] = {"type": "QCheckBox", "value": self.time_checker.isChecked()}
+        # self.gui_elements_state["lineEdit_folder"] = {"type": "QLineEdit", "value": self.lineEdit_folder.text()}
+        # self.gui_elements_state["size_ctrl"] = {"type": "QLineEdit", "value": self.size_ctrl.text()}
+        # self.gui_elements_state["dropdown"] = {"type": "QComboBox", "value": self.dropdown.currentText()}
+        # self.gui_elements_state["length_ctrl"] = {"type": "QLineEdit", "value": self.length_ctrl.text()}
+        # self.gui_elements_state["freq_ctrl"] = {"type": "QLineEdit", "value": self.freq_ctrl.text()}
+        # self.gui_elements_state["pushButton_3"]["enabled"] = self.pushButton_3.isEnabled()
+        # self.gui_elements_state["pushButton_3"]["enabled"] = self.pushButton_3.isEnabled()
+
+        for component_name in self.gui_elements_state:
+            self.gui_elements_state[component_name] = {"type": type(getattr(self, component_name)).__name__, "value": self.agnostic_component_getter(getattr(self, component_name)), "enabled": getattr(self, component_name).isEnabled()}
+
+            # if component_name == "modellist_selected_rows":
+
+            #     # self.gui_elements_state[component_name] = {"type": "QTableWidget", "value": self.agnostic_component_getter(getattr(self, component_name))}
+
+
+            # else:
+            #     self.gui_elements_state[component_name] = {"type": type(getattr(self, component_name)).__name__, "value": self.agnostic_component_getter(getattr(self, component_name)), "enabled": getattr(self, component_name).isEnabled()}
+
+
         # self.gui_elements_state["input_tree"] = {"type": "QTreeWidget", "value": self.input_tree.currentItem().text(0)}
 
-        print(self.gui_elements_state)
+        verbose(self.gui_elements_state)
         #save to json
         file_name= "{file_name}.json" if not file_name.endswith(".json") else file_name
         with open(file_name, "w") as file:
-            import json
-            json.dump(self.gui_elements_state, file)
+            json.dump(self.gui_elements_state, file, indent=4)
 
-    # def agnostic_component_setter(self,component,component_type, value):
-    #     """
-    #     Set the value of a component regardless of its type.
-    #     """
-
-    #     if component_type == "QComboBox":
-    #         component.setCurrentText(value)
-    #     elif component_type == "QLineEdit":
-    #         component.setText(value)
-    #     elif component_type == "QCheckBox":
-    #         component.setChecked(value)
-    #     elif component_type == "QTreeWidget":
-    #         component.setCurrentItem(value)
 
     def agnostic_component_setter(self,component, metadata):
         """
@@ -1353,9 +1423,52 @@ class Ui_Neuroptimus(QMainWindow):
             component.setCurrentItem(value)
         elif isinstance(component,QtWidgets.QPushButton):
             if value is True:
-                #click the button
+                #click the button to raise the subsequent events
                 component.setEnabled(True)
                 component.click()
+        elif isinstance(component,QtWidgets.QTableWidget):
+            return
+            #iterate over the rows and columns of the table widget and set the values
+            for row in range(component.rowCount()):
+                for col in range(component.columnCount()):
+                    component.setItem(row, col, QtWidgets.QTableWidgetItem(value[row][col]))
+        elif isinstance(component, TableSelections):
+            if value:
+                table_widget_to_set = getattr(self,component.get_table_widget())
+                rows_to_select = value
+                #select all the rows in the table widget at once
+                table = table_widget_to_set            
+                # Set the selection mode to allow multiple selections
+                table_widget_to_set.setSelectionMode(QTableWidget.MultiSelection)
+
+                # Set the selection behavior to select entire rows
+                table_widget_to_set.setSelectionBehavior(QTableWidget.SelectRows)
+
+                for row in rows_to_select:
+                    table_widget_to_set.selectRow(row)
+                #reset the multi selection mode to single selection
+                table_widget_to_set.setSelectionMode(QTableWidget.ContiguousSelection)
+
+    def agnostic_component_getter(self,component: QtWidgets.QWidget):
+        """
+        Get the value of a component regardless of its type.
+        """
+        if isinstance(component,QtWidgets.QComboBox):
+            return component.currentText()
+        elif isinstance(component,QtWidgets.QLineEdit):
+            return component.text()
+        elif isinstance(component,QtWidgets.QCheckBox):
+            return component.isChecked()
+        elif isinstance(component,QtWidgets.QTreeWidget):
+            return component.currentItem()
+        elif isinstance(component,QtWidgets.QPushButton):
+            return self.gui_elements_state[component.objectName()].get("value", False)
+        elif isinstance(component,QtWidgets.QTableWidget):
+            #iterate over the rows and columns of the table widget and get the values
+            return [[component.item(row, col).text() for col in range(component.columnCount())] for row in range(component.rowCount())]
+        elif isinstance(component, TableSelections):
+            return component.get_selected_rows_indices()
+        
 
     def load_gui_state(self):
         """
@@ -1366,7 +1479,6 @@ class Ui_Neuroptimus(QMainWindow):
         print(file_name)
         if file_name:
             with open(file_name, "r") as file:
-                import json
                 loaded_ui_element = json.load(file)
             for key, value in loaded_ui_element.items():
                 print(key, value)
@@ -2256,9 +2368,28 @@ class Ui_Neuroptimus(QMainWindow):
         
         
         return string
-        
+    
+    # def save_state_decorator(func):
+    #     @wraps(func)
+    #     def wrapper( *args, **kwargs):
+    #         # Call the slot method
+    #         result = func(*args, **kwargs )
 
-    def Load(self):
+    #         # Save the state of the signal emitter
+    #         self = args[0]
+    #         self.gui_elements_state[self.sender().objectName()] = {
+    #             "type": type(self.sender()).__name__,
+    #             # "value": self.sender().isEnabled()
+    #             "value": True #True means the button was clicked
+    #         }
+    #         verbose(f"saving the state of the signal emitter {self.sender().objectName()}")
+
+    #         return result
+
+    #     return wrapper
+    
+    @save_state_decorator
+    def Load(self,*args):
         """
         Loads the model after the 'Load Trace' clicked
 
@@ -2266,7 +2397,7 @@ class Ui_Neuroptimus(QMainWindow):
         Plots the trace in matplotlib on the file tab.
 
         """
-        self.gui_elements_state["pushButton_3"] = {"type": "QPushButton", "value": True}
+        # self.gui_elements_state["pushButton_3"] = {"type": "QPushButton", "value": True}
         if (self.type_selector.currentText() == 'Features'):
             try:
 
@@ -2433,7 +2564,7 @@ class Ui_Neuroptimus(QMainWindow):
 
         
         
-        
+    @save_state_decorator
     def Set(self, e):
         """
         Set the selected parameters to optimize on the model.
@@ -2441,6 +2572,9 @@ class Ui_Neuroptimus(QMainWindow):
         Loop through every selected line.
         """
         items = self.modellist.selectionModel().selectedRows()
+        #save the selected items rows to self.gui_elements_state
+        self.modellist_selected_rows.add_selected_rows_index([x.row() for x in items])
+        self.modellist_selected_rows.set_table_widget("modellist")
         self.remover.setEnabled(True)
         for item_selected in items:
                 selected_row=item_selected.row()
@@ -2478,6 +2612,7 @@ class Ui_Neuroptimus(QMainWindow):
         Loop through every selected line.
         """
         items = self.modellist.selectionModel().selectedRows()
+        self.modellist_selected_rows.remove_selected_rows_indices([x.row() for x in items])
         for item_selected in items:
                 selected_row=item_selected.row()
                 section = str(self.modellist.item(selected_row, 0).text())
@@ -2575,8 +2710,8 @@ class Ui_Neuroptimus(QMainWindow):
         if fileName:
             self.sim_path.setText("python "+str(fileName))
 
-
-    def Load2(self, e):
+    @save_state_decorator
+    def Load2(self,e):
         """
         Load the selected Neuron model and displays the sections in a tablewidget
         """
@@ -2691,9 +2826,9 @@ class Ui_Neuroptimus(QMainWindow):
         Calls the user function window for the Model tab.
         """
 
-        self.SW = SecondWindow(self) 
-        self.SW.setObjectName("Neuroptimus")
-        self.SW.resize(500, 500)
+        # self.SW = SecondWindow(self) 
+        # self.SW.setObjectName("Neuroptimus")
+        # self.SW.resize(500, 500)
         self.SW.show()
 
     def amplitudes_fun(self):
@@ -3718,6 +3853,7 @@ class SecondWindow(QtWidgets.QMainWindow):
                     fun = fun + l
             self.plaintext.setPlainText(str(fun))
     
+    @save_state_decorator
     def OnOk(self, e):
         try:
             self.option_handler.u_fun_string = str(self.plaintext.toPlainText())
