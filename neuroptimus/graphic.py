@@ -181,11 +181,36 @@ class Ui_Neuroptimus(QMainWindow):
         self.modellist_selected_rows = TableSelections("modellist")
         self.gui_elements_state["setter"] = {}
         self.gui_elements_state["SW.plaintext"] = {}
+        self.gui_elements_state["SW.pushButton_46"] = {}
+
+        self.gui_elements_state["stimprot"] = {}
+        self.gui_elements_state["stimulus_type"] = {}
+        self.gui_elements_state["base_dir_controll9"] = {}
+
+        self.gui_elements_state["SiW.amplit_edit"] = {}
+        self.gui_elements_state["SiW.pushButton_create"] = {}
+        self.gui_elements_state["SiW.stim_table"] = {}
+        self.gui_elements_state["SiW.pushButton_accept"] = {}
 
 
+        self.gui_elements_state["param_to_record"] = {}
+        self.gui_elements_state["section_rec"] = {}
+        self.gui_elements_state["lineEdit_pos"] = {}
+
+        self.gui_elements_state["lineEdit_initv"] = {}
+        self.gui_elements_state["lineEdit_tstop"] = {}
+        self.gui_elements_state["lineEdit_dt"] = {}
 
 
+        self.gui_elements_state["lineEdit_delay"] = {}
+        self.gui_elements_state["lineEdit_duration"] = {}
 
+        self.gui_elements_state["section_stim"] = {}
+        self.gui_elements_state["lineEdit_posins"] = {}
+
+        
+        
+        
         self.centralwidget = QtWidgets.QWidget(Neuroptimus)
         self.centralwidget.setObjectName("centralwidget")
         Neuroptimus.setCentralWidget(self.centralwidget)
@@ -1337,11 +1362,18 @@ class Ui_Neuroptimus(QMainWindow):
         self.fileMenu.addAction(self.actionexit)
         self.menubar.addAction(self.fileMenu.menuAction())
 
+        self.container = []
+        self.temp=[]
+
+
         self.SW = SecondWindow(self) 
         self.SW.setObjectName("Neuroptimus")
         self.SW.resize(500, 500)
 
-
+        #Amplitudes window
+        self.SiW = StimuliWindow(self) 
+        self.SiW.setObjectName("Neuroptimus")
+        self.SiW.resize(400, 500)
 
         #when actionSaveSettings clicked call function self.save_gui_state
         self.actionSaveSettings.triggered.connect(self.save_gui_state)
@@ -1351,6 +1383,13 @@ class Ui_Neuroptimus(QMainWindow):
         self.retranslateUi(Neuroptimus)
         QtCore.QMetaObject.connectSlotsByName(Neuroptimus)
         self.tabwidget.setCurrentIndex(0)
+
+    def modify_gui_state_dict(self, key, value_dict):
+        if key in self.gui_elements_state:
+            self.gui_elements_state[key].update(value_dict)
+        else:
+            self.gui_elements_state[key] = value_dict
+
 
 
     def save_gui_state(self):
@@ -1363,41 +1402,49 @@ class Ui_Neuroptimus(QMainWindow):
             #save the state of the GUI to the file
             self.serialize_gui_state(file_name)
 
-    def get_deep_attribute(self, obj, attr):
-        """
-        Get a deep attribute of an object.
-        """
-        return reduce(getattr, attr.split('.'), obj)
-
+    # def get_deep_attribute(self, obj, attr):
+    #     """
+    #     Get a deep attribute of an object. i.e if "sw.app" we get obj.sw.app step by step using getattr, we also handle if there is no .
+    #     """
+    #     if "." in attr:
+    #         first, rest = attr.split(".", 1)
+    #         verbose(f"first: {first}, rest: {rest}")
+    #         return self.get_deep_attribute(getattr(obj, first), rest)
+    #     else:
+    #         return getattr(obj, attr)
+    def get_deep_attribute(self,obj, attr_path):
+        try:
+            attrs = attr_path.split('.')
+            for attr in attrs:
+                obj = getattr(obj, attr)
+            return obj
+        except AttributeError:
+            return None
 
     def serialize_gui_state(self,file_name):
         """
         Serialize the state of the GUI to a file.
         """
-        # self.gui_elements_state = {}
-        #first tab
-        # self.gui_elements_state["type_selector"] = {"type": "QComboBox", "value": self.type_selector.currentText()}
-        # self.gui_elements_state["lineEdit_file"] = {"type": "QLineEdit", "value": self.lineEdit_file.text()}
-        # self.gui_elements_state["time_checker"] = {"type": "QCheckBox", "value": self.time_checker.isChecked()}
-        # self.gui_elements_state["lineEdit_folder"] = {"type": "QLineEdit", "value": self.lineEdit_folder.text()}
-        # self.gui_elements_state["size_ctrl"] = {"type": "QLineEdit", "value": self.size_ctrl.text()}
-        # self.gui_elements_state["dropdown"] = {"type": "QComboBox", "value": self.dropdown.currentText()}
-        # self.gui_elements_state["length_ctrl"] = {"type": "QLineEdit", "value": self.length_ctrl.text()}
-        # self.gui_elements_state["freq_ctrl"] = {"type": "QLineEdit", "value": self.freq_ctrl.text()}
-        # self.gui_elements_state["pushButton_3"]["enabled"] = self.pushButton_3.isEnabled()
-        # self.gui_elements_state["pushButton_3"]["enabled"] = self.pushButton_3.isEnabled()
-
+        
         for component_name in self.gui_elements_state:
-            self.gui_elements_state[component_name] = {"type": type(getattr(self, component_name)).__name__, "value": self.agnostic_component_getter(getattr(self, component_name)), "enabled": getattr(self, component_name).isEnabled()}
+            # self.gui_elements_state[component_name] = {"type": type(getattr(self, component_name)).__name__, "value": self.agnostic_component_getter(getattr(self, component_name)), "enabled": getattr(self, component_name).isEnabled()}
 
-            # if component_name == "modellist_selected_rows":
+            if component_name == "SW.plaintext":
 
-            #     # self.gui_elements_state[component_name] = {"type": "QTableWidget", "value": self.agnostic_component_getter(getattr(self, component_name))}
+                self.gui_elements_state[component_name] = {"type": "QPlainTextEdit", "value": self.SW.plaintext.toPlainText()}
+            elif component_name == "SW.pushButton_46":
 
-
-            # else:
-            #     self.gui_elements_state[component_name] = {"type": type(getattr(self, component_name)).__name__, "value": self.agnostic_component_getter(getattr(self, component_name)), "enabled": getattr(self, component_name).isEnabled()}
-
+                self.gui_elements_state[component_name] = {"type": "QPushButton", "value": self.SW.was_loaded}
+            elif component_name == "SiW.stim_table":
+                self.gui_elements_state[component_name] = {"type": type(self.SiW.stim_table).__name__, "value": self.agnostic_component_getter(self.SiW.stim_table), "enabled": self.SiW.stim_table.isEnabled()}
+            elif component_name == "SiW.amplit_edit":
+                self.gui_elements_state[component_name] = {"type": "QLineEdit", "value": self.SiW.amplit_edit.text()}
+            elif component_name == "SiW.pushButton_create":
+                self.gui_elements_state[component_name] = {"type": "QPushButton", "value": self.SiW.is_stimuli_created}
+            elif component_name == "SiW.pushButton_accept":
+                self.gui_elements_state[component_name] = {"type": "QPushButton", "value": self.SiW.is_stimuli_accepted}
+            else:
+                self.gui_elements_state[component_name] = {"type": type(getattr(self, component_name)).__name__, "value": self.agnostic_component_getter(getattr(self, component_name)), "enabled": getattr(self, component_name).isEnabled()}
 
         # self.gui_elements_state["input_tree"] = {"type": "QTreeWidget", "value": self.input_tree.currentItem().text(0)}
 
@@ -1427,11 +1474,12 @@ class Ui_Neuroptimus(QMainWindow):
                 component.setEnabled(True)
                 component.click()
         elif isinstance(component,QtWidgets.QTableWidget):
-            return
+            # return
             #iterate over the rows and columns of the table widget and set the values
-            for row in range(component.rowCount()):
-                for col in range(component.columnCount()):
-                    component.setItem(row, col, QtWidgets.QTableWidgetItem(value[row][col]))
+            if value:
+                for row in range(component.rowCount()):
+                    for col in range(component.columnCount()):
+                        component.setItem(row, col, QtWidgets.QTableWidgetItem(value[row][col]))
         elif isinstance(component, TableSelections):
             if value:
                 table_widget_to_set = getattr(self,component.get_table_widget())
@@ -1448,6 +1496,7 @@ class Ui_Neuroptimus(QMainWindow):
                     table_widget_to_set.selectRow(row)
                 #reset the multi selection mode to single selection
                 table_widget_to_set.setSelectionMode(QTableWidget.ContiguousSelection)
+        
 
     def agnostic_component_getter(self,component: QtWidgets.QWidget):
         """
@@ -1480,10 +1529,28 @@ class Ui_Neuroptimus(QMainWindow):
         if file_name:
             with open(file_name, "r") as file:
                 loaded_ui_element = json.load(file)
-            for key, value in loaded_ui_element.items():
-                print(key, value)
+            for component_name, value in loaded_ui_element.items():
+                print(component_name, value)
                 # self.agnostic_component_setter(getattr(self,key), value["type"],value["value"])
-                self.agnostic_component_setter(getattr(self,key), value)
+                if component_name == "SW.plaintext":
+                    self.SW.plaintext.setPlainText(str(value["value"]))
+                    # self.gui_elements_state[component_name] = {"type": "QPlainTextEdit", "value": self.SW.plaintext.toPlainText()}
+                elif component_name == "SW.pushButton_46":
+                    if value["value"]:
+                        self.SW.pushButton_46.click()
+
+                elif component_name == "SiW.amplit_edit":
+                    self.SiW.amplit_edit.setText(value["value"])
+                elif component_name == "SiW.pushButton_create":
+                    if value["value"]:
+                        self.SiW.pushButton_create.click()
+                elif component_name == "SiW.stim_table":
+                    self.agnostic_component_setter(self.SiW.stim_table, value)
+                elif component_name == "SiW.pushButton_accept":
+                    if value["value"]:
+                        self.SiW.pushButton_accept.click()
+                else:
+                    self.agnostic_component_setter(getattr(self,component_name), value)
 
 
     def retranslateUi(self, Neuroptimus):
@@ -1640,8 +1707,8 @@ class Ui_Neuroptimus(QMainWindow):
         self.param_to_record.addItems(["v","i"])
         #self.stimprot.setItemText(0, _translate("Neuroptimus", "IClamp"))
         #self.stimprot.setItemText(1, _translate("Neuroptimus", "VClamp"))
-        self.container = []
-        self.temp=[]
+        # self.container = []
+        # self.temp=[]
 
 
         #fittab 4
@@ -2830,15 +2897,17 @@ class Ui_Neuroptimus(QMainWindow):
         # self.SW.setObjectName("Neuroptimus")
         # self.SW.resize(500, 500)
         self.SW.show()
-
-    def amplitudes_fun(self):
+    @save_state_decorator
+    def amplitudes_fun(self,*args):
         """
         Calls the amplitude window for the Options tab.
         """
 
-        self.SiW = StimuliWindow(self) 
-        self.SiW.setObjectName("Neuroptimus")
-        self.SiW.resize(400, 500)
+        # self.SiW = StimuliWindow(self) 
+        # self.SiW.setObjectName("Neuroptimus")
+        # self.SiW.resize(400, 500)
+
+        self.SiW.initialize()
         self.SiW.show()
 
     
@@ -3792,11 +3861,17 @@ class SecondWindow(QtWidgets.QMainWindow):
         super(SecondWindow, self).__init__()
         _translate = QtCore.QCoreApplication.translate
         self.core=Core.coreModul()
+        self.parent = parent
+        self.gui_elements_state = {}
+        
         self.plaintext = QtWidgets.QPlainTextEdit(self)
+        # self.plaintext.textChanged.connect(self.text_changed)
         self.plaintext.insertPlainText("#Please define your function below in the template!\n"+
                 "#You may choose an arbitrary name for your function,\n"+
                 "#but the input parameters must be self and a vector!In the first line of the function specify the length of the vector in a comment!\n"+
                 "#In the second line you may specify the names of the parameters in a comment, separated by spaces.\n")
+        self.was_loaded = False
+        
         self.plaintext.move(10,10)
         self.plaintext.resize(350,400)
         self.pushButton_45 = QtWidgets.QPushButton(self)
@@ -3852,9 +3927,13 @@ class SecondWindow(QtWidgets.QMainWindow):
                 for l in f:
                     fun = fun + l
             self.plaintext.setPlainText(str(fun))
-    
+
+    def text_changed(self):
+        self.parent.modify_gui_state_dict("SW.plaintext", {"type":"QPlainTextEdit", "value":self.plaintext.toPlainText()})
+        
     @save_state_decorator
     def OnOk(self, e):
+        # self.parent.modify_gui_state_dict("SW.pushButton_46", {"type":"QPushButton", "value":True,'enabled': True} )
         try:
             self.option_handler.u_fun_string = str(self.plaintext.toPlainText())
             self.option_handler.adjusted_params=[]
@@ -3882,8 +3961,11 @@ class SecondWindow(QtWidgets.QMainWindow):
             if variables[0] == '':
                 raise ValueError
             compile(self.plaintext.toPlainText(), '<string>', 'exec')
+            self.was_loaded = True
             self.close()
         except ValueError as val_err:
+            print(val_err)
+            traceback.print_exc()
             popup("Your function doesn't have any input parameters!")
         except SyntaxError as syn_err:
             popup(str(syn_err) +"Syntax Error")
@@ -3933,7 +4015,8 @@ class StimuliWindow(QtWidgets.QMainWindow):
         self.stim_table.setHorizontalHeaderLabels(["Amplitude ("+unit+")"])
         self.stim_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.stim_table.horizontalHeader().setStretchLastSection(True)
-
+        self.is_stimuli_created= False
+        self.is_stimuli_accepted = False
 
 
         # Create a new QGridLayout
@@ -3954,6 +4037,21 @@ class StimuliWindow(QtWidgets.QMainWindow):
         self.setGeometry(100, 100, 400, 500)
 
 
+        # if self.parent.container:
+        #     self.amplit_edit.setText(str(len(self.parent.container)))
+        #     self.stim_table.setRowCount(len(self.parent.container))
+        #     for idx,n in enumerate(self.parent.container):
+        #         self.stim_table.setItem(idx, 0, QTableWidgetItem(str(n)))
+
+        
+        # try:
+        #     if self.option_handler.type[-1]=="features":
+        #         self.amplit_edit.setText(str(len(self.data_handler.features_data["stim_amp"])))
+        #         self.Set(self) 
+        # except:
+        #     print("No input file found")
+
+    def initialize(self):
         if self.parent.container:
             self.amplit_edit.setText(str(len(self.parent.container)))
             self.stim_table.setRowCount(len(self.parent.container))
@@ -3968,11 +4066,14 @@ class StimuliWindow(QtWidgets.QMainWindow):
         except:
             print("No input file found")
 
+    # @save_state_decorator
     def Set(self, e):
         try:
             self.stim_table.setRowCount(int(self.amplit_edit.text()))
             self.pushButton_accept.setEnabled(True)
+            self.is_stimuli_created = True
         except:
+            # self.is_stimuli_created = False
             self.close()
         
 
@@ -3981,8 +4082,10 @@ class StimuliWindow(QtWidgets.QMainWindow):
         try:
             for n in range(self.stim_table.rowCount()):
                 self.parent.container.append(float(self.stim_table.item(n, 0).text()))
+            self.is_stimuli_accepted = True
         except:
-                print("Stimuli values are missing or incorrect")
+                popup("Stimuli values are missing or incorrect")
+                traceback.print_exception()
         self.close()
 
     
