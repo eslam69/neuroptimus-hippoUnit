@@ -31,7 +31,7 @@ warnings.simplefilter("ignore", UserWarning)
 import importlib.util
 
 
-DEBUG = True
+DEBUG = False
 def verbose(*args, **kwargs):
     if DEBUG:
         print(*args, **kwargs)
@@ -207,6 +207,20 @@ class Ui_Neuroptimus(QMainWindow):
 
         self.gui_elements_state["section_stim"] = {}
         self.gui_elements_state["lineEdit_posins"] = {}
+
+        
+        self.gui_elements_state["output_dir_input"] = {}
+        self.gui_elements_state["template_name_input"] = {}
+        self.gui_elements_state["v_init_input"] = {}
+        self.gui_elements_state["celsius_input"] = {}
+        self.gui_elements_state["soma_input"] = {}
+
+        
+        self.gui_elements_state["fitlist"] = {}
+        self.gui_elements_state["test_specific_settings_table"] = {}
+        
+        # self.selected_algorithm = None
+        
 
         
         
@@ -1455,6 +1469,68 @@ class Ui_Neuroptimus(QMainWindow):
             json.dump(self.gui_elements_state, file, indent=4)
 
 
+
+    def load_gui_state(self):
+        """
+        Load the state of the GUI from a file.
+        """
+        #open file dialog to get the file name
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self.centralwidget, "Open File", "", "")
+        verbose("loading gui state from: ",file_name)
+        if file_name:
+            with open(file_name, "r") as file:
+                loaded_ui_element = json.load(file)
+            for component_name, loadedValue in loaded_ui_element.items():
+                verbose(component_name, loadedValue)
+                # self.agnostic_component_setter(getattr(self,key), value["type"],value["value"])
+                if component_name == "SW.plaintext":
+                    self.SW.plaintext.setPlainText(str(loadedValue["value"]))
+                    # self.gui_elements_state[component_name] = {"type": "QPlainTextEdit", "value": self.SW.plaintext.toPlainText()}
+                elif component_name == "SW.pushButton_46":
+                    if loadedValue["value"]:
+                        self.SW.pushButton_46.click()
+
+                elif component_name == "SiW.amplit_edit":
+                    self.SiW.amplit_edit.setText(loadedValue["value"])
+                elif component_name == "SiW.pushButton_create":
+                    if loadedValue["value"]:
+                        self.SiW.pushButton_create.click()
+                elif component_name == "SiW.stim_table":
+                    self.agnostic_component_setter(self.SiW.stim_table, loadedValue)
+                elif component_name == "SiW.pushButton_accept":
+                    if loadedValue["value"]:
+                        self.SiW.pushButton_accept.click()
+                elif component_name == "fitlist":
+                    table = loadedValue["value"] # [[],[]]
+                    if table:
+                        for row in range(len(table)):
+                            for col in range(1,len(table[row])):
+                                verbose(table[row][1])
+                                #first filling the rows
+                                self.fitlist.blockSignals(True)
+                                self.fitlist.setItem(row, col, QtWidgets.QTableWidgetItem(table[row][col]))
+                                self.fitlist.blockSignals(False)                        #then fill the table with the rest of the values except the weight
+                        for col in range(1,len(table[0])):
+                            for row in range(len(table)):
+                                #then fill the 
+                                self.fitlist.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
+                                self.fitlist.selectRow(row)
+                                self.fitlist.setItem(row, col, QtWidgets.QTableWidgetItem(table[row][col]))
+
+                elif component_name == "test_specific_settings_table":
+                    #update cells value in the table from the loaded table
+                    table = loadedValue["value"]
+                    if table:
+                        for row in range(len(table)):
+                            for column in range(0,len(table[0])):
+                                self.test_specific_settings_table.item(row, column).setText(table[row][column])
+
+                            
+                else:
+                    self.agnostic_component_setter(getattr(self,component_name), loadedValue)
+
+
+
     def agnostic_component_setter(self,component, metadata):
         """
         Set the value of a component regardless of its type.
@@ -1518,39 +1594,6 @@ class Ui_Neuroptimus(QMainWindow):
         elif isinstance(component, TableSelections):
             return component.get_selected_rows_indices()
         
-
-    def load_gui_state(self):
-        """
-        Load the state of the GUI from a file.
-        """
-        #open file dialog to get the file name
-        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self.centralwidget, "Open File", "", "")
-        print(file_name)
-        if file_name:
-            with open(file_name, "r") as file:
-                loaded_ui_element = json.load(file)
-            for component_name, value in loaded_ui_element.items():
-                print(component_name, value)
-                # self.agnostic_component_setter(getattr(self,key), value["type"],value["value"])
-                if component_name == "SW.plaintext":
-                    self.SW.plaintext.setPlainText(str(value["value"]))
-                    # self.gui_elements_state[component_name] = {"type": "QPlainTextEdit", "value": self.SW.plaintext.toPlainText()}
-                elif component_name == "SW.pushButton_46":
-                    if value["value"]:
-                        self.SW.pushButton_46.click()
-
-                elif component_name == "SiW.amplit_edit":
-                    self.SiW.amplit_edit.setText(value["value"])
-                elif component_name == "SiW.pushButton_create":
-                    if value["value"]:
-                        self.SiW.pushButton_create.click()
-                elif component_name == "SiW.stim_table":
-                    self.agnostic_component_setter(self.SiW.stim_table, value)
-                elif component_name == "SiW.pushButton_accept":
-                    if value["value"]:
-                        self.SiW.pushButton_accept.click()
-                else:
-                    self.agnostic_component_setter(getattr(self,component_name), value)
 
 
     def retranslateUi(self, Neuroptimus):
@@ -1730,7 +1773,9 @@ class Ui_Neuroptimus(QMainWindow):
         # self.label_69.setText(_translate("Neuroptimus", "Spike detection tresh. (mV)"))
         # self.label_70.setText(_translate("Neuroptimus", "Spike window (ms)"))
         self.pushButton_normalize.clicked.connect(self.Fit_normalize)
-        self.HippoTests_parameter_location_in_table = {"TrunkSecList_name":3 , "ObliqueSecList_name":4 , "TuftSecList_name":5, "num_of_dend_locations":6}
+        # self.HippoTests_parameter_location_in_table = {"TrunkSecList_name":3 , "ObliqueSecList_name":4 , "TuftSecList_name":5, "num_of_dend_locations":6}
+        
+            
         #self.fittab_help.clicked.connect(self.help_popup_fit)
 
         #runtab 5
@@ -2128,13 +2173,18 @@ class Ui_Neuroptimus(QMainWindow):
 
             # #selection is by cell not row
             self.fitlist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectItems)
-
+            self.HippoTests_parameter_location_in_table = {"TrunkSecList_name":3 , "ObliqueSecList_name":4 , "TuftSecList_name":5, "num_of_dend_locations":6}
             self.tests_ui_names = {"SomaticFeaturesTest":"Somatic Features Test",
                                     "PSPAttenuationTest":"PSP Attenuation Test",
                                     "BackpropagatingAPTest":"Backpropagating AP Test",
                                     "PathwayInteraction":"Pathway Interaction Test",
                                     "DepolarizationBlockTest":"Depolarization Block Test",
                                     "ObliqueIntegrationTest":"Oblique Integration Test"}
+            self.HippoTests_required_parameters = {self.tests_ui_names["PSPAttenuationTest"]: ["TrunkSecList_name","num_of_dend_locations"],
+                                            self.tests_ui_names["BackpropagatingAPTest"]: ["TrunkSecList_name"],
+                                            self.tests_ui_names["ObliqueIntegrationTest"]: ["ObliqueSecList_name", "TrunkSecList_name"],
+                                            self.tests_ui_names["PathwayInteraction"]: ["TuftSecList_name","num_of_dend_locations"]}
+            
             #inverse of the above dictionary
             self.tests_real_names = {v: k for k, v in self.tests_ui_names.items()}
 
@@ -2191,7 +2241,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.fitlist.insertRow(4)
             self.fitlist.setItem(4, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["DepolarizationBlockTest"]))
             self.fitlist.setItem(4, 2, fitlistTableItem("Browse (Double Click)"))
-            self.fitlist.setItem(4, 3, fitlistTableItem("Browse (Double Click)"))
+            self.fitlist.setItem(4, 3, fitlistTableItem(" "))
             self.fitlist.setItem(4, 4, QtWidgets.QTableWidgetItem("250"))
 
         
@@ -2213,7 +2263,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.fitlist.insertRow(5)
             self.fitlist.setItem(5, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["ObliqueIntegrationTest"]))
             self.fitlist.setItem(5, 2, fitlistTableItem("Browse (Double Click)"))
-            self.fitlist.setItem(5, 3, QtWidgets.QTableWidgetItem("NA"))
+            self.fitlist.setItem(5, 3, QtWidgets.QTableWidgetItem(" "))
             self.fitlist.setItem(5, 4, QtWidgets.QTableWidgetItem("250"))
             #set its color to gray
             self.fitlist.item(5, 3).setBackground(QtGui.QColor(192,192,192))
@@ -2229,7 +2279,7 @@ class Ui_Neuroptimus(QMainWindow):
                     elif column == 3:
                         #if last three rows:
                         if row >= self.fitlist.rowCount()-2:
-                            self.fitlist.item(row, column).setToolTip("NA")
+                            self.fitlist.item(row, column).setToolTip("N/A")
                         else:
                             self.fitlist.item(row, column).setToolTip("Double click to Browse")
             # self.fitlist.horizontalHeader().setStretchLastSection(True)
@@ -2575,7 +2625,7 @@ class Ui_Neuroptimus(QMainWindow):
         if self.core.option_handler.type[-1].lower()  in ["voltage", "current"]:
                 self.my_list = copy(self.core.ffun_calc_list)
         elif self.core.option_handler.type[-1].lower() == "hippounit":
-                print("hippounit tests loading in table")
+                verbose("hippounit tests loading in table")
                 self.my_list = copy(self.core.hippounit_tests_names)               
         else: #features
             self.my_list=list(self.core.data_handler.features_data.keys())[3:]
@@ -2911,20 +2961,21 @@ class Ui_Neuroptimus(QMainWindow):
         self.SiW.show()
 
     
-    def fitselect(self):
-        """
-        Calls when fitness functions selected, colours the item and adds them to a set.
-        """
-        items = self.fitlist.selectionModel().selectedIndexes()
-        for item_selected in items:
-            if item_selected.column()==0:
-                current_item=str(self.fitlist.item(item_selected.row(), 0).text())
-                if current_item in self.fitset:
-                    self.fitlist.item(item_selected.row(),0).setBackground(QtGui.QColor(255,255,255))
-                    self.fitset.remove(current_item)
-                else:
-                    self.fitlist.item(item_selected.row(),0).setBackground(QtGui.QColor(0,255,0))
-                    self.fitset.add(current_item)
+    # def fitselect(self):
+    #     """
+    #     Calls when fitness functions selected, colours the item and adds them to a set.
+    #     """
+    #     verbose("fitlist called")
+    #     items = self.fitlist.selectionModel().selectedIndexes()
+    #     for item_selected in items:
+    #         if item_selected.column()==0:
+    #             current_item=str(self.fitlist.item(item_selected.row(), 0).text())
+    #             if current_item in self.fitset:
+    #                 self.fitlist.item(item_selected.row(),0).setBackground(QtGui.QColor(255,255,255))
+    #                 self.fitset.remove(current_item)
+    #             else:
+    #                 self.fitlist.item(item_selected.row(),0).setBackground(QtGui.QColor(0,255,0))
+    #                 self.fitset.add(current_item)
 
 
     def _check_fitlist_weight(self,selected_row):
@@ -2942,39 +2993,57 @@ class Ui_Neuroptimus(QMainWindow):
         #first check if hippounit test is selected
         if self.type_selector.currentText().lower() == "hippounit":
             
-            # self.HippoTests_required_parameters = {"PSP Attenuation Test": "TrunkSecList_name",
-            #                                 "Back propagatingAP Test": "TrunkSecList_name",
-            #                                 "Oblique Integration Test": "ObliqueSecList_name",
-            #                                 "Pathway Interaction Test": "TuftSecList_name"}
-            self.HippoTests_required_parameters = {self.tests_ui_names["PSPAttenuationTest"]: ["TrunkSecList_name","num_of_dend_locations"],
-                                            self.tests_ui_names["BackpropagatingAPTest"]: ["TrunkSecList_name"],
-                                            self.tests_ui_names["ObliqueIntegrationTest"]: ["ObliqueSecList_name", "TrunkSecList_name"],
-                                            self.tests_ui_names["PathwayInteraction"]: ["TuftSecList_name","num_of_dend_locations"]}
+           
+            # self.HippoTests_required_parameters = {self.tests_ui_names["PSPAttenuationTest"]: ["TrunkSecList_name","num_of_dend_locations"],
+            #                                 self.tests_ui_names["BackpropagatingAPTest"]: ["TrunkSecList_name"],
+            #                                 self.tests_ui_names["ObliqueIntegrationTest"]: ["ObliqueSecList_name", "TrunkSecList_name"],
+            #                                 self.tests_ui_names["PathwayInteraction"]: ["TuftSecList_name","num_of_dend_locations"]}
             
             
             # self.HippoTests_parameter_location_in_table = {"TrunkSecList_name":3 , "ObliqueSecList_name":4 , "TuftSecList_name":5, "num_of_dend_locations":6}
             #get currently selected row 
             selected_row = self.fitlist.currentRow()
+            # verbose("Current selected row ---------->",selected_row)
 
             #get the name of the test if not its's weight (2nd column) is not none and not empty and not 0
             try:
                 test_name = self.fitlist.item(selected_row, 0).text()
-                if self._check_fitlist_weight(selected_row): #Weight is a number and not 0
+                is_test_weighted = self._check_fitlist_weight(selected_row)
+                if is_test_weighted: #Weight is a number and not 0
                     #make  its corresponding property row in the table to the selected row be editable and non grayed
-                    #get the row of the property
-                    
-
                     #enable the row in fitlist and make it white columns 2 , 3 ,4
                     self.fitlist.blockSignals(True)
                     for column in range(2,5): #do this except cells (5,2) , (5,3), (4,2) , (4,3)
-                        if column == 4:#set value to 255
-                            self.fitlist.item(selected_row, column).setText("250") 
+                        # #set text "Double click to Browse" if it is not last column
+                        is_penalty_coulmn = column == self.fitlist.columnCount() - 1
+                        if is_penalty_coulmn:
+                            is_penalty_already_set = self.fitlist.item(selected_row, column).text().isnumeric()
+                            if not is_penalty_already_set:
+                                self.fitlist.item(selected_row, column).setText("250")
+                            else:
+                                pass #keep the value
+                        elif  not os.path.isfile(self.fitlist.item(selected_row, column).text()) :
+                            self.fitlist.item(selected_row, column).setText("Double click to Browse!")
+                            
+                        else :
+                            pass
+                        # if column == 4:#set value to 255
+                        #     #if it's text is not numeric (not already set to a number), set it to 250
+                        #     if not self.fitlist.item(selected_row, column).text().isnumeric():
+                        #         self.fitlist.item(selected_row, column).setText("250") 
+                                # self.fitlist.item(selected_row, column).setPlaceholderText("250") 
                         if (column == 3 and selected_row == 4) or (column == 3 and selected_row == 5)  :
-                            continue
+                            self.fitlist.item(selected_row, column).setBackground(QtGui.QColor(192,192,192))
+                            self.fitlist.item(selected_row, column).setForeground(QtGui.QColor(0,0,0))
+                            self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+                            self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.NoItemFlags)
+                            self.fitlist.item(selected_row, column).setText("")
                         
-                        self.fitlist.item(selected_row, column).setBackground(QtGui.QColor(255,255,255))
-                        self.fitlist.item(selected_row, column).setForeground(QtGui.QColor(0,0,0))
-                        self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+                        else:
+                            self.fitlist.item(selected_row, column).setBackground(QtGui.QColor(255,255,255))
+                            self.fitlist.item(selected_row, column).setForeground(QtGui.QColor(0,0,0))
+                            self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+                        
                     self.fitlist.blockSignals(False)
                     #disable callbacks for the table
                     
@@ -2990,22 +3059,17 @@ class Ui_Neuroptimus(QMainWindow):
                    
                 else : # Weight is 0 or none
                     #make uneditable and grayed out rows if the weight is 0 or none
-                    
-                    
                     self.fitlist.blockSignals(True)
                     for column in range(2,5): 
-                        if (column == 3 and selected_row == 4) or (column == 3 and selected_row == 5)  :
-                            continue
-                        if column == 4:#set value to empty
-                            self.fitlist.item(selected_row, column).setText("") 
                         self.fitlist.item(selected_row, column).setBackground(QtGui.QColor(192,192,192))
                         self.fitlist.item(selected_row, column).setForeground(QtGui.QColor(0,0,0))
                         self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
                         self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.NoItemFlags)
+                        self.fitlist.item(selected_row, column).setText("") 
+            
                     self.fitlist.blockSignals(False)
-                    if test_name in [self.tests_ui_names["PSPAttenuationTest"], self.tests_ui_names["BackpropagatingAPTest"]]:
-                        if self._check_fitlist_weight(1) or self._check_fitlist_weight(2): #if any of the first two tests have weight, return
-                            return
+            
+    
                     if test_name in self.HippoTests_required_parameters.keys():
                         required_properties_by_test = self.HippoTests_required_parameters[test_name]
                         # print("required_properties_by_test",required_properties_by_test)
@@ -3016,9 +3080,12 @@ class Ui_Neuroptimus(QMainWindow):
                             self.test_specific_settings_table.item(property_row, 1).setBackground(QtGui.QColor(192,192,192))
                             self.test_specific_settings_table.item(property_row, 0).setBackground(QtGui.QColor(192,192,192))
                         
-                    
+            except AttributeError as ae:
+                pass    
                     
             except Exception as e:
+
+                traceback.print_exc()
                 # print(e)
                 pass
 
@@ -3072,6 +3139,7 @@ class Ui_Neuroptimus(QMainWindow):
         except Exception as e:
             popup("Wrong values given. "+str(e))
 
+    
     def packageselect(self,pack_name):
             """
             Writes the given aspects to algorithm in an other table, where the user can change the option (generation, population size, etc.).
@@ -3414,7 +3482,7 @@ class Ui_Neuroptimus(QMainWindow):
         hippounit_settings_path = os.path.join(base_dir,hippounit_settings_file_name)
         with open(hippounit_settings_path, 'w+') as out:
             json.dump(self.hippounit_config,out,indent=4)
-            print(f"hippounit_config_from_gui.json saved to {hippounit_settings_path}")
+            verbose(f"hippounit_config_from_gui.json saved to {hippounit_settings_path}")
 
 
         neuroptimus_settings_name = "neuroptimus_config_from_gui.json"
@@ -3460,7 +3528,7 @@ class Ui_Neuroptimus(QMainWindow):
         with open(neuroptimus_settings_path, 'w+') as out:
             json.dump(neuroptimus_settings,out,indent=4)
             # print("neuroptimus_config_from_gui.json saved")
-            print(f"neuroptimus_config_from_gui.json saved to {neuroptimus_settings_path}")
+            verbose(f"neuroptimus_config_from_gui.json saved to {neuroptimus_settings_path}")
 
 
 
