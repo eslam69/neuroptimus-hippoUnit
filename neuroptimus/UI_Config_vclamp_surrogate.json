@@ -1,0 +1,337 @@
+{
+    "type_selector": {
+        "type": "QComboBox",
+        "value": "Voltage trace",
+        "enabled": true
+    },
+    "lineEdit_file": {
+        "type": "QLineEdit",
+        "value": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/new_test_files/VClamp_surrogate/iclamp_new_evendt.dat",
+        "enabled": true
+    },
+    "time_checker": {
+        "type": "QCheckBox",
+        "value": true,
+        "enabled": true
+    },
+    "lineEdit_folder": {
+        "type": "QLineEdit",
+        "value": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/new_test_files/VClamp_surrogate",
+        "enabled": true
+    },
+    "size_ctrl": {
+        "type": "QLineEdit",
+        "value": "1",
+        "enabled": true
+    },
+    "dropdown": {
+        "type": "QComboBox",
+        "value": "mV",
+        "enabled": true
+    },
+    "length_ctrl": {
+        "type": "QLineEdit",
+        "value": "500",
+        "enabled": true
+    },
+    "freq_ctrl": {
+        "type": "QLineEdit",
+        "value": "40000.0",
+        "enabled": true
+    },
+    "pushButton_3": {
+        "type": "QPushButton",
+        "value": true,
+        "enabled": true
+    },
+    "model_name_input": {
+        "type": "QLineEdit",
+        "value": "smsm",
+        "enabled": true
+    },
+    "dd_type": {
+        "type": "QComboBox",
+        "value": "Neuron",
+        "enabled": true
+    },
+    "lineEdit_file2": {
+        "type": "QLineEdit",
+        "value": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/new_test_files/VClamp_surrogate/simple_hh_syn_vclamp_toopt2.hoc",
+        "enabled": true
+    },
+    "load_mods_checkbox": {
+        "type": "QCheckBox",
+        "value": false,
+        "enabled": true
+    },
+    "lineEdit_folder2": {
+        "type": "QLineEdit",
+        "value": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/new_test_files/VClamp_surrogate",
+        "enabled": false
+    },
+    "pushButton_13": {
+        "type": "QPushButton",
+        "value": true,
+        "enabled": true
+    },
+    "modellist": {
+        "type": "QTableWidget",
+        "value": [],
+        "enabled": true
+    },
+    "pushButton_16": {
+        "type": "QPushButton",
+        "value": false,
+        "enabled": true
+    },
+    "modellist_selected_rows": {
+        "type": "TableSelections",
+        "value": [
+            4,
+            0,
+            2
+        ],
+        "enabled": true
+    },
+    "setter": {
+        "type": "QPushButton",
+        "value": true,
+        "enabled": true
+    },
+    "SW.plaintext": {
+        "type": "QPlainTextEdit",
+        "value": "#Please define your function below in the template!\n#You may choose an arbitrary name for your function,\n#but the input parameters must be self and a vector!In the first line of the function specify the length of the vector in a comment!\n#In the second line you may specify the names of the parameters in a comment, separated by spaces.\ndef usr_fun(self,v):\n#4\n#weight\n#delay\n#tau_rise\n#tau_decay\n    h.nc.weight[0] = v[0]\n    h.nc.delay = v[1]\n    h.ampasyn.tau1 = v[2]\n    h.ampasyn.tau2 = v[3]\n"
+    },
+    "SW.pushButton_46": {
+        "type": "QPushButton",
+        "value": true
+    },
+    "stimprot": {
+        "type": "QComboBox",
+        "value": "VClamp",
+        "enabled": true
+    },
+    "stimulus_type": {
+        "type": "QComboBox",
+        "value": "Step Protocol",
+        "enabled": true
+    },
+    "base_dir_controll9": {
+        "type": "QPushButton",
+        "value": true,
+        "enabled": true
+    },
+    "SiW.amplit_edit": {
+        "type": "QLineEdit",
+        "value": "1"
+    },
+    "SiW.pushButton_create": {
+        "type": "QPushButton",
+        "value": true
+    },
+    "SiW.stim_table": {
+        "type": "QTableWidget",
+        "value": [
+            [
+                "-70"
+            ]
+        ],
+        "enabled": true
+    },
+    "SiW.pushButton_accept": {
+        "type": "QPushButton",
+        "value": true
+    },
+    "param_to_record": {
+        "type": "QComboBox",
+        "value": "i",
+        "enabled": true
+    },
+    "section_rec": {
+        "type": "QComboBox",
+        "value": "soma",
+        "enabled": true
+    },
+    "lineEdit_pos": {
+        "type": "QLineEdit",
+        "value": "0.5",
+        "enabled": true
+    },
+    "lineEdit_initv": {
+        "type": "QLineEdit",
+        "value": "-70",
+        "enabled": true
+    },
+    "lineEdit_tstop": {
+        "type": "QLineEdit",
+        "value": "500.0",
+        "enabled": true
+    },
+    "lineEdit_dt": {
+        "type": "QLineEdit",
+        "value": "0.025",
+        "enabled": true
+    },
+    "lineEdit_delay": {
+        "type": "QLineEdit",
+        "value": "1",
+        "enabled": true
+    },
+    "lineEdit_duration": {
+        "type": "QLineEdit",
+        "value": "1",
+        "enabled": true
+    },
+    "section_stim": {
+        "type": "QComboBox",
+        "value": "soma",
+        "enabled": true
+    },
+    "lineEdit_posins": {
+        "type": "QLineEdit",
+        "value": "0.5",
+        "enabled": true
+    },
+    "output_dir_input": {
+        "type": "QLineEdit",
+        "value": "",
+        "enabled": false
+    },
+    "template_name_input": {
+        "type": "QLineEdit",
+        "value": "",
+        "enabled": false
+    },
+    "v_init_input": {
+        "type": "QLineEdit",
+        "value": "",
+        "enabled": false
+    },
+    "celsius_input": {
+        "type": "QLineEdit",
+        "value": "",
+        "enabled": false
+    },
+    "soma_input": {
+        "type": "QLineEdit",
+        "value": "",
+        "enabled": false
+    },
+    "fitlist": {
+        "type": "QTableWidget",
+        "value": [
+            [
+                "MSE",
+                "1"
+            ],
+            [
+                "MSE (excl. spikes)",
+                "0"
+            ],
+            [
+                "Spike count",
+                "0"
+            ],
+            [
+                "Spike count (stim.)",
+                "0"
+            ],
+            [
+                "ISI differences",
+                "0"
+            ],
+            [
+                "Latency to 1st spike",
+                "0"
+            ],
+            [
+                "AP amplitude",
+                "0"
+            ],
+            [
+                "AHP depth",
+                "0"
+            ],
+            [
+                "AP width",
+                "0"
+            ],
+            [
+                "Derivative difference",
+                "0"
+            ]
+        ],
+        "enabled": true
+    },
+    "test_specific_settings_table": {
+        "type": "QTableWidget",
+        "value": [
+            [
+                "Spike detection threshold (mV) ",
+                "0.0"
+            ],
+            [
+                "Spike Window (ms)",
+                "1.0"
+            ]
+        ],
+        "enabled": true
+    },
+    "algolist": {
+        "type": "QTabelWidget",
+        "value": [
+            "Classical Evolution Strategy (CES) - Inspyred",
+            "Covariance Matrix Adaptation ES (CMAES) - Cmaes",
+            "Covariance Matrix Adaptation ES (CMAES) - Pygmo",
+            "Particle Swarm (PSO) - Inspyred",
+            "Particle Swarm Gen (PSOG) - Pygmo",
+            "Indicator Based (IBEA) - Bluepyopt",
+            "L-BFGS-B - Scipy",
+            "Random Search"
+        ],
+        "current_row": 7
+    },
+    "algorithm_parameter_list": {
+        "type": "QTabelWidget",
+        "value": [
+            [
+                "Seed",
+                "1234"
+            ],
+            [
+                "size_of_population",
+                "1"
+            ],
+            [
+                "number_of_cpu",
+                "1"
+            ]
+        ]
+    },
+    "BW.boundary_table": {
+        "type": "QTableWidget",
+        "value": [
+            [
+                "weight",
+                "0.001",
+                "1"
+            ],
+            [
+                "delay",
+                "0",
+                "5"
+            ],
+            [
+                "tau_rise",
+                "0.001",
+                "1"
+            ],
+            [
+                "tau_decay",
+                "0.1",
+                "5"
+            ]
+        ],
+        "enabled": true
+    }
+}

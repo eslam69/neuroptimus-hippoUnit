@@ -6,3 +6,5 @@ neuroptimus/Data/*
 neuroptimus/__pycache__/Core.cpython-37.pyc
 neuroptimus/__pycache__/graphic.cpython-37.pyc
 neuroptimus/Data/CA1pyramidal_package/
+neuroptimus/ui_state.json
+neuroptimus/ui_state2.json
