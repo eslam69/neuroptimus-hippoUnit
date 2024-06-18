@@ -219,8 +219,14 @@ class Ui_Neuroptimus(QMainWindow):
         self.gui_elements_state["fitlist"] = {}
         self.gui_elements_state["test_specific_settings_table"] = {}
         
-        # self.selected_algorithm = None
+        self.gui_elements_state["algolist"] = {}
+        self.gui_elements_state["algorithm_parameter_list"] = {}
+
+
+        self.gui_elements_state["BW.boundary_table"] = {}
         
+        # self.selected_algorithm = None
+
 
         
         
@@ -1169,6 +1175,8 @@ class Ui_Neuroptimus(QMainWindow):
         self.algolist = QtWidgets.QTableWidget(self.runtab)
         self.algolist.setGeometry(QtCore.QRect(10, 120, 441, 321))
         self.algolist.setObjectName("algolist")
+        #setting selection model to have always one active selected
+        self.algolist.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.algorithm_parameter_list = QtWidgets.QTableWidget(self.runtab)
         self.algorithm_parameter_list.setGeometry(QtCore.QRect(470, 90, 241, 351))
         self.algorithm_parameter_list.setObjectName("algorithm_parameter_list")
@@ -1389,6 +1397,10 @@ class Ui_Neuroptimus(QMainWindow):
         self.SiW.setObjectName("Neuroptimus")
         self.SiW.resize(400, 500)
 
+        
+        #Parameters boundaries window
+        self.BW = BoundaryWindow(self) 
+
         #when actionSaveSettings clicked call function self.save_gui_state
         self.actionSaveSettings.triggered.connect(self.save_gui_state)
         #when actionLoadSettings clicked call function self.load_gui_state
@@ -1416,16 +1428,7 @@ class Ui_Neuroptimus(QMainWindow):
             #save the state of the GUI to the file
             self.serialize_gui_state(file_name)
 
-    # def get_deep_attribute(self, obj, attr):
-    #     """
-    #     Get a deep attribute of an object. i.e if "sw.app" we get obj.sw.app step by step using getattr, we also handle if there is no .
-    #     """
-    #     if "." in attr:
-    #         first, rest = attr.split(".", 1)
-    #         verbose(f"first: {first}, rest: {rest}")
-    #         return self.get_deep_attribute(getattr(obj, first), rest)
-    #     else:
-    #         return getattr(obj, attr)
+    
     def get_deep_attribute(self,obj, attr_path):
         try:
             attrs = attr_path.split('.')
@@ -1457,6 +1460,33 @@ class Ui_Neuroptimus(QMainWindow):
                 self.gui_elements_state[component_name] = {"type": "QPushButton", "value": self.SiW.is_stimuli_created}
             elif component_name == "SiW.pushButton_accept":
                 self.gui_elements_state[component_name] = {"type": "QPushButton", "value": self.SiW.is_stimuli_accepted}
+            elif component_name == "algolist":
+                # self.gui_elements_state[component_name] = {"type": "QTabelWidget", "value": self.agnostic_component_getter(self.algolist), "current_row": self.algolist.currentRow() }
+                table_cells = []
+                for row in range(self.algolist.rowCount()):
+                    #it is a single column table
+                    table_cells.append(self.algolist.item(row, 0).text())
+                self.gui_elements_state[component_name] = {"type": "QTabelWidget", "value": table_cells, "current_row": self.algolist.currentRow() }
+            
+            elif component_name == "algorithm_parameter_list":
+                table = []
+                #if not empty save it else save []
+                if self.algorithm_parameter_list.rowCount() > 0:
+                    # iterate over rows and columns if a cell is checkable save it as true or false else save it's text
+                    for row in range(self.algorithm_parameter_list.rowCount()):
+                        row_values = []
+                        for col in range(self.algorithm_parameter_list.columnCount()):
+                            item = self.algorithm_parameter_list.item(row, col)
+                            if (item.flags() & QtCore.Qt.ItemIsUserCheckable) and not self.algorithm_parameter_list.item(row, col).text():
+                                row_values.append(item.checkState() == QtCore.Qt.Checked)
+                            else:
+                                row_values.append(self.algorithm_parameter_list.item(row, col).text())
+                        table.append(row_values)
+                self.gui_elements_state[component_name] = {"type": "QTabelWidget", "value": table}
+            
+            elif component_name == "BW.boundary_table":
+                if self.BW.boundary_table.rowCount() > 0:
+                    self.gui_elements_state[component_name] = {"type": type(self.BW.boundary_table).__name__, "value": self.agnostic_component_getter(self.BW.boundary_table), "enabled": self.BW.boundary_table.isEnabled()}
             else:
                 self.gui_elements_state[component_name] = {"type": type(getattr(self, component_name)).__name__, "value": self.agnostic_component_getter(getattr(self, component_name)), "enabled": getattr(self, component_name).isEnabled()}
 
@@ -1464,7 +1494,7 @@ class Ui_Neuroptimus(QMainWindow):
 
         verbose(self.gui_elements_state)
         #save to json
-        file_name= "{file_name}.json" if not file_name.endswith(".json") else file_name
+        file_name= f"{file_name}.json" if not file_name.endswith(".json") else file_name
         with open(file_name, "w") as file:
             json.dump(self.gui_elements_state, file, indent=4)
 
@@ -1525,13 +1555,53 @@ class Ui_Neuroptimus(QMainWindow):
                             for column in range(0,len(table[0])):
                                 self.test_specific_settings_table.item(row, column).setText(table[row][column])
 
+                elif component_name == "algolist":
+                    selected_row = loadedValue["current_row"]
+                    table_cells = loadedValue["value"]
+                    #disable signals to prevent the table from emitting signals
+                    self.algolist.blockSignals(True)
+                    # self.agnostic_component_setter(self.algolist, loadedValue)
+                    #clear rows first
+                    self.algolist.setRowCount(0)
+                    for row in range(len(table_cells)):
+                        self.algolist.insertRow(row)
+                        self.algolist.setItem(row, 0, QtWidgets.QTableWidgetItem(table_cells[row]))
+
+                    self.algolist.blockSignals(False)
+                    self.algolist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+
+                    #select as double click
+                    self.algolist.selectRow(selected_row)
+                    self.algoselect()
+               
+                   
+                elif component_name == "algorithm_parameter_list":
+                    table = loadedValue["value"]
+                    if table:
+                        #iterate over rows and cols
+                        for row in range(len(table)):
+                            for col in range(1,len(table[0])):
+                                #if the cell is checkable set it's check state else set it's text
+                                if isinstance(table[row][col],bool):
+                                    state = QtCore.Qt.Checked if table[row][col] else QtCore.Qt.Unchecked
+                                    self.algorithm_parameter_list.item(row, col).setCheckState(state)
+                                else:
+                                    self.algorithm_parameter_list.item(row, col).setText(table[row][col])
+
+                            
+                elif component_name == "BW.boundary_table":
+                    self.boundarywindow()
+                    self.agnostic_component_setter(self.BW.boundary_table, loadedValue)
+                    #clicking self.BW.Setbutton
+                    self.BW.Setbutton.click()
+                    self.BW.close()
                             
                 else:
                     self.agnostic_component_setter(getattr(self,component_name), loadedValue)
 
 
 
-    def agnostic_component_setter(self,component, metadata):
+    def agnostic_component_setter(self,component, metadata:dict):
         """
         Set the value of a component regardless of its type.
         """
@@ -1589,6 +1659,8 @@ class Ui_Neuroptimus(QMainWindow):
         elif isinstance(component,QtWidgets.QPushButton):
             return self.gui_elements_state[component.objectName()].get("value", False)
         elif isinstance(component,QtWidgets.QTableWidget):
+            #print component anme
+            # print(component.objectName())
             #iterate over the rows and columns of the table widget and get the values
             return [[component.item(row, col).text() for col in range(component.columnCount())] for row in range(component.rowCount())]
         elif isinstance(component, TableSelections):
@@ -2633,7 +2705,7 @@ class Ui_Neuroptimus(QMainWindow):
         if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
             self.param_list[2] = [("Spike detection thres. (mV)",0.0)]
             self.param_list[1] = [("Spike detection thres. (mV)",0.0), ("Spike Window (ms)",1.0)]
-            print("self.param_list",self.param_list)
+            
         elif self.core.option_handler.type[-1].lower() == "features":
             self.param_list[0] = [("Spike detection thres. (mV)",0.0)]
 
@@ -3905,9 +3977,8 @@ class Ui_Neuroptimus(QMainWindow):
         self.extra_error_dialog.show()
 
     def boundarywindow(self):
-        self.BW = BoundaryWindow(self) 
-        self.BW.setObjectName("Neuroptimus")
-        self.BW.resize(400, 500)
+        self.BW = BoundaryWindow(self)
+       
         self.BW.show()
 
     def startingpoints(self):
@@ -4165,11 +4236,14 @@ class BoundaryWindow(QtWidgets.QMainWindow):
         vstep = 35
         hoffset = 10
         voffset = 15
+        self.setObjectName("Parameters_Boundaries")
+        self.setWindowTitle("Parameters Boundaries")
+        self.resize(400, 500)
         self.option_handler=parent.core.option_handler
         self.boundary_table = QtWidgets.QTableWidget(self)
         self.boundary_table.setGeometry(QtCore.QRect(10, 10, 302, 361))
         self.boundary_table.setObjectName("boundary_table")
-        self.setColumnCount(3)
+        self.boundary_table.setColumnCount(3)
         self.boundary_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.boundary_table.setHorizontalHeaderLabels(("Parameters;Minimum;Maximum").split(";"))
         self.boundary_table.setRowCount(len(self.option_handler.GetObjTOOpt()))
@@ -4197,21 +4271,21 @@ class BoundaryWindow(QtWidgets.QMainWindow):
             
         
            
-        Setbutton = QtWidgets.QPushButton(self)
-        Setbutton.setGeometry(QtCore.QRect(10, 400, 80, 22))
-        Setbutton.setObjectName("Setbutton")
-        Setbutton.setText(_translate("Neuroptimus", "Set"))
-        Setbutton.clicked.connect(self.Set)
-        Savebutton = QtWidgets.QPushButton(self)
-        Savebutton.setGeometry(QtCore.QRect(100, 400, 80, 22))
-        Savebutton.setObjectName("Savebutton")
-        Savebutton.setText(_translate("Neuroptimus", "Save"))
-        Savebutton.clicked.connect(self.Save)
-        Loadbutton = QtWidgets.QPushButton(self)
-        Loadbutton.setGeometry(QtCore.QRect(190, 400, 80, 22))
-        Loadbutton.setObjectName("Savebutton")
-        Loadbutton.setText(_translate("Neuroptimus", "Load"))
-        Loadbutton.clicked.connect(self.Load)
+        self.Setbutton = QtWidgets.QPushButton(self)
+        self.Setbutton.setGeometry(QtCore.QRect(10, 400, 80, 22))
+        self.Setbutton.setObjectName("Setbutton")
+        self.Setbutton.setText(_translate("Neuroptimus", "Set"))
+        self.Setbutton.clicked.connect(self.Set)
+        self.Savebutton = QtWidgets.QPushButton(self)
+        self.Savebutton.setGeometry(QtCore.QRect(100, 400, 80, 22))
+        self.Savebutton.setObjectName("Savebutton")
+        self.Savebutton.setText(_translate("Neuroptimus", "Save"))
+        self.Savebutton.clicked.connect(self.Save)
+        self.Loadbutton = QtWidgets.QPushButton(self)
+        self.Loadbutton.setGeometry(QtCore.QRect(190, 400, 80, 22))
+        self.Loadbutton.setObjectName("Savebutton")
+        self.Loadbutton.setText(_translate("Neuroptimus", "Load"))
+        self.Loadbutton.clicked.connect(self.Load)
 
     def Set(self, e):
         try:
