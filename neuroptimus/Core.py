@@ -200,7 +200,79 @@ class coreModul():
 				k_range=len(self.data_handler.features_data["stim_amp"])
 			self.option_handler.SetModelStimParam([[0]*k_range,0,0])
 
-	
+	def get_model_parameters(self,model_path,model_modFiles_dir,model_base_dir):
+		
+		# model_handler = modelHandlerNeuron(model_path,model_modFiles_dir,model_base_dir)
+		
+		# params = model_handler.GetParameters()
+		# h.quit()
+		
+		# return params
+		import subprocess
+		import json
+
+		# Define the command with arguments, including the output file path
+		output_file = "params_output.json"
+		output_file2 = "sections_output.json"
+		# command = ["python", "run_model_handler_separately.py", model_path, model_modFiles_dir, model_base_dir, output_file, output_file2]
+
+
+		python_code = f"""import argparse
+from modelHandler import modelHandlerNeuron
+import json
+
+
+# # Set up argument parsing
+# parser = argparse.ArgumentParser(description='Run model handler and get parameters.')
+# parser.add_argument('model_path', type=str, help='Path to the model')
+# parser.add_argument('model_modFiles_dir', type=str, help='Directory of mod files')
+# parser.add_argument('model_base_dir', type=str, help='Base directory of the model')
+# parser.add_argument('output_file', type=str, help='File to write the parameters to')
+
+# # Parse arguments
+# args = parser.parse_args()
+
+# Use the arguments to create a model handler instance
+model_handler = modelHandlerNeuron("{model_path}", "{model_modFiles_dir}", "{model_base_dir}")
+
+# Get parameters from the model handler
+params = model_handler.GetParameters()
+sections=[]
+for n in params:
+    sections.append(n[0])
+sections=list(set(sections))
+sections.append("None")
+
+# Write the parameters to the specified output file
+# Assuming params is a dictionary, convert it to a JSON string for writing
+with open("{output_file}", 'w') as f:
+    json.dump(params, f)
+
+#save json file with sections
+with open("{output_file2}", 'w') as f:
+    json.dump(sections, f)
+
+"""
+
+		command = ["python", "-c", python_code, model_modFiles_dir, model_base_dir, output_file]
+
+		# Run the command
+		subprocess.run(command)
+
+		# Read the output from the file
+		with open(output_file, 'r') as f:
+			params = json.load(f)
+			#delete the file
+			os.remove(output_file)
+		with open(output_file2, 'r') as f:
+			sections = json.load(f)
+			#delete the file
+			os.remove(output_file2)
+
+		# Now params contains the parameters read from the file
+		return params, sections
+			
+
 	def ReturnSections(self):
 		"""
 

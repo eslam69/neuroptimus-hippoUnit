@@ -2924,8 +2924,54 @@ class Ui_Neuroptimus(QMainWindow):
             simulator_selected = "hippounit"
             self.model_name = self.model_name_input.text()
             self._write_on_status_bar("Model loaded Successfully!")
+            sections = None
+            try:
+                # self.core.LoadModel({"model" : [self.model_file, self.spec_file],
+                #                     "simulator" : simulator_selected,
+                #                     "sim_command" : self.sim_path.text() if not self.dd_type else self.sim_path.text()+" "+self.sim_param.text()})
+                
+                # temp = self.core.model_handler.GetParameters()
+                temp,sections = self.core.get_model_parameters(self.model_file,self.spec_file,self.lineEdit_folder.text())
+                if temp!=None:
+                    with open("model.txt", 'w+') as out:
+                        for i in temp:
+                            out.write(str(i))
+                            out.write("\n")
+                        index=0
+                    self.modellist.setRowCount(self.recursive_len(temp))
+                    for row in temp:
+                        for k in (row[1]):
+                            if k != []:
+                                for s in (k[2]):
+                                    self.modellist.setItem(index, 0, QTableWidgetItem(row[0]))
+                                    self.modellist.setItem(index, 1, QTableWidgetItem(str(k[0])))
+                                    self.modellist.setItem(index, 2, QTableWidgetItem(k[1]))
+                                    self.modellist.setItem(index, 3, QTableWidgetItem(s))
+                                    index+=1
+                    self.modellist.setRowCount(index)
+                else:
+                    pass
 
-
+            except OSError as oe:
+                print(oe)
+            except Exception as e:
+                print("Error in Load2:")
+                traceback.print_exc()
+            if not self.dd_type.currentIndex():  
+                try:
+                    if sections is not None:
+                        [sections.remove("None") for i in range(sections.count("None"))]
+                        self.section_rec.addItems(sections)
+                        self.section_stim.addItems(sections)
+                        if "soma" in sections:
+                            self.section_rec.setCurrentText("soma")
+                            self.section_stim.setCurrentText("soma")
+                    else:
+                        #throw an error
+                        raise ValueError("Sections not found")
+                except:
+                    traceback.print_exc()
+                    popup("Section error")
 
             return
 
@@ -4224,7 +4270,7 @@ class StimuliWindow(QtWidgets.QMainWindow):
             self.is_stimuli_accepted = True
         except:
                 popup("Stimuli values are missing or incorrect")
-                traceback.print_exception()
+                traceback.print_exc()
         self.close()
 
     
