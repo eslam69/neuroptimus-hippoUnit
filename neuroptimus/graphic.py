@@ -135,7 +135,6 @@ class CustomTableWidget(QTableWidget):
         else:
             super().setItem(row, column, item)
     def item(self, row, column):
-        print(f"item row: {row}, column: {column}")
         #agnostically return the item in the cell
         try:
             item = self.cellWidget(row, column)
@@ -1092,7 +1091,7 @@ class Ui_Neuroptimus(QMainWindow):
         #make the table widget stretch to fill the available space
         # self.fit_tab_grid.setColumnStretch(0, 1)
         # self.fit_tab_grid.setRowStretch(0, 1)
-        self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        # self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         #decrease size of 2nd column to be small
         # self.fit_tab_grid.setColumnMinimumWidth(0, 200)
 
@@ -1662,6 +1661,7 @@ class Ui_Neuroptimus(QMainWindow):
                                 self.fitlist.selectRow(row)
                                 # self.fitlist.setItem(row, col, QtWidgets.QTableWidgetItem(table[row][col]))
                                 self.fitlist.item(row,col).setText(table[row][col])
+                                self.fitchanged()
 
                 elif component_name == "test_specific_settings_table":
                     #update cells value in the table from the loaded table
@@ -2340,7 +2340,10 @@ class Ui_Neuroptimus(QMainWindow):
         if self.type_selector.currentText() == "HippoUnit"  :
             self.fitlist.setColumnCount(5)
             self.fitlist.setHorizontalHeaderLabels(["Fitness functions","Weights", "Target data path","Stimuli file path","Feature penalty"])
-            self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+            # self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+            self.fitlist.resizeColumnToContents(2)
+            self.fitlist.resizeColumnToContents(3)
+            self.fitlist.resizeColumnToContents(4)
             self.fitlist.verticalHeader().setVisible(False)
             self.fitlist.setRowCount(0)
             self.fitlist.setAlternatingRowColors(False)
@@ -2349,9 +2352,13 @@ class Ui_Neuroptimus(QMainWindow):
             # self.fitlist.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
             self.fitlist.setSortingEnabled(False)
             self.fitlist.setShowGrid(True)
-            self.fitlist.setWordWrap(False)
+            self.fitlist.setWordWrap(True)
             self.fitlist.setCornerButtonEnabled(True)
-            # self.fitlist.horizontalHeader().setStretchLastSection(True)
+            self.fitlist.horizontalHeader().setStretchLastSection(True)
+            min_width = sum([self.fitlist.columnWidth(i) for i in range(self.fitlist.columnCount())])
+            self.fitlist.setMinimumWidth(min_width)
+           
+
 
 
             # if cell in column 2 or 3  doubel clicked, open file dialog 
@@ -2428,10 +2435,10 @@ class Ui_Neuroptimus(QMainWindow):
             #setting color to gray rgb(192,192,192)
             self.fitlist.item(4, 3).setBackground(GRAY)
             #non clickable cell
-            self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+            # self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
             # column 2 3 have fixed width enough for the header text
-            self.fitlist.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Fixed)
-            self.fitlist.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.Fixed)
+            # self.fitlist.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Fixed)
+            # self.fitlist.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.Fixed)
             #set the width of column 2 3 to 200
             self.fitlist.setColumnWidth(2, 130)
             self.fitlist.setColumnWidth(3, 130)
@@ -2567,7 +2574,7 @@ class Ui_Neuroptimus(QMainWindow):
     
         self._disable_column_editing(self.fitlist, 0)
         #stretch the last column
-        self.fitlist.horizontalHeader().setStretchLastSection(True)
+        # self.fitlist.horizontalHeader().setStretchLastSection(True)
 
     def _disable_column_editing(self, table_widget, column_index):
         """
