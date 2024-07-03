@@ -19,7 +19,7 @@ import re
 import threading
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox,QTableWidget
+from PyQt5.QtWidgets import QMainWindow, QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox,QTableWidget, QHBoxLayout, QPushButton
 from PyQt5.QtGui import *
 from PyQt5.QtCore import QThread, pyqtSignal
 import json
@@ -48,6 +48,108 @@ def add_trailing_slash(path):
     if path and path[-1] != "/":
         return path + "/"
     return path
+GRAY = QtGui.QColor(192, 192, 192)
+GRAY = QtGui.QColor(220, 220, 220)
+WHITE = QtGui.QColor(255, 255, 255)
+BLACK = QtGui.QColor(0, 0, 0)
+
+class fitlistTableItem(QWidget):
+    def __init__(self,text="" ):
+        super().__init__()
+        self.layout = QHBoxLayout(self)
+        self.lineEdit = QLineEdit(self)
+        self.lineEdit.setText(text)
+        self.button = QPushButton("...", self)
+        self.layout.addWidget(self.lineEdit)
+        self.layout.addWidget(self.button)
+        self.button.clicked.connect(self.openFileDialog)
+        # self.layout.setContentsMargins(0, 0, 0, 0)
+        #make the text field wider than the button , button shall fit only the ...
+        self.lineEdit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.button.setMaximumWidth(15)
+        #set small font for the text field
+        self.lineEdit.setFont(QFont("Arial", 8))
+        self.setLayout(self.layout)
+        self._flags = QtCore.Qt.ItemFlags(QtCore.Qt.NoItemFlags)  # Default flags
+
+
+    def openFileDialog(self):
+        filePath, _ = QFileDialog.getOpenFileName(self, "Select File")
+        if filePath:
+            self.lineEdit.setText(filePath)
+
+    def setText(self, text):
+        self.lineEdit.setText(text)
+
+    def text(self):
+        return self.lineEdit.text()
+    
+    def setToolTip(self, text):
+        self.button.setToolTip(text)
+    def setFlags(self, flags):
+        # return
+        # if flags == 0:
+        #     self.button.setEnabled(False)
+        #     self.lineEdit.setReadOnly(True)
+        #     #
+        # else:
+        #     self.button.setEnabled(True)
+        #     self.lineEdit.setReadOnly(False)
+        self._flags = flags
+        if flags & QtCore.Qt.ItemIsEditable:
+            self.lineEdit.setReadOnly(False)
+            self.button.setEnabled(True)
+        else:
+            self.lineEdit.setReadOnly(True)
+            self.button.setEnabled(False)
+    def flags(self):
+        return self._flags
+
+    def setBackground(self, color):
+        return
+        # return
+        #convert color to hex
+        color = color.name()
+        print("setBackground",color)
+
+        self.lineEdit.setStyleSheet(f"background-color: {color}")
+        self.button.setStyleSheet(f"background-color: {color}")
+    def setForeground(self,color):
+        return
+        color = color.name()
+        print("setForeground",color)
+        self.lineEdit.setStyleSheet(f"color: {color}")
+        self.button.setStyleSheet(f"color: {color}")
+    
+
+
+class CustomTableWidget(QTableWidget):
+    """ a class to create a custom table widget that can hold custom widgets in its cells
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    def setItem(self, row, column, item):
+        if isinstance(item, fitlistTableItem):
+            self.setCellWidget(row, column, item)
+        else:
+            super().setItem(row, column, item)
+    def item(self, row, column):
+        #agnostically return the item in the cell
+        try:
+            item = self.cellWidget(row, column)
+            if item:
+                return item
+            else:
+                return super().item(row, column)
+        except:
+            return super().item(row, column)
+    # def setSelectionBehavior(self, behavior):
+
+        
+       
+
+
 
 class QHLine(QtWidgets.QFrame):
             def __init__(self):
@@ -946,7 +1048,8 @@ class Ui_Neuroptimus(QMainWindow):
         font.setWeight(50)
         self.label_56.setFont(font)
         self.label_56.setObjectName("label_56")
-        self.fitlist = QtWidgets.QTableWidget(self.fittab)
+        # self.fitlist = QtWidgets.QTableWidget(self.fittab)
+        self.fitlist = CustomTableWidget(self.fittab)
         # self.fitlist.setGeometry(QtCore.QRect(10, 80, 301, 401))
         self.fitlist.setObjectName("fitlist")
         # self.spike_tresh = QtWidgets.QLineEdit(self.fittab)
@@ -988,7 +1091,7 @@ class Ui_Neuroptimus(QMainWindow):
         #make the table widget stretch to fill the available space
         # self.fit_tab_grid.setColumnStretch(0, 1)
         # self.fit_tab_grid.setRowStretch(0, 1)
-        self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        # self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         #decrease size of 2nd column to be small
         # self.fit_tab_grid.setColumnMinimumWidth(0, 200)
 
@@ -1072,13 +1175,13 @@ class Ui_Neuroptimus(QMainWindow):
         self.test_specific_settings_table.setItem(0, 0, QtWidgets.QTableWidgetItem("Spike detection threshold (mV) "))
         self.test_specific_settings_table.setItem(0, 1, QtWidgets.QTableWidgetItem("0"))
         self.test_specific_settings_table.item(0, 0).setFlags(QtCore.Qt.NoItemFlags)
-        self.test_specific_settings_table.item(0, 0).setForeground(QtGui.QColor(0,0   ,0))
+        self.test_specific_settings_table.item(0, 0).setForeground(BLACK)
         # row 1 Spike Window (ms)
         self.test_specific_settings_table.insertRow(1)
         self.test_specific_settings_table.setItem(1, 0, QtWidgets.QTableWidgetItem("Spike Window (ms)"))
         self.test_specific_settings_table.setItem(1, 1, QtWidgets.QTableWidgetItem("1.0"))
         self.test_specific_settings_table.item(1, 0).setFlags(QtCore.Qt.NoItemFlags)
-        self.test_specific_settings_table.item(1, 0).setForeground(QtGui.QColor(0,0   ,0))
+        self.test_specific_settings_table.item(1, 0).setForeground(BLACK)
 
         
         
@@ -1460,6 +1563,7 @@ class Ui_Neuroptimus(QMainWindow):
                 self.gui_elements_state[component_name] = {"type": "QPushButton", "value": self.SiW.is_stimuli_created}
             elif component_name == "SiW.pushButton_accept":
                 self.gui_elements_state[component_name] = {"type": "QPushButton", "value": self.SiW.is_stimuli_accepted}
+
             elif component_name == "algolist":
                 # self.gui_elements_state[component_name] = {"type": "QTabelWidget", "value": self.agnostic_component_getter(self.algolist), "current_row": self.algolist.currentRow() }
                 table_cells = []
@@ -1467,6 +1571,15 @@ class Ui_Neuroptimus(QMainWindow):
                     #it is a single column table
                     table_cells.append(self.algolist.item(row, 0).text())
                 self.gui_elements_state[component_name] = {"type": "QTabelWidget", "value": table_cells, "current_row": self.algolist.currentRow() }
+            elif component_name == "fitlist":
+                #get text of each cell and save it in a list
+                table = []
+                for row in range(self.fitlist.rowCount()):
+                    row_values = []
+                    for col in range(self.fitlist.columnCount()):
+                        row_values.append(self.fitlist.item(row, col).text())
+                    table.append(row_values)
+                self.gui_elements_state[component_name] = {"type": "CustomTableWidget", "value": table}
             
             elif component_name == "algorithm_parameter_list":
                 table = []
@@ -1538,14 +1651,17 @@ class Ui_Neuroptimus(QMainWindow):
                                 verbose(table[row][1])
                                 #first filling the rows
                                 self.fitlist.blockSignals(True)
-                                self.fitlist.setItem(row, col, QtWidgets.QTableWidgetItem(table[row][col]))
+                                # self.fitlist.setItem(row, col, QtWidgets.QTableWidgetItem(table[row][col]))
+                                self.fitlist.item(row,col).setText(table[row][col])
                                 self.fitlist.blockSignals(False)                        #then fill the table with the rest of the values except the weight
                         for col in range(1,len(table[0])):
                             for row in range(len(table)):
                                 #then fill the 
                                 self.fitlist.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
                                 self.fitlist.selectRow(row)
-                                self.fitlist.setItem(row, col, QtWidgets.QTableWidgetItem(table[row][col]))
+                                # self.fitlist.setItem(row, col, QtWidgets.QTableWidgetItem(table[row][col]))
+                                self.fitlist.item(row,col).setText(table[row][col])
+                                self.fitchanged()
 
                 elif component_name == "test_specific_settings_table":
                     #update cells value in the table from the loaded table
@@ -1626,6 +1742,7 @@ class Ui_Neuroptimus(QMainWindow):
                 for row in range(component.rowCount()):
                     for col in range(component.columnCount()):
                         component.setItem(row, col, QtWidgets.QTableWidgetItem(value[row][col]))
+                        # component.item(row,col).setText(text = value[row][col])
         elif isinstance(component, TableSelections):
             if value:
                 table_widget_to_set = getattr(self,component.get_table_widget())
@@ -1658,6 +1775,7 @@ class Ui_Neuroptimus(QMainWindow):
             return component.currentItem()
         elif isinstance(component,QtWidgets.QPushButton):
             return self.gui_elements_state[component.objectName()].get("value", False)
+
         elif isinstance(component,QtWidgets.QTableWidget):
             #print component anme
             # print(component.objectName())
@@ -2222,7 +2340,10 @@ class Ui_Neuroptimus(QMainWindow):
         if self.type_selector.currentText() == "HippoUnit"  :
             self.fitlist.setColumnCount(5)
             self.fitlist.setHorizontalHeaderLabels(["Fitness functions","Weights", "Target data path","Stimuli file path","Feature penalty"])
-            self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+            # self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+            self.fitlist.resizeColumnToContents(2)
+            self.fitlist.resizeColumnToContents(3)
+            self.fitlist.resizeColumnToContents(4)
             self.fitlist.verticalHeader().setVisible(False)
             self.fitlist.setRowCount(0)
             self.fitlist.setAlternatingRowColors(False)
@@ -2231,9 +2352,13 @@ class Ui_Neuroptimus(QMainWindow):
             # self.fitlist.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
             self.fitlist.setSortingEnabled(False)
             self.fitlist.setShowGrid(True)
-            self.fitlist.setWordWrap(False)
+            self.fitlist.setWordWrap(True)
             self.fitlist.setCornerButtonEnabled(True)
-            # self.fitlist.horizontalHeader().setStretchLastSection(True)
+            self.fitlist.horizontalHeader().setStretchLastSection(True)
+            min_width = sum([self.fitlist.columnWidth(i) for i in range(self.fitlist.columnCount())])
+            self.fitlist.setMinimumWidth(min_width)
+           
+
 
 
             # if cell in column 2 or 3  doubel clicked, open file dialog 
@@ -2265,67 +2390,55 @@ class Ui_Neuroptimus(QMainWindow):
             # #row 0 SomaticFeaturesTest target_data_path , second column to be filled with stimuli_file_path
             
 
-            class fitlistTableItem(QtWidgets.QTableWidgetItem):
-                def __init__(self, text= "Browse (Double Click)"):
-                    super().__init__(text)
-                    self.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-                    browse_cell_text = text
-                    browse_cell_font = QtGui.QFont()
-                    #smaller font
-                    browse_cell_font.setPointSize(8)
-                    #set the font to the cell
-                    self.setFont(browse_cell_font)
-                    #cell dont expand
-                    self.setSizeHint(QtCore.QSize(100, 20))
-
 
 
             self.fitlist.insertRow(0)
+            # self.fitlist.setItem(0, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["SomaticFeaturesTest"]))
             self.fitlist.setItem(0, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["SomaticFeaturesTest"]))
-            self.fitlist.setItem(0, 2, fitlistTableItem("Browse (Double Click)"))
-            self.fitlist.setItem(0, 3, fitlistTableItem("Browse (Double Click)"))
+            self.fitlist.setItem(0, 2, fitlistTableItem(""))
+            self.fitlist.setItem(0, 3, fitlistTableItem(""))
             self.fitlist.setItem(0, 4, QtWidgets.QTableWidgetItem("250"))
             
             #row 1 PSPAttenuationTest
             self.fitlist.insertRow(1)
             self.fitlist.setItem(1, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["PSPAttenuationTest"]))
-            self.fitlist.setItem(1, 2, fitlistTableItem("Browse (Double Click)"))
-            self.fitlist.setItem(1, 3, fitlistTableItem("Browse (Double Click)"))
+            self.fitlist.setItem(1, 2, fitlistTableItem(""))
+            self.fitlist.setItem(1, 3, fitlistTableItem(""))
             self.fitlist.setItem(1, 4, QtWidgets.QTableWidgetItem("250"))
             #BackpropagatingAPTest
             self.fitlist.insertRow(2)
             self.fitlist.setItem(2, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["BackpropagatingAPTest"]))
-            self.fitlist.setItem(2, 2, fitlistTableItem("Browse (Double Click)"))
-            self.fitlist.setItem(2, 3, fitlistTableItem("Browse (Double Click)"))
+            self.fitlist.setItem(2, 2, fitlistTableItem(""))
+            self.fitlist.setItem(2, 3, fitlistTableItem(""))
             self.fitlist.setItem(2, 4, QtWidgets.QTableWidgetItem("250"))
             #PathwayInteraction
             self.fitlist.insertRow(3)
             self.fitlist.setItem(3, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["PathwayInteraction"]))
-            self.fitlist.setItem(3, 2, fitlistTableItem("Browse (Double Click)"))
-            self.fitlist.setItem(3, 3, fitlistTableItem("Browse (Double Click)"))
+            self.fitlist.setItem(3, 2, fitlistTableItem(""))
+            self.fitlist.setItem(3, 3, fitlistTableItem(""))
             self.fitlist.setItem(3, 4, QtWidgets.QTableWidgetItem("250"))
 
             #non editable and non selectable cell
             self.fitlist.item(3, 3).setFlags(QtCore.Qt.NoItemFlags)
             #setting color to gray rgb(192,192,192)
-            self.fitlist.item(3, 3).setBackground(QtGui.QColor(192,192,192))
+            self.fitlist.item(3, 3).setBackground(GRAY)
             #BackpropagatingAPTest
             self.fitlist.insertRow(4)
             self.fitlist.setItem(4, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["DepolarizationBlockTest"]))
-            self.fitlist.setItem(4, 2, fitlistTableItem("Browse (Double Click)"))
-            self.fitlist.setItem(4, 3, fitlistTableItem(" "))
+            self.fitlist.setItem(4, 2, fitlistTableItem(""))
+            self.fitlist.setItem(4, 3, QtWidgets.QTableWidgetItem(""))
             self.fitlist.setItem(4, 4, QtWidgets.QTableWidgetItem("250"))
 
         
             #non editable and non selectable cell
             self.fitlist.item(4, 3).setFlags(QtCore.Qt.NoItemFlags)
             #setting color to gray rgb(192,192,192)
-            self.fitlist.item(4, 3).setBackground(QtGui.QColor(192,192,192))
+            self.fitlist.item(4, 3).setBackground(GRAY)
             #non clickable cell
-            self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+            # self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
             # column 2 3 have fixed width enough for the header text
-            self.fitlist.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Fixed)
-            self.fitlist.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.Fixed)
+            # self.fitlist.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Fixed)
+            # self.fitlist.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.Fixed)
             #set the width of column 2 3 to 200
             self.fitlist.setColumnWidth(2, 130)
             self.fitlist.setColumnWidth(3, 130)
@@ -2334,11 +2447,11 @@ class Ui_Neuroptimus(QMainWindow):
             #ObliqueIntegrationTest
             self.fitlist.insertRow(5)
             self.fitlist.setItem(5, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["ObliqueIntegrationTest"]))
-            self.fitlist.setItem(5, 2, fitlistTableItem("Browse (Double Click)"))
+            self.fitlist.setItem(5, 2, fitlistTableItem(""))
             self.fitlist.setItem(5, 3, QtWidgets.QTableWidgetItem(" "))
             self.fitlist.setItem(5, 4, QtWidgets.QTableWidgetItem("250"))
             #set its color to gray
-            self.fitlist.item(5, 3).setBackground(QtGui.QColor(192,192,192))
+            self.fitlist.item(5, 3).setBackground(GRAY)
             
             #make it non editable and non selectable
             self.fitlist.item(5, 3).setFlags(QtCore.Qt.NoItemFlags)
@@ -2347,13 +2460,13 @@ class Ui_Neuroptimus(QMainWindow):
             for row in range(self.fitlist.rowCount()):
                 for column in range(self.fitlist.columnCount()):
                     if column == 2 :
-                        self.fitlist.item(row, column).setToolTip("Double click to Browse")
+                        self.fitlist.item(row, column).setToolTip("click to Browse")
                     elif column == 3:
                         #if last three rows:
                         if row >= self.fitlist.rowCount()-2:
                             self.fitlist.item(row, column).setToolTip("N/A")
                         else:
-                            self.fitlist.item(row, column).setToolTip("Double click to Browse")
+                            self.fitlist.item(row, column).setToolTip("click to Browse")
             # self.fitlist.horizontalHeader().setStretchLastSection(True)
             
             #gray #4th 5th 6th columns
@@ -2361,7 +2474,7 @@ class Ui_Neuroptimus(QMainWindow):
             for row in range(self.fitlist.rowCount()):
                 for column in range(2,5):
                     self.fitlist.item(row, column).setFlags(QtCore.Qt.NoItemFlags)
-                    self.fitlist.item(row, column).setBackground(QtGui.QColor(192,192,192))
+                    self.fitlist.item(row, column).setBackground(GRAY)
             self.fitlist.blockSignals(False)
 
 
@@ -2370,7 +2483,7 @@ class Ui_Neuroptimus(QMainWindow):
             # for row in range(self.fitlist.rowCount()):
             #     for column in range(2,5):
             #         self.fitlist.item(row, column).setFlags(QtCore.Qt.NoItemFlags)
-            #         self.fitlist.item(row, column).setBackground(QtGui.QColor(192,192,192))
+            #         self.fitlist.item(row, column).setBackground(GRAY)
             # self.fitlist.blockSignals(False)
 
             #first row of test_specific_settings_table value be -20 
@@ -2383,56 +2496,56 @@ class Ui_Neuroptimus(QMainWindow):
             self.test_specific_settings_table.setItem(2, 0, QtWidgets.QTableWidgetItem("SomaSecList_name  (leave empty if no template is used)"))
             self.test_specific_settings_table.setItem(2, 1, QtWidgets.QTableWidgetItem(""))
             self.test_specific_settings_table.item(2, 0).setFlags(QtCore.Qt.NoItemFlags)
-            self.test_specific_settings_table.item(2, 0).setForeground(QtGui.QColor(0,0   ,0))
+            self.test_specific_settings_table.item(2, 0).setForeground(BLACK)
             # row 3 TrunkSecList_name
             self.test_specific_settings_table.insertRow(3)
             self.test_specific_settings_table.setItem(3, 0, QtWidgets.QTableWidgetItem("TrunkSecList_name"))
             self.test_specific_settings_table.setItem(3, 1, QtWidgets.QTableWidgetItem(""))
             self.test_specific_settings_table.item(3, 0).setFlags(QtCore.Qt.NoItemFlags)
-            self.test_specific_settings_table.item(3, 0).setForeground(QtGui.QColor(0,0   ,0))
+            self.test_specific_settings_table.item(3, 0).setForeground(BLACK)
 
             # row 4 ObliqueSecList_name
             self.test_specific_settings_table.insertRow(4)
             self.test_specific_settings_table.setItem(4, 0, QtWidgets.QTableWidgetItem("ObliqueSecList_name"))
             self.test_specific_settings_table.setItem(4, 1, QtWidgets.QTableWidgetItem(""))
             self.test_specific_settings_table.item(4, 0).setFlags(QtCore.Qt.NoItemFlags)
-            self.test_specific_settings_table.item(4, 0).setForeground(QtGui.QColor(0,0   ,0))
+            self.test_specific_settings_table.item(4, 0).setForeground(BLACK)
             # row 5 TuftSecList_name
             self.test_specific_settings_table.insertRow(5)
             self.test_specific_settings_table.setItem(5, 0, QtWidgets.QTableWidgetItem("TuftSecList_name"))
             self.test_specific_settings_table.setItem(5, 1, QtWidgets.QTableWidgetItem(""))
             self.test_specific_settings_table.item(5, 0).setFlags(QtCore.Qt.NoItemFlags)
-            self.test_specific_settings_table.item(5, 0).setForeground(QtGui.QColor(0,0   ,0))
+            self.test_specific_settings_table.item(5, 0).setForeground(BLACK)
 
             #row 6 num_of_dend_locations
             self.test_specific_settings_table.insertRow(6)
             self.test_specific_settings_table.setItem(6, 0, QtWidgets.QTableWidgetItem("num_of_dend_locations"))
             self.test_specific_settings_table.setItem(6, 1, QtWidgets.QTableWidgetItem("15"))
             self.test_specific_settings_table.item(6, 0).setFlags(QtCore.Qt.NoItemFlags)
-            self.test_specific_settings_table.item(6, 0).setForeground(QtGui.QColor(0,0   ,0))
+            self.test_specific_settings_table.item(6, 0).setForeground(BLACK)
 
 
             #make these rows gray  TrunkSecList_name ObliqueSecList_name TuftSecList_name  rows and make them non editable
             # self.hippounit_test_sections_names_table.item(2, 1).setFlags(QtCore.Qt.NoItemFlags)
-            # self.hippounit_test_sections_names_table.item(2, 1).setBackground(QtGui.QColor(192,192,192))
-            # self.hippounit_test_sections_names_table.item(2, 0).setBackground(QtGui.QColor(192,192,192))
+            # self.hippounit_test_sections_names_table.item(2, 1).setBackground(GRAY)
+            # self.hippounit_test_sections_names_table.item(2, 0).setBackground(GRAY)
 
 
             self.test_specific_settings_table.item(3, 1).setFlags(QtCore.Qt.NoItemFlags)
-            self.test_specific_settings_table.item(3, 1).setBackground(QtGui.QColor(192,192,192))
-            self.test_specific_settings_table.item(3, 0).setBackground(QtGui.QColor(192,192,192))
+            self.test_specific_settings_table.item(3, 1).setBackground(GRAY)
+            self.test_specific_settings_table.item(3, 0).setBackground(GRAY)
 
             self.test_specific_settings_table.item(4, 1).setFlags(QtCore.Qt.NoItemFlags)
-            self.test_specific_settings_table.item(4, 1).setBackground(QtGui.QColor(192,192,192))
-            self.test_specific_settings_table.item(4, 0).setBackground(QtGui.QColor(192,192,192))
+            self.test_specific_settings_table.item(4, 1).setBackground(GRAY)
+            self.test_specific_settings_table.item(4, 0).setBackground(GRAY)
 
             self.test_specific_settings_table.item(5, 1).setFlags(QtCore.Qt.NoItemFlags)
-            self.test_specific_settings_table.item(5, 1).setBackground(QtGui.QColor(192,192,192))
-            self.test_specific_settings_table.item(5, 0).setBackground(QtGui.QColor(192,192,192))
+            self.test_specific_settings_table.item(5, 1).setBackground(GRAY)
+            self.test_specific_settings_table.item(5, 0).setBackground(GRAY)
 
             self.test_specific_settings_table.item(6, 1).setFlags(QtCore.Qt.NoItemFlags)
-            self.test_specific_settings_table.item(6, 1).setBackground(QtGui.QColor(192,192,192))
-            self.test_specific_settings_table.item(6, 0).setBackground(QtGui.QColor(192,192,192))
+            self.test_specific_settings_table.item(6, 1).setBackground(GRAY)
+            self.test_specific_settings_table.item(6, 0).setBackground(GRAY)
 
             
             
@@ -2461,7 +2574,7 @@ class Ui_Neuroptimus(QMainWindow):
     
         self._disable_column_editing(self.fitlist, 0)
         #stretch the last column
-        self.fitlist.horizontalHeader().setStretchLastSection(True)
+        # self.fitlist.horizontalHeader().setStretchLastSection(True)
 
     def _disable_column_editing(self, table_widget, column_index):
         """
@@ -2469,7 +2582,7 @@ class Ui_Neuroptimus(QMainWindow):
         """
         for row in range(table_widget.rowCount()):
             table_widget.item(row, column_index).setFlags(QtCore.Qt.NoItemFlags)
-            table_widget.item(row, column_index).setForeground(QtGui.QColor(0,0   ,0))
+            table_widget.item(row, column_index).setForeground(BLACK)
 
     def disable_mod_path(self):
         """
@@ -2829,7 +2942,7 @@ class Ui_Neuroptimus(QMainWindow):
                 if len(self.core.option_handler.GetObjTOOpt()) == 0:
                     self.remover.setEnabled(False )
                 for j in range(4):
-                    self.modellist.item(selected_row,j).setBackground(QtGui.QColor(255,255,255))
+                    self.modellist.item(selected_row,j).setBackground(WHITE)
 
 
 
@@ -3043,7 +3156,7 @@ class Ui_Neuroptimus(QMainWindow):
     #         if item_selected.column()==0:
     #             current_item=str(self.fitlist.item(item_selected.row(), 0).text())
     #             if current_item in self.fitset:
-    #                 self.fitlist.item(item_selected.row(),0).setBackground(QtGui.QColor(255,255,255))
+    #                 self.fitlist.item(item_selected.row(),0).setBackground(WHITE)
     #                 self.fitset.remove(current_item)
     #             else:
     #                 self.fitlist.item(item_selected.row(),0).setBackground(QtGui.QColor(0,255,0))
@@ -3095,7 +3208,7 @@ class Ui_Neuroptimus(QMainWindow):
                             else:
                                 pass #keep the value
                         elif  not os.path.isfile(self.fitlist.item(selected_row, column).text()) :
-                            self.fitlist.item(selected_row, column).setText("Double click to Browse!")
+                            self.fitlist.item(selected_row, column).setText("")
                             
                         else :
                             pass
@@ -3105,15 +3218,15 @@ class Ui_Neuroptimus(QMainWindow):
                         #         self.fitlist.item(selected_row, column).setText("250") 
                                 # self.fitlist.item(selected_row, column).setPlaceholderText("250") 
                         if (column == 3 and selected_row == 4) or (column == 3 and selected_row == 5)  :
-                            self.fitlist.item(selected_row, column).setBackground(QtGui.QColor(192,192,192))
-                            self.fitlist.item(selected_row, column).setForeground(QtGui.QColor(0,0,0))
+                            self.fitlist.item(selected_row, column).setBackground(GRAY)
+                            self.fitlist.item(selected_row, column).setForeground(BLACK)
                             self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
                             self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.NoItemFlags)
                             self.fitlist.item(selected_row, column).setText("")
                         
                         else:
-                            self.fitlist.item(selected_row, column).setBackground(QtGui.QColor(255,255,255))
-                            self.fitlist.item(selected_row, column).setForeground(QtGui.QColor(0,0,0))
+                            self.fitlist.item(selected_row, column).setBackground(WHITE)
+                            self.fitlist.item(selected_row, column).setForeground(BLACK)
                             self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
                         
                     self.fitlist.blockSignals(False)
@@ -3125,16 +3238,16 @@ class Ui_Neuroptimus(QMainWindow):
                         for property in required_properties_by_test:
                             property_row = self.HippoTests_parameter_location_in_table[property]
                             self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
-                            self.test_specific_settings_table.item(property_row, 1).setBackground(QtGui.QColor(255,255,255))
-                            self.test_specific_settings_table.item(property_row, 0).setBackground(QtGui.QColor(255,255,255))
+                            self.test_specific_settings_table.item(property_row, 1).setBackground(WHITE)
+                            self.test_specific_settings_table.item(property_row, 0).setBackground(WHITE)
                    
                    
                 else : # Weight is 0 or none
                     #make uneditable and grayed out rows if the weight is 0 or none
                     self.fitlist.blockSignals(True)
                     for column in range(2,5): 
-                        self.fitlist.item(selected_row, column).setBackground(QtGui.QColor(192,192,192))
-                        self.fitlist.item(selected_row, column).setForeground(QtGui.QColor(0,0,0))
+                        self.fitlist.item(selected_row, column).setBackground(GRAY)
+                        self.fitlist.item(selected_row, column).setForeground(BLACK)
                         self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
                         self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.NoItemFlags)
                         self.fitlist.item(selected_row, column).setText("") 
@@ -3149,8 +3262,8 @@ class Ui_Neuroptimus(QMainWindow):
                             # print("property",property)
                             property_row = self.HippoTests_parameter_location_in_table[property]
                             self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.NoItemFlags)
-                            self.test_specific_settings_table.item(property_row, 1).setBackground(QtGui.QColor(192,192,192))
-                            self.test_specific_settings_table.item(property_row, 0).setBackground(QtGui.QColor(192,192,192))
+                            self.test_specific_settings_table.item(property_row, 1).setBackground(GRAY)
+                            self.test_specific_settings_table.item(property_row, 0).setBackground(GRAY)
                         
             except AttributeError as ae:
                 pass    

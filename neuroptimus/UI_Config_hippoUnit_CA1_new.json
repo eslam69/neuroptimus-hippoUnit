@@ -1,0 +1,391 @@
+{
+    "type_selector": {
+        "type": "QComboBox",
+        "value": "HippoUnit",
+        "enabled": true
+    },
+    "lineEdit_file": {
+        "type": "QLineEdit",
+        "value": "",
+        "enabled": false
+    },
+    "time_checker": {
+        "type": "QCheckBox",
+        "value": false,
+        "enabled": false
+    },
+    "lineEdit_folder": {
+        "type": "QLineEdit",
+        "value": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/model",
+        "enabled": true
+    },
+    "size_ctrl": {
+        "type": "QLineEdit",
+        "value": "",
+        "enabled": false
+    },
+    "dropdown": {
+        "type": "QComboBox",
+        "value": "",
+        "enabled": false
+    },
+    "length_ctrl": {
+        "type": "QLineEdit",
+        "value": "",
+        "enabled": false
+    },
+    "freq_ctrl": {
+        "type": "QLineEdit",
+        "value": "",
+        "enabled": false
+    },
+    "pushButton_3": {
+        "type": "QPushButton",
+        "value": true,
+        "enabled": true
+    },
+    "model_name_input": {
+        "type": "QLineEdit",
+        "value": "detailed_CA1_pyramidal_neuron",
+        "enabled": true
+    },
+    "dd_type": {
+        "type": "QComboBox",
+        "value": "Neuron",
+        "enabled": false
+    },
+    "lineEdit_file2": {
+        "type": "QLineEdit",
+        "value": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/model/load_model_na_inhomo_minimal_model+KM+KA+KD.hoc",
+        "enabled": true
+    },
+    "load_mods_checkbox": {
+        "type": "QCheckBox",
+        "value": true,
+        "enabled": true
+    },
+    "lineEdit_folder2": {
+        "type": "QLineEdit",
+        "value": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/model",
+        "enabled": false
+    },
+    "pushButton_13": {
+        "type": "QPushButton",
+        "value": true,
+        "enabled": true
+    },
+    "modellist": {
+        "type": "QTableWidget",
+        "value": [],
+        "enabled": true
+    },
+    "pushButton_16": {
+        "type": "QPushButton",
+        "value": false,
+        "enabled": true
+    },
+    "modellist_selected_rows": {
+        "type": "TableSelections",
+        "value": [],
+        "enabled": true
+    },
+    "setter": {
+        "type": "QPushButton",
+        "value": false,
+        "enabled": true
+    },
+    "SW.plaintext": {
+        "type": "QPlainTextEdit",
+        "value": "#Please define your function below in the template!\n#You may choose an arbitrary name for your function,\n#but the input parameters must be self and a vector!In the first line of the function specify the length of the vector in a comment!\n#In the second line you may specify the names of the parameters in a comment, separated by spaces.\ndef usr_fun(self,v):\n#12\n#Na_BG_act_inact_shift 0\n#gmax_K_DRS4_params_voltage_dep_dend 1\n#gmax_Na_BG_soma 2\n#gmax_K_DRS4_params_voltage_dep_soma 3\n#gmax_K_DRS4_params_voltage_dep_axon 4\n#gmax_Leak_pyr 5\n#H_ratio 6\n#e_Leak_pyr 7\n#gbar_km_soma_dend 8\n#gbar_km_axon 9\n#KA_ratio 10\n#gbar_kd 11 \n    for sec in h.all_dendrites:\n\t\t\n        sec.Y_v0_Na_BG_dend = sec.X_v0_Na_BG_dend-v[0]\n        sec.gmax_K_DRS4_params_voltage_dep = v[1]\n        sec.gbar_km_q10_2 = v[8]  \n        for seg in sec:\n                h('soma distance()')\n                dist=(h.distance(seg.x))\n\t\t\t\t\n                seg.gmax_Na_BG_dend = (v[2]+v[2]*(-0.00125)*dist)\n        \n                if (dist>100) and (dist<=150):\n                        seg.gmax_H_CA1pyr_dist=(v[6]*0.00002+v[6]*4e-07*dist)\n                        seg.gmax_H_CA1pyr_prox=0\n                        seg.gmax_K_A_prox=0\n                        seg.gmax_K_A_dist=(0.0035*v[10]+v[10]*5.5e-05*dist)\n                elif (dist>150.0) and (dist<=400.0):\n                        seg.gmax_H_CA1pyr_dist=(v[6]*0.00002+v[6]*4e-07*dist)\n                        seg.gmax_H_CA1pyr_prox=0\n                        seg.gmax_K_A_prox=0\n                        seg.gmax_K_A_dist=(0.0035*v[10]+v[10]*5.5e-05*dist)\n                elif (dist<=100.0) and (dist>0.0):\n                        seg.gmax_H_CA1pyr_dist=0\n                        seg.gmax_H_CA1pyr_prox=(v[6]*0.00002+v[6]*4e-07*dist)\n                        seg.gmax_K_A_prox=(0.0035*v[10]+v[10]*5.5e-05*dist)\n                        seg.gmax_K_A_dist=0\n                elif (dist>400.0):\n                        seg.gmax_H_CA1pyr_dist=0.00018*v[6]\n                        seg.gmax_H_CA1pyr_prox=0\n                        seg.gmax_K_A_prox=0\n                        seg.gmax_K_A_dist=0.0255*v[10]\n                elif (dist<=0.0):\n                        seg.gmax_H_CA1pyr_prox=0.00002*v[6]\n                        seg.gmax_H_CA1pyr_dist=0\n                        seg.gmax_K_A_prox=0.0035*v[10]\n                        seg.gmax_K_A_dist=0\n    for sec in h.soma:\n        sec.gmax_Na_BG_soma = v[2]\n        sec.Y_v0_Na_BG_soma = sec.X_v0_Na_BG_soma-v[0]\n        sec.gmax_K_DRS4_params_voltage_dep = v[3]\n        sec.gmax_H_CA1pyr_prox = 0.00002*v[6] \n        sec.gbar_km_q10_2 = v[8]    \n        sec.gmax_K_A_prox=0.0035*v[10] \n        sec.gkd_kd_params3=v[11]\n    for sec in h.all_axon:\n        sec.gmax_Na_BG_axon = v[2]*40\n        sec.Y_v0_Na_BG_axon = sec.X_v0_Na_BG_axon-v[0]\n        sec.gmax_K_DRS4_params_voltage_dep = v[4]\n        sec.gmax_H_CA1pyr_prox = 0.00002*v[6]\n        sec.gbar_km_q10_2 = v[9]\n        sec.gmax_K_A_prox=0.0035*v[10]\n    for sec in h.all:\n        sec.gmax_Leak_pyr = v[5]\n        sec.e_Leak_pyr = v[7]\n"
+    },
+    "SW.pushButton_46": {
+        "type": "QPushButton",
+        "value": true
+    },
+    "stimprot": {
+        "type": "QComboBox",
+        "value": "IClamp",
+        "enabled": false
+    },
+    "stimulus_type": {
+        "type": "QComboBox",
+        "value": "Step Protocol",
+        "enabled": false
+    },
+    "base_dir_controll9": {
+        "type": "QPushButton",
+        "value": false,
+        "enabled": false
+    },
+    "SiW.amplit_edit": {
+        "type": "QLineEdit",
+        "value": ""
+    },
+    "SiW.pushButton_create": {
+        "type": "QPushButton",
+        "value": false
+    },
+    "SiW.stim_table": {
+        "type": "QTableWidget",
+        "value": [],
+        "enabled": true
+    },
+    "SiW.pushButton_accept": {
+        "type": "QPushButton",
+        "value": false
+    },
+    "param_to_record": {
+        "type": "QComboBox",
+        "value": "v",
+        "enabled": false
+    },
+    "section_rec": {
+        "type": "QComboBox",
+        "value": "",
+        "enabled": false
+    },
+    "lineEdit_pos": {
+        "type": "QLineEdit",
+        "value": "0.5",
+        "enabled": false
+    },
+    "lineEdit_initv": {
+        "type": "QLineEdit",
+        "value": "-65",
+        "enabled": false
+    },
+    "lineEdit_tstop": {
+        "type": "QLineEdit",
+        "value": "",
+        "enabled": false
+    },
+    "lineEdit_dt": {
+        "type": "QLineEdit",
+        "value": "0.05",
+        "enabled": false
+    },
+    "lineEdit_delay": {
+        "type": "QLineEdit",
+        "value": "",
+        "enabled": false
+    },
+    "lineEdit_duration": {
+        "type": "QLineEdit",
+        "value": "",
+        "enabled": false
+    },
+    "section_stim": {
+        "type": "QComboBox",
+        "value": "",
+        "enabled": false
+    },
+    "lineEdit_posins": {
+        "type": "QLineEdit",
+        "value": "0.5",
+        "enabled": false
+    },
+    "output_dir_input": {
+        "type": "QLineEdit",
+        "value": "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/output/bug/",
+        "enabled": true
+    },
+    "template_name_input": {
+        "type": "QLineEdit",
+        "value": "",
+        "enabled": true
+    },
+    "v_init_input": {
+        "type": "QLineEdit",
+        "value": "-70",
+        "enabled": true
+    },
+    "celsius_input": {
+        "type": "QLineEdit",
+        "value": "33",
+        "enabled": true
+    },
+    "soma_input": {
+        "type": "QLineEdit",
+        "value": "soma",
+        "enabled": true
+    },
+    "fitlist": {
+        "type": "CustomTableWidget",
+        "value": [
+            [
+                "Somatic Features Test",
+                "1",
+                "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/neuroptimus_config_from_gui.json",
+                "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/UI_Config_hippoUnit_CA1.json",
+                "250"
+            ],
+            [
+                "PSP Attenuation Test",
+                "0",
+                "",
+                "",
+                ""
+            ],
+            [
+                "Backpropagating AP Test",
+                "0",
+                "",
+                "",
+                ""
+            ],
+            [
+                "Pathway Interaction Test",
+                "0",
+                "",
+                "",
+                ""
+            ],
+            [
+                "Depolarization Block Test",
+                "0",
+                "",
+                "",
+                ""
+            ],
+            [
+                "Oblique Integration Test",
+                "0",
+                "",
+                "",
+                ""
+            ]
+        ],
+        "enabled": true
+    },
+    "test_specific_settings_table": {
+        "type": "QTableWidget",
+        "value": [
+            [
+                "Spike detection threshold (mV) ",
+                "-20"
+            ],
+            [
+                "Spike Window (ms)",
+                "1.0"
+            ],
+            [
+                "SomaSecList_name  (leave empty if no template is used)",
+                ""
+            ],
+            [
+                "TrunkSecList_name",
+                ""
+            ],
+            [
+                "ObliqueSecList_name",
+                ""
+            ],
+            [
+                "TuftSecList_name",
+                ""
+            ],
+            [
+                "num_of_dend_locations",
+                "15"
+            ]
+        ],
+        "enabled": true
+    },
+    "algolist": {
+        "type": "QTabelWidget",
+        "value": [
+            "Classical Evolution Strategy (CES) - Inspyred",
+            "Covariance Matrix Adaptation ES (CMAES) - Cmaes",
+            "Covariance Matrix Adaptation ES (CMAES) - Pygmo",
+            "Particle Swarm (PSO) - Inspyred",
+            "Particle Swarm Gen (PSOG) - Pygmo",
+            "Indicator Based (IBEA) - Bluepyopt",
+            "L-BFGS-B - Scipy",
+            "Random Search"
+        ],
+        "current_row": 7
+    },
+    "algorithm_parameter_list": {
+        "type": "QTabelWidget",
+        "value": [
+            [
+                "Seed",
+                "1234"
+            ],
+            [
+                "size_of_population",
+                "1"
+            ],
+            [
+                "number_of_cpu",
+                "1"
+            ]
+        ]
+    },
+    "BW.boundary_table": {
+        "type": "QTableWidget",
+        "value": [
+            [
+                "Na_BG_act_inact_shift 0",
+                "5.0",
+                "15.0"
+            ],
+            [
+                "gmax_K_DRS4_params_voltage_dep_dend 1",
+                "0.01",
+                "0.2"
+            ],
+            [
+                "gmax_Na_BG_soma 2",
+                "0.002",
+                "0.1"
+            ],
+            [
+                "gmax_K_DRS4_params_voltage_dep_soma 3",
+                "0.01",
+                "0.5"
+            ],
+            [
+                "gmax_K_DRS4_params_voltage_dep_axon 4",
+                "0.01",
+                "10.0"
+            ],
+            [
+                "gmax_Leak_pyr 5",
+                "1e-05",
+                "0.0001"
+            ],
+            [
+                "H_ratio 6",
+                "0.1",
+                "15.0"
+            ],
+            [
+                "e_Leak_pyr 7",
+                "-70.0",
+                "-40.0"
+            ],
+            [
+                "gbar_km_soma_dend 8",
+                "5e-05",
+                "0.01"
+            ],
+            [
+                "gbar_km_axon 9",
+                "0.0001",
+                "5.0"
+            ],
+            [
+                "KA_ratio 10",
+                "0.3",
+                "3.0"
+            ],
+            [
+                "gbar_kd 11",
+                "1e-05",
+                "0.01"
+            ]
+        ],
+        "enabled": true
+    }
+}
