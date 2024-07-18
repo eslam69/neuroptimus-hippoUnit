@@ -215,8 +215,8 @@
             [
                 "Somatic Features Test",
                 "1",
-                "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/neuroptimus_config_from_gui.json",
-                "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/UI_Config_hippoUnit_CA1.json",
+                "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/somatic_features_hippounit.json",
+                "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/somatic_features_hippounit_stim.json",
                 "250"
             ],
             [
@@ -254,8 +254,7 @@
                 "",
                 ""
             ]
-        ],
-        "enabled": true
+        ]
     },
     "test_specific_settings_table": {
         "type": "QTableWidget",
@@ -314,7 +313,7 @@
             ],
             [
                 "size_of_population",
-                "1"
+                "10"
             ],
             [
                 "number_of_cpu",
