@@ -72,9 +72,7 @@ class FileWatcherThread(QThread):
                 with open('eval.txt','r') as f:
                     lines = f.readlines()
                     progress = len(lines)
-                    print(f" progress {progress}")
                     self.progress.emit(progress)
-                    print(f"emmitted progress {progress}")
                     self.msleep(500)
             except:
                 pass
@@ -3787,18 +3785,9 @@ class Ui_Neuroptimus(QMainWindow):
         
         
     
-    def update_progress_bar(self, progress):
-        #if progress bigger than current progress update
-        print("progress",progress)
-        if progress > self.progress_bar.value():
-            self.progress_bar.setValue(progress)
-            self.progress_bar.update()
-            self.progress_bar.repaint()
-            QtWidgets.QApplication.processEvents()
 
 
     def updateProgressBar(self, value):
-        print("ui progress bar shall be updated")
         total_evaluations_required = self.core.option_handler.GetOptimizerOptions()["algorithm_parameters"].get("number_of_generations",1)*self.core.option_handler.GetOptimizerOptions()["algorithm_parameters"].get("size_of_population",1)
         percenatge = value * 100/  total_evaluations_required
         self.progressBar.setValue(percenatge)
