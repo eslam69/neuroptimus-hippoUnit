@@ -211,8 +211,9 @@ class FittingThread(QThread):
     def run(self):
         try:
             # Call the runsim method
-            self.parent().runsim()
-
+            started = self.parent().runsim()
+            if  not started:
+                return
             # Emit the finished signal
             self.finished.emit()
         except Exception as e:
@@ -292,6 +293,8 @@ class Ui_Neuroptimus(QMainWindow):
         
         self.progress_thread = FileWatcherThread()
         self.progress_thread.progress.connect(self.updateProgressBar)
+
+        self.is_optimization_active = False
         
        
         self.total_evaluations_required = None
@@ -3836,7 +3839,7 @@ class Ui_Neuroptimus(QMainWindow):
 
 
         
-    def runsim(self,singlerun=False): 
+    def runsim(self,singlerun=False)->bool: 
         """
         Check all the tabs and sends the options to the Core.
         Check the fitness values and if they are normalized.
@@ -3845,6 +3848,13 @@ class Ui_Neuroptimus(QMainWindow):
         If an error happens, stores the number of tab in a list and it's error string in an other list.
         Switch to the tab, where the error happened and popup the erro.
         """
+        if self.is_optimization_active:
+            popup("Optimization is already running")
+            return False
+        
+        self.is_optimization_active = True
+
+
         
     
         if self.core.option_handler.type[-1].lower() == "hippounit":
@@ -4026,6 +4036,9 @@ class Ui_Neuroptimus(QMainWindow):
                     traceback.print_exc()
                     print("#"*20)
                     popup(message)
+        self.is_optimization_active = False
+        return True
+        
         #stop the thread at the end of optimization
         
 
