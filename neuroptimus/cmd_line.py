@@ -78,20 +78,20 @@ def main(fname, param=None):
     if param != None:
         core.option_handler.output_level = param.lstrip("-v_level=")
     core.option_handler.ReadJson(json_data['attributes'])
-    print("json data attributes: ", json_data.keys())
+    # print("json data attributes: ", json_data.keys())
     # core.Print()
     kwargs = {"file" : core.option_handler.GetFileOption(),
             "input": core.option_handler.GetInputOptions()}
-    print("kwargs1: ", kwargs)
+    # print("kwargs1: ", kwargs)
     core.FirstStep(kwargs)
     kwargs = {"simulator": core.option_handler.GetSimParam()[0],
             "model" : core.option_handler.GetModelOptions(),
             "sim_command":core.option_handler.GetSimParam()[1]}
-    print("kwargs2: ", kwargs)
+    # print("kwargs2: ", kwargs)
     core.LoadModel(kwargs)
 
     kwargs = {"stim" : core.option_handler.GetModelStim(), "stimparam" : core.option_handler.GetModelStimParam()}
-    print("kwargs3: ", kwargs)
+    # print("kwargs3: ", kwargs)
     core.SecondStep(kwargs)
     total_number_of_evaluations= core.option_handler.GetOptimizerOptions()["algorithm_parameters"].get("number_of_generations",1) * core.option_handler.GetOptimizerOptions()["algorithm_parameters"].get("size_of_population",1)
     kwargs = None

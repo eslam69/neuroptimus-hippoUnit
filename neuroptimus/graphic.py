@@ -59,7 +59,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 import os
 from PyQt5.QtCore import QThread, pyqtSignal
 
-class FileWatcherThread(QThread):
+class FileWatcherQTThread(QThread):
     progress = pyqtSignal(int)  # This signal emits the current progress as an integer
 
     def __init__(self):
@@ -291,7 +291,7 @@ class Ui_Neuroptimus(QMainWindow):
         Implements the widgets from the PyQT package.
         """
         
-        self.progress_thread = FileWatcherThread()
+        self.progress_thread = FileWatcherQTThread()
         self.progress_thread.progress.connect(self.updateProgressBar)
 
         self.is_optimization_active = False
