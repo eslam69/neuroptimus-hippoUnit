@@ -1,3 +1,4 @@
+import importlib.util
 import sys
 from traceHandler import sizeError
 try:
@@ -19,7 +20,7 @@ import re
 import threading
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox,QTableWidget, QHBoxLayout, QPushButton, QProgressBar
+from PyQt5.QtWidgets import QMainWindow, QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog, QTableWidgetItem, QSizePolicy, QVBoxLayout, QGroupBox, QTableWidget, QHBoxLayout, QPushButton, QProgressBar
 from PyQt5.QtGui import *
 from PyQt5.QtCore import QThread, pyqtSignal
 import json
@@ -28,13 +29,14 @@ import traceback
 import warnings
 warnings.simplefilter("ignore", UserWarning)
 
-import importlib.util
-
 
 DEBUG = False
+
+
 def verbose(*args, **kwargs):
     if DEBUG:
         print(*args, **kwargs)
+
 
 def is_hippounit_installed():
     hippounit_spec = importlib.util.find_spec('hippounit')
@@ -48,19 +50,17 @@ def add_trailing_slash(path):
     if path and path[-1] != "/":
         return path + "/"
     return path
+
+
 GRAY = QtGui.QColor(192, 192, 192)
 GRAY = QtGui.QColor(220, 220, 220)
 WHITE = QtGui.QColor(255, 255, 255)
 BLACK = QtGui.QColor(0, 0, 0)
 
 
-from PyQt5.QtCore import QThread, pyqtSignal
-
-import os
-from PyQt5.QtCore import QThread, pyqtSignal
-
 class FileWatcherQTThread(QThread):
-    progress = pyqtSignal(int)  # This signal emits the current progress as an integer
+    # This signal emits the current progress as an integer
+    progress = pyqtSignal(int)
 
     def __init__(self):
         super().__init__()
@@ -88,14 +88,14 @@ class FileWatcherQTThread(QThread):
         self._is_running = False
         self.wait()  # Wait for the thread to finish
         self.progress.emit(-1)
+
     def start(self):
         self._is_running = True
         super().start()
 
-   
 
 class fitlistTableItem(QWidget):
-    def __init__(self,text="" ):
+    def __init__(self, text=""):
         super().__init__()
         self.layout = QHBoxLayout(self)
         self.lineEdit = QLineEdit(self)
@@ -105,15 +105,15 @@ class fitlistTableItem(QWidget):
         self.layout.addWidget(self.button)
         self.button.clicked.connect(self.openFileDialog)
         # self.layout.setContentsMargins(0, 0, 0, 0)
-        #make the text field wider than the button , button shall fit only the ...
+        # make the text field wider than the button , button shall fit only the ...
         self.lineEdit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.button.setMaximumWidth(15)
-        #set small font for the text field
+        # set small font for the text field
         self.lineEdit.setFont(QFont("Arial", 8))
         self.setLayout(self.layout)
-        self._flags = QtCore.Qt.ItemFlags(QtCore.Qt.NoItemFlags)  # Default flags
-
+        self._flags = QtCore.Qt.ItemFlags(
+            QtCore.Qt.NoItemFlags)  # Default flags
 
     def openFileDialog(self):
         filePath, _ = QFileDialog.getOpenFileName(self, "Select File")
@@ -125,9 +125,10 @@ class fitlistTableItem(QWidget):
 
     def text(self):
         return self.lineEdit.text()
-    
+
     def setToolTip(self, text):
         self.button.setToolTip(text)
+
     def setFlags(self, flags):
         # return
         # if flags == 0:
@@ -144,39 +145,43 @@ class fitlistTableItem(QWidget):
         else:
             self.lineEdit.setReadOnly(True)
             self.button.setEnabled(False)
+
     def flags(self):
         return self._flags
 
     def setBackground(self, color):
         return
         # return
-        #convert color to hex
+        # convert color to hex
         color = color.name()
-        print("setBackground",color)
+        print("setBackground", color)
 
         self.lineEdit.setStyleSheet(f"background-color: {color}")
         self.button.setStyleSheet(f"background-color: {color}")
-    def setForeground(self,color):
+
+    def setForeground(self, color):
         return
         color = color.name()
-        print("setForeground",color)
+        print("setForeground", color)
         self.lineEdit.setStyleSheet(f"color: {color}")
         self.button.setStyleSheet(f"color: {color}")
-    
 
 
 class CustomTableWidget(QTableWidget):
     """ a class to create a custom table widget that can hold custom widgets in its cells
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
     def setItem(self, row, column, item):
         if isinstance(item, fitlistTableItem):
             self.setCellWidget(row, column, item)
         else:
             super().setItem(row, column, item)
+
     def item(self, row, column):
-        #agnostically return the item in the cell
+        # agnostically return the item in the cell
         try:
             item = self.cellWidget(row, column)
             if item:
@@ -187,18 +192,14 @@ class CustomTableWidget(QTableWidget):
             return super().item(row, column)
     # def setSelectionBehavior(self, behavior):
 
-        
-       
-
-
 
 class QHLine(QtWidgets.QFrame):
-            def __init__(self):
-                super(QHLine, self).__init__()
-                self.setFrameShape(QtWidgets.QFrame.HLine)
-                self.setFrameShadow(QtWidgets.QFrame.Sunken)
-                #dark gray line
-                # self.setStyleSheet("background-color: #A9A9A9")
+    def __init__(self):
+        super(QHLine, self).__init__()
+        self.setFrameShape(QtWidgets.QFrame.HLine)
+        self.setFrameShadow(QtWidgets.QFrame.Sunken)
+        # dark gray line
+        # self.setStyleSheet("background-color: #A9A9A9")
 
 
 class FittingThread(QThread):
@@ -212,7 +213,7 @@ class FittingThread(QThread):
         try:
             # Call the runsim method
             started = self.parent().runsim()
-            if  not started:
+            if not started:
                 return
             # Emit the finished signal
             self.finished.emit()
@@ -234,79 +235,88 @@ def popup(message):
     msg.setWindowTitle("Warning")
     msg.exec()
 
+
 class TableSelections:
-    def __init__(self, table:str ):
+    def __init__(self, table: str):
         self.table = table
         self.selected_rows_indices = []
         self.enabled = True
+
     def set_table_widget(self, table):
         self.table = table
+
     def get_table_widget(self):
         return self.table
+
     def set_selected_rows_indices(self, indices):
         self.selected_rows_indices = indices
-    def add_selected_rows_index(self,rows):
+
+    def add_selected_rows_index(self, rows):
         for row in rows:
             if row not in self.selected_rows_indices:
                 self.selected_rows_indices.append(row)
-    def remove_selected_rows_indices(self,row_to_remove):
+
+    def remove_selected_rows_indices(self, row_to_remove):
         for row in row_to_remove:
             if row in self.selected_rows_indices:
                 self.selected_rows_indices.remove(row)
 
     def get_selected_rows_indices(self):
         return self.selected_rows_indices
+
     def is_empty(self):
         return len(self.selected_rows_indices) == 0
+
     def isEnabled(self):
         return self.enabled
 
 
 def save_state_decorator(func):
     @wraps(func)
-    def wrapper( *args, **kwargs):
+    def wrapper(*args, **kwargs):
         # Call the slot method
-        result = func(*args, **kwargs )
+        result = func(*args, **kwargs)
 
         # Save the state of the signal emitter
         self = args[0]
         self.gui_elements_state[self.sender().objectName()] = {
             "type": type(self.sender()).__name__,
             # "value": self.sender().isEnabled()
-            "value": True #True means the button was clicked
+            "value": True  # True means the button was clicked
         }
-        verbose(f"saving the state of the signal emitter {self.sender().objectName()}")
+        verbose(
+            f"saving the state of the signal emitter {self.sender().objectName()}")
 
         return result
 
     return wrapper
 
-class Ui_Neuroptimus(QMainWindow):
-    def __init__(self,*args):
-        super().__init__(*args)
 
+class Ui_Neuroptimus(QMainWindow):
+    def __init__(self, *args):
+        super().__init__(*args)
 
     def setupUi(self, Neuroptimus):
         """
         Implements the widgets from the PyQT package.
         """
-        
+
         self.progress_thread = FileWatcherQTThread()
         self.progress_thread.progress.connect(self.updateProgressBar)
 
         self.is_optimization_active = False
-        
-       
+
         self.total_evaluations_required = None
 
         Neuroptimus.setObjectName("Neuroptimus")
         Neuroptimus.resize(800, 589)
-        Neuroptimus.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        Neuroptimus.setSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         # setting the minimum to be suitable to the device screen, by getting the screen size and setting the minimum to be 50% of it
         WINDOW2SCREEN_RATIO = 0.5
         # screen = QtWidgets.QDesktopWidget().screenGeometry()
         # Neuroptimus.setMinimumSize(QtCore.QSize(screen.width() * WINDOW2SCREEN_RATIO, screen.height() * WINDOW2SCREEN_RATIO))
-        
+
         self.gui_elements_state = OrderedDict()
         self.gui_elements_state["type_selector"] = {}
         self.gui_elements_state["lineEdit_file"] = {}
@@ -340,7 +350,6 @@ class Ui_Neuroptimus(QMainWindow):
         self.gui_elements_state["SiW.stim_table"] = {}
         self.gui_elements_state["SiW.pushButton_accept"] = {}
 
-
         self.gui_elements_state["param_to_record"] = {}
         self.gui_elements_state["section_rec"] = {}
         self.gui_elements_state["lineEdit_pos"] = {}
@@ -349,36 +358,28 @@ class Ui_Neuroptimus(QMainWindow):
         self.gui_elements_state["lineEdit_tstop"] = {}
         self.gui_elements_state["lineEdit_dt"] = {}
 
-
         self.gui_elements_state["lineEdit_delay"] = {}
         self.gui_elements_state["lineEdit_duration"] = {}
 
         self.gui_elements_state["section_stim"] = {}
         self.gui_elements_state["lineEdit_posins"] = {}
 
-        
         self.gui_elements_state["output_dir_input"] = {}
         self.gui_elements_state["template_name_input"] = {}
         self.gui_elements_state["v_init_input"] = {}
         self.gui_elements_state["celsius_input"] = {}
         self.gui_elements_state["soma_input"] = {}
 
-        
         self.gui_elements_state["fitlist"] = {}
         self.gui_elements_state["test_specific_settings_table"] = {}
-        
+
         self.gui_elements_state["algolist"] = {}
         self.gui_elements_state["algorithm_parameter_list"] = {}
 
-
         self.gui_elements_state["BW.boundary_table"] = {}
-        
+
         # self.selected_algorithm = None
 
-
-        
-        
-        
         self.centralwidget = QtWidgets.QWidget(Neuroptimus)
         self.centralwidget.setObjectName("centralwidget")
         Neuroptimus.setCentralWidget(self.centralwidget)
@@ -389,16 +390,15 @@ class Ui_Neuroptimus(QMainWindow):
 
         self.tabwidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabwidget.setObjectName("tabwidget")
-        self.tabwidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.tabwidget.setSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.laybox.addWidget(self.tabwidget)
-
-        
 
         self.hippoUnit_only_widgets = []
         self.neuroptimus_only_widgets = []
-        
+
         # filetab 1
-        
+
         self.filetab = QtWidgets.QWidget()
         self.filetab.setObjectName("filetab")
 
@@ -467,8 +467,6 @@ class Ui_Neuroptimus(QMainWindow):
         self.lineEdit_file.setObjectName("lineEdit")
 
         self.model = QStandardItemModel(0, 1)
-        
-        
 
         self.widget = QtWidgets.QWidget(self.filetab)
         self.widget.setObjectName("widget")
@@ -481,45 +479,48 @@ class Ui_Neuroptimus(QMainWindow):
 
         # Use a QGridLayout to arrange the widgets in a grid
         self.layout = QtWidgets.QGridLayout(self.filetab)
-        #create new widget Qlabel name it  input_type_label at 0 ,0 
+        # create new widget Qlabel name it  input_type_label at 0 ,0
         self.input_type_label = QtWidgets.QLabel(self.filetab)
         self.input_type_label.setObjectName("input_type_label")
         self.input_type_label.setText("Input Type")
 
-        #First tab (Target data)
+        # First tab (Target data)
 
-        #1st row: input type label, input type selector
+        # 1st row: input type label, input type selector
         self.layout.addWidget(self.input_type_label, 0, 0, 1, 1)
         self.layout.addWidget(self.type_selector, 0, 1, 1, 1)
 
-        #2nd row: label_2, lineEdit_file, input_file_controll, time_checker
+        # 2nd row: label_2, lineEdit_file, input_file_controll, time_checker
         self.layout.addWidget(self.label_2, 1, 0, 1, 1)
         self.layout.addWidget(self.lineEdit_file, 1, 1, 1, 1)
         self.layout.addWidget(self.input_file_controll, 1, 2, 1, 1)
         self.layout.addWidget(self.time_checker, 1, 3, 1, 1)
 
-        #3rd row: label_3, lineEdit_folder, base_dir_controll
-        self.layout.addWidget(self.label_3, 2, 0, 1, 1) #Base Directory
+        # 3rd row: label_3, lineEdit_folder, base_dir_controll
+        self.layout.addWidget(self.label_3, 2, 0, 1, 1)  # Base Directory
         self.layout.addWidget(self.lineEdit_folder, 2, 1, 1, 2)
         self.layout.addWidget(self.base_dir_controll, 2, 3, 1, 1)
 
+        # 4th row: label_5, size_ctrl, label_7,  dropdown
+        self.layout.addWidget(self.label_5, 3, 0, 1, 1)  # n of traces label
+        self.layout.addWidget(self.size_ctrl, 3, 1, 1, 1)  # n of traces input
+        # units label, align center
+        self.layout.addWidget(self.label_7, 3, 2, 1, 1, QtCore.Qt.AlignHCenter)
+        self.layout.addWidget(self.dropdown, 3, 3, 1, 1)  # units dropdown
 
-        #4th row: label_5, size_ctrl, label_7,  dropdown
-        self.layout.addWidget(self.label_5, 3, 0, 1, 1) #n of traces label
-        self.layout.addWidget(self.size_ctrl, 3, 1, 1, 1) #n of traces input
-        self.layout.addWidget(self.label_7, 3, 2, 1, 1,QtCore.Qt.AlignHCenter ) #units label, align center
-        self.layout.addWidget(self.dropdown, 3, 3, 1, 1) #units dropdown
+        # 5th row: label_4, length_ctrl, label_6, freq_ctrl
+        # length of traces label
+        self.layout.addWidget(self.label_4, 4, 0, 1, 1)
+        # length of traces line edit input
+        self.layout.addWidget(self.length_ctrl, 4, 1, 1, 1)
+        # sampling frequency label
+        self.layout.addWidget(self.label_6, 4, 2, 1, 1)
+        # sampling frequency input
+        self.layout.addWidget(self.freq_ctrl, 4, 3, 1, 1)
 
+        self.layout.addWidget(self.pushButton_3, 5, 0,
+                              1, 2)  # load data button
 
-        #5th row: label_4, length_ctrl, label_6, freq_ctrl
-        self.layout.addWidget(self.label_4, 4, 0, 1, 1) #length of traces label
-        self.layout.addWidget(self.length_ctrl, 4, 1, 1, 1) #length of traces line edit input
-        self.layout.addWidget(self.label_6, 4, 2, 1, 1) #sampling frequency label
-        self.layout.addWidget(self.freq_ctrl, 4, 3, 1, 1) #sampling frequency input
-
-
-        self.layout.addWidget(self.pushButton_3, 5, 0, 1, 2) #load data button
-        
         self.layout.addWidget(self.input_tree, 6, 0, 1, 2)
         self.layout.addWidget(self.widget, 6, 2, 1, 2)
 
@@ -547,18 +548,16 @@ class Ui_Neuroptimus(QMainWindow):
         # self.target_data_ui_components.append(self.input_tree)
         self.target_data_ui_components.append(self.widget)
 
-
-
-
-        #make all buttons in this tab the same size
+        # make all buttons in this tab the same size
         for widget in self.filetab.findChildren(QtWidgets.QPushButton):
-            widget.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+            widget.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
+                                 QtWidgets.QSizePolicy.Fixed)
 
         self.filetab.setLayout(self.layout)
 
         self.tabwidget.addTab(self.filetab, "File Tab")
 
-        # #model tab 
+        # #model tab
         self.tabwidget.addTab(self.filetab, "")
         self.modeltab = QtWidgets.QWidget()
         self.modeltab.setObjectName("modeltab")
@@ -594,7 +593,8 @@ class Ui_Neuroptimus(QMainWindow):
         self.modellist = QtWidgets.QTableWidget(self.modeltab)
         self.modellist.setGeometry(QtCore.QRect(10, 200, 441, 261))
         self.modellist.setObjectName("modellist")
-        self.modellist.setToolTip("<p>Select the desired parameters then click the Set button</p>")
+        self.modellist.setToolTip(
+            "<p>Select the desired parameters then click the Set button</p>")
         self.pushButton_14 = QtWidgets.QPushButton(self.modeltab)
         self.pushButton_14.setGeometry(QtCore.QRect(240, 150, 80, 22))
         self.pushButton_14.setObjectName("pushButton_14")
@@ -625,7 +625,8 @@ class Ui_Neuroptimus(QMainWindow):
         self.dd_type.addItem("External")
         self.dd_type.currentIndexChanged.connect(self.sim_plat)
         self.dd_type.setToolTip("Simulator type")
-        self.lineEdit_folder2 = QtWidgets.QLineEdit(self.modeltab) #mod files line edit, next to check box
+        self.lineEdit_folder2 = QtWidgets.QLineEdit(
+            self.modeltab)  # mod files line edit, next to check box
         self.lineEdit_folder2.setGeometry(QtCore.QRect(10, 150, 221, 22))
         self.lineEdit_folder2.setObjectName("lineEdit_folder2")
         self.sim_path = QtWidgets.QLineEdit(self.modeltab)
@@ -644,9 +645,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.remover.setObjectName("remover")
         self.remover.setEnabled(False)
 
-
-
-        #model name label
+        # model name label
         self.model_name_label = QtWidgets.QLabel(self.modeltab)
         self.model_name_label.setGeometry(QtCore.QRect(10, 10, 300, 16))
         font.setWeight(50)
@@ -654,19 +653,17 @@ class Ui_Neuroptimus(QMainWindow):
         self.model_name_label.setObjectName("model_name_label")
         self.model_name_label.setText("Model Name")
 
-        #model name input
+        # model name input
         self.model_name_input = QtWidgets.QLineEdit(self.modeltab)
         self.model_name_input.setGeometry(QtCore.QRect(10, 30, 221, 22))
         self.model_name_input.setObjectName("model_name_input")
-        #text placeholder
+        # text placeholder
         # self.model_name_input.setPlaceholderText("(for HippoUnit)")
-
 
         self.hippoUnit_only_widgets.append(self.model_name_label)
         self.hippoUnit_only_widgets.append(self.model_name_input)
 
-
-        #Simulator label 
+        # Simulator label
         self.simulator_label = QtWidgets.QLabel(self.modeltab)
         self.simulator_label.setGeometry(QtCore.QRect(10, 10, 300, 16))
         font.setWeight(50)
@@ -674,51 +671,43 @@ class Ui_Neuroptimus(QMainWindow):
         self.simulator_label.setObjectName("simulator_label")
         self.simulator_label.setText("Simulator")
 
-        #Simulator input        
-
-
-
-
-       
+        # Simulator input
 
         self.layout = QtWidgets.QGridLayout(self.modeltab)
-        
-        #1st row
+
+        # 1st row
         # Modelname label , input
         self.layout.addWidget(self.model_name_label, 0, 0, 1, 1)
         self.layout.addWidget(self.model_name_input, 0, 1, 1, 4)
 
-
-
-        #2nd row
-        #simualtor label , dd_type
+        # 2nd row
+        # simualtor label , dd_type
         self.layout.addWidget(self.simulator_label, 1, 0, 1, 1)
-        self.layout.addWidget(self.dd_type, 1, 1, 1, 4) #Simulator Drop Down
-        
+        self.layout.addWidget(self.dd_type, 1, 1, 1, 4)  # Simulator Drop Down
 
-        #3rd row
+        # 3rd row
         # label_24 , lineEdit_file2 , pushButton_15 , pushButton_13
-        self.layout.addWidget(self.label_24, 2, 0, 1, 1) # label Model file
-        self.layout.addWidget(self.lineEdit_file2, 2, 1, 1, 3) #line edit hoc file
-        self.layout.addWidget(self.pushButton_15, 2, 4, 1, 1) # browse model file (non-hidden)
-        self.layout.addWidget(self.pushButton_13, 2, 5, 2, 1) # load model file
-        
-        #4th row
+        self.layout.addWidget(self.label_24, 2, 0, 1, 1)  # label Model file
+        self.layout.addWidget(self.lineEdit_file2, 2, 1,
+                              1, 3)  # line edit hoc file
+        # browse model file (non-hidden)
+        self.layout.addWidget(self.pushButton_15, 2, 4, 1, 1)
+        self.layout.addWidget(self.pushButton_13, 2, 5,
+                              2, 1)  # load model file
+
+        # 4th row
         # label_23 , load_mods_checkbox , lineEdit_folder2 , pushButton_14
 
         hbox_load_mod = QtWidgets.QHBoxLayout()
 
         # Add the checkbox and label to the layout
-        hbox_load_mod.addWidget(self.load_mods_checkbox, 0, QtCore.Qt.AlignLeft)
+        hbox_load_mod.addWidget(self.load_mods_checkbox,
+                                0, QtCore.Qt.AlignLeft)
         hbox_load_mod.addWidget(self.label_23, 1, QtCore.Qt.AlignLeft)
         # Set the horizontal stretch factor of the checkbox to 0 and the label to 1
         hbox_load_mod.setStretch(0, 0)
         hbox_load_mod.setStretch(1, 1)
         self.layout.addLayout(hbox_load_mod, 3, 0, 1, 2)
-
-        
-
-
 
         self.layout.addWidget(self.lineEdit_folder2, 3, 2, 1, 2)
         self.layout.addWidget(self.pushButton_14, 3, 4, 1, 1)
@@ -729,16 +718,17 @@ class Ui_Neuroptimus(QMainWindow):
         font.setPointSize(12)
         self.param_table_label.setFont(font)
         self.param_table_label.setObjectName("param_table_label")
-        self.param_table_label.setText("Selection of parameters to be optimized")
-        
-        self.pushButton_16.setMinimumSize(QtCore.QSize(0, 40))
+        self.param_table_label.setText(
+            "Selection of parameters to be optimized")
 
+        self.pushButton_16.setMinimumSize(QtCore.QSize(0, 40))
 
         self.layout.addWidget(QHLine(), 4, 0, 1, 6)  # Add horizontal line
         self.layout.addWidget(self.param_table_label, 5, 0, 1, 6)
 
         self.layout.addWidget(self.modellist, 6, 0, 10, 3)
-        self.layout.addWidget(self.pushButton_16, 6, 3, 2, 2) #define function
+        self.layout.addWidget(self.pushButton_16, 6, 3,
+                              2, 2)  # define function
         self.layout.addWidget(self.sim_param, 5, 2, 1, 1)
         self.layout.addWidget(self.setter, 16, 0, 1, 1)
         self.layout.addWidget(self.remover, 16, 1, 1, 1)
@@ -746,17 +736,16 @@ class Ui_Neuroptimus(QMainWindow):
         self.modeltab.setLayout(self.layout)
 
         self.tabwidget.addTab(self.modeltab, "Model Tab")
-        
-        for widget in self.modeltab.findChildren(QtWidgets.QPushButton):
-            widget.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
 
-        #editing self.pushButton_13 to have double vertical size
+        for widget in self.modeltab.findChildren(QtWidgets.QPushButton):
+            widget.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
+                                 QtWidgets.QSizePolicy.Fixed)
+
+        # editing self.pushButton_13 to have double vertical size
         self.pushButton_13.setMinimumSize(QtCore.QSize(0, 40))
         self.pushButton_13.setMaximumSize(QtCore.QSize(16777215, 80))
 
-
-
-        #sim tab 3
+        # sim tab 3
         self.tabwidget.addTab(self.modeltab, "")
         self.simtab = QtWidgets.QWidget()
         self.simtab.setObjectName("simtab")
@@ -864,10 +853,6 @@ class Ui_Neuroptimus(QMainWindow):
         font.setWeight(50)
         self.label_55.setFont(font)
         self.label_55.setObjectName("label_55")
-        
-        
-        
-
 
         # Create a new QGridLayout layout
         self.settings_tab_grid = QtWidgets.QGridLayout(self.simtab)
@@ -875,17 +860,18 @@ class Ui_Neuroptimus(QMainWindow):
         # Create a group box for the stimulus protocol widgets
         self.stim_group = QtWidgets.QGroupBox("Stimulus Mode")
         stim_layout = QtWidgets.QVBoxLayout()
-        stim_layout.addWidget(self.label_55) #stim protocol
+        stim_layout.addWidget(self.label_55)  # stim protocol
         stim_layout.addWidget(self.stimprot)
-        stim_layout.addWidget(self.label_49) #stim type
-        stim_layout.addWidget(self.stimulus_type) 
-        stim_layout.addWidget(self.base_dir_controll9) #amplitude(s) push button
+        stim_layout.addWidget(self.label_49)  # stim type
+        stim_layout.addWidget(self.stimulus_type)
+        # amplitude(s) push button
+        stim_layout.addWidget(self.base_dir_controll9)
         self.stim_group.setLayout(stim_layout)
 
         # Add the stimulus protocol group box to the self.settings_tab_grid layout
         self.settings_tab_grid.addWidget(self.stim_group, 0, 0, 5, 1)
 
-        #hide stim_group but keep its place in the grid
+        # hide stim_group but keep its place in the grid
         # stim_group.hide()
 
         # Create a group box for the delay and duration widgets
@@ -940,17 +926,14 @@ class Ui_Neuroptimus(QMainWindow):
         # Add the simulation group box to the self.settings_tab_grid layout
         self.settings_tab_grid.addWidget(self.sim_group, 0, 2, 6, 1)
 
-        ## container for the groups that are only used for Neuroptimus
-        self.neuroptimus_settings_widgets = [self.stim_group, self.time_group, self.pos_group, self.rec_group, self.sim_group]
-
-       
-
-
+        # container for the groups that are only used for Neuroptimus
+        self.neuroptimus_settings_widgets = [
+            self.stim_group, self.time_group, self.pos_group, self.rec_group, self.sim_group]
 
         # container for the widgets that are only used for HippoUnit
         self.hippounit_settings_widgets = []
 
-        #HippoUnit: output directory 
+        # HippoUnit: output directory
         self.output_dir_label = QtWidgets.QLabel(self.simtab)
         self.output_dir_label.setGeometry(QtCore.QRect(10, 30, 300, 16))
         font.setWeight(50)
@@ -958,48 +941,42 @@ class Ui_Neuroptimus(QMainWindow):
         self.output_dir_label.setObjectName("output_dir_label")
         self.output_dir_label.setText("HippoUnit Output Directory")
 
-        
-        
         self.output_dir_input = QtWidgets.QLineEdit(self.simtab)
         self.output_dir_input.setGeometry(QtCore.QRect(10, 50, 221, 22))
         self.output_dir_input.setObjectName("output_dir_input")
 
-        #add browse button next to the output input
+        # add browse button next to the output input
         self.output_dir_browse = QtWidgets.QPushButton(self.simtab)
         self.output_dir_browse.setGeometry(QtCore.QRect(240, 50, 80, 22))
         self.output_dir_browse.setObjectName("output_dir_browse")
         self.output_dir_browse.setText("Browse")
 
-        #connect the browse button to the browsse function to get the output directory
+        # connect the browse button to the browsse function to get the output directory
         self.output_dir_browse.clicked.connect(self.set_hippounit_output_dir)
 
-        
-         
-        #add output_dir_input and output_dir_browse to horizental group box 
+        # add output_dir_input and output_dir_browse to horizental group box
         self.output_dir_group = QtWidgets.QGroupBox("")
         output_dir_layout = QtWidgets.QHBoxLayout()
         output_dir_layout.addWidget(self.output_dir_input)
         output_dir_layout.addWidget(self.output_dir_browse)
         self.output_dir_group.setLayout(output_dir_layout)
-        
-        #add output_dir_label to the hippounit_settings_widgets list
 
-
+        # add output_dir_label to the hippounit_settings_widgets list
 
         self.hippounit_settings_widgets.append(self.output_dir_label)
         # self.hippounit_settings_widgets.append(self.output_dir_input)
-        #add  output_dir_browse to the hippounit_settings_widgets list
+        # add  output_dir_browse to the hippounit_settings_widgets list
         # self.hippounit_settings_widgets.append(self.output_dir_browse)
         self.hippounit_settings_widgets.append(self.output_dir_group)
 
-
-        #HippoUnit: template name
+        # HippoUnit: template name
         self.template_name_label = QtWidgets.QLabel(self.simtab)
         self.template_name_label.setGeometry(QtCore.QRect(10, 70, 300, 16))
         font.setWeight(50)
         self.template_name_label.setFont(font)
         self.template_name_label.setObjectName("template_name_label")
-        self.template_name_label.setText("Template Name (leave empty if no template is used)")
+        self.template_name_label.setText(
+            "Template Name (leave empty if no template is used)")
 
         self.template_name_input = QtWidgets.QLineEdit(self.simtab)
         self.template_name_input.setGeometry(QtCore.QRect(10, 90, 221, 22))
@@ -1008,7 +985,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.hippounit_settings_widgets.append(self.template_name_label)
         self.hippounit_settings_widgets.append(self.template_name_input)
 
-        #HippoUnit: v_init
+        # HippoUnit: v_init
         self.v_init_label = QtWidgets.QLabel(self.simtab)
         self.v_init_label.setGeometry(QtCore.QRect(10, 110, 300, 16))
         font.setWeight(50)
@@ -1023,7 +1000,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.hippounit_settings_widgets.append(self.v_init_label)
         self.hippounit_settings_widgets.append(self.v_init_input)
 
-        #HippoUnit: celsius
+        # HippoUnit: celsius
         self.celsius_label = QtWidgets.QLabel(self.simtab)
         self.celsius_label.setGeometry(QtCore.QRect(10, 150, 300, 16))
         font.setWeight(50)
@@ -1038,7 +1015,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.hippounit_settings_widgets.append(self.celsius_label)
         self.hippounit_settings_widgets.append(self.celsius_input)
 
-        #HippoUnit: soma
+        # HippoUnit: soma
 
         self.soma_label = QtWidgets.QLabel(self.simtab)
         self.soma_label.setGeometry(QtCore.QRect(10, 190, 300, 16))
@@ -1054,8 +1031,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.hippounit_settings_widgets.append(self.soma_label)
         self.hippounit_settings_widgets.append(self.soma_input)
 
-
-        #creat a groub box for the hippounit settings
+        # creat a groub box for the hippounit settings
         self.hippounit_group = QtWidgets.QGroupBox("HippoUnit Settings")
         self.hippounit_group.setEnabled(False)
         hippounit_layout = QtWidgets.QVBoxLayout()
@@ -1063,26 +1039,27 @@ class Ui_Neuroptimus(QMainWindow):
             hippounit_layout.addWidget(widget)
         self.hippounit_group.setLayout(hippounit_layout)
 
-        #add the hippounit group box to the self.settings_tab_grid layout
+        # add the hippounit group box to the self.settings_tab_grid layout
         self.settings_tab_grid.addWidget(self.hippounit_group, 6, 1, 7, 1)
         self.hippounit_group.hide()
 
-        #add these group boxes except hippounit_group to a list
-        self.simtab_neuroptimus_group_boxes = [self.stim_group, self.time_group, self.pos_group, self.rec_group, self.sim_group]
-
+        # add these group boxes except hippounit_group to a list
+        self.simtab_neuroptimus_group_boxes = [
+            self.stim_group, self.time_group, self.pos_group, self.rec_group, self.sim_group]
 
         for widget in self.simtab.findChildren(QtWidgets.QPushButton):
-            widget.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+            widget.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
+                                 QtWidgets.QSizePolicy.Fixed)
 
-        #setting groupbox titles only to bold centered
+        # setting groupbox titles only to bold centered
         for widget in self.simtab.findChildren(QtWidgets.QGroupBox):
             widget.setAlignment(QtCore.Qt.AlignCenter)
             widget.setStyleSheet("QGroupBox {font-weight: bold;}")
 
         # Set the layout of the widget to the new QGridLayout
         self.simtab.setLayout(self.settings_tab_grid)
-            
-        #fit tab 4
+
+        # fit tab 4
         self.tabwidget.addTab(self.simtab, "")
         self.fittab = QtWidgets.QWidget()
         self.fittab.setObjectName("fittab")
@@ -1127,34 +1104,31 @@ class Ui_Neuroptimus(QMainWindow):
         self.fittab_help_icon.setAlignment(QtCore.Qt.AlignCenter)
         self.fittab_help = QtWidgets.QLabel("",self.fittab)
         self.fittab_help.setGeometry(350, 260, 30, 30)"""
-        self.pushButton_normalize.setToolTip("<p>Rescale the active fitness weights sum to 1</p>")
-        self.fitlist.setToolTip("<p>Fitness functions with 0 weights considered inactive</p>")
-        self.core=Core.coreModul()
-      
+        self.pushButton_normalize.setToolTip(
+            "<p>Rescale the active fitness weights sum to 1</p>")
+        self.fitlist.setToolTip(
+            "<p>Fitness functions with 0 weights considered inactive</p>")
+        self.core = Core.coreModul()
+
         self.fit_tab_grid = QtWidgets.QGridLayout(self.fittab)
 
         self.fit_tab_grid.addWidget(self.pushButton_normalize, 0, 2, 1, 1)
         self.fit_tab_grid.addWidget(self.fitlist, 1, 0, 5, 7)
-        #make the table widget stretch to fill the available space
+        # make the table widget stretch to fill the available space
         # self.fit_tab_grid.setColumnStretch(0, 1)
         # self.fit_tab_grid.setRowStretch(0, 1)
         # self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-        #decrease size of 2nd column to be small
+        # decrease size of 2nd column to be small
         # self.fit_tab_grid.setColumnMinimumWidth(0, 200)
 
-        
-
-        #stretch first column to fill text
-        
+        # stretch first column to fill text
 
         # Create a new QGroupBox for the spike detection parameters
         # self.spike_group_box = QtWidgets.QGroupBox("Spike Detection Parameters")
-        #make the group panel flat
-       
+        # make the group panel flat
 
-        #set the font to be bold for the group box title
+        # set the font to be bold for the group box title
         # self.spike_group_box.setStyleSheet("QGroupBox { font-weight: bold; }")
-
 
         # # Create a new QGridLayout for the spike detection group box
         # spike_group_layout = QtWidgets.QVBoxLayout(self.spike_group_box)
@@ -1165,37 +1139,39 @@ class Ui_Neuroptimus(QMainWindow):
         # spike_group_layout.addWidget(self.label_70)
         # spike_group_layout.addWidget(self.spike_window)
 
-
-       
         # self.fit_tab_grid.addWidget(self.spike_group_box, 1, 3, 2, 4)
-
 
         # Set the layout of the spike detection group box
         # self.spike_group_box.setLayout(spike_group_layout)
-        
 
-        #HippoUnit: Test specific settings
+        # HippoUnit: Test specific settings
         # #Create a table with 3 columns and a label above the table HippoUnit Test-Specific Settings
-        self.hippounit_test_specific_settings_label = QtWidgets.QLabel(self.fittab)
-        self.hippounit_test_specific_settings_label.setGeometry(QtCore.QRect(330, 260, 300, 16))
+        self.hippounit_test_specific_settings_label = QtWidgets.QLabel(
+            self.fittab)
+        self.hippounit_test_specific_settings_label.setGeometry(
+            QtCore.QRect(330, 260, 300, 16))
         self.hippounit_test_specific_settings_label.setFont(font)
-        self.hippounit_test_specific_settings_label.setObjectName("test_specific_settings_label")
-        self.hippounit_test_specific_settings_label.setText("Fitness function settings")
-
+        self.hippounit_test_specific_settings_label.setObjectName(
+            "test_specific_settings_label")
+        self.hippounit_test_specific_settings_label.setText(
+            "Fitness function settings")
 
         # #add the label and the table to the self.fit_tab_grid layout
-        self.fit_tab_grid.addWidget(self.hippounit_test_specific_settings_label, 7, 0, 1, 7)
+        self.fit_tab_grid.addWidget(
+            self.hippounit_test_specific_settings_label, 7, 0, 1, 7)
         # #stretch the table to fill the available space
         self.fit_tab_grid.setColumnStretch(5, 2)
         self.fit_tab_grid.setRowStretch(5, 1)
 
-
-        #create new table under it
+        # create new table under it
         self.test_specific_settings_table = QtWidgets.QTableWidget(self.fittab)
-        self.test_specific_settings_table.setObjectName("hippounit_test_sections_names_table")
+        self.test_specific_settings_table.setObjectName(
+            "hippounit_test_sections_names_table")
         self.test_specific_settings_table.setColumnCount(2)
-        self.test_specific_settings_table.setHorizontalHeaderLabels(["Property", "Value"])
-        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.test_specific_settings_table.setHorizontalHeaderLabels(
+            ["Property", "Value"])
+        self.test_specific_settings_table.horizontalHeader(
+        ).setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.test_specific_settings_table.verticalHeader().setVisible(False)
         self.test_specific_settings_table.setRowCount(6)
         self.test_specific_settings_table.setAlternatingRowColors(False)
@@ -1204,78 +1180,72 @@ class Ui_Neuroptimus(QMainWindow):
         self.test_specific_settings_table.setWordWrap(True)
         self.test_specific_settings_table.setCornerButtonEnabled(True)
         self.test_specific_settings_table.horizontalHeader().setStretchLastSection(True)
-        #column size resizeable with dragging the column border
-        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
+        # column size resizeable with dragging the column border
+        self.test_specific_settings_table.horizontalHeader(
+        ).setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
         self.test_specific_settings_table.horizontalHeader().setStretchLastSection(True)
-        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        
-        
-        
-        #add it to the self.fit_tab_grid layout
-        self.fit_tab_grid.addWidget(self.test_specific_settings_table, 8, 0, 2, 7)
-        #stretch it to fill the available space
+        self.test_specific_settings_table.horizontalHeader(
+        ).setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(
+            0, QtWidgets.QHeaderView.ResizeToContents)
+
+        # add it to the self.fit_tab_grid layout
+        self.fit_tab_grid.addWidget(
+            self.test_specific_settings_table, 8, 0, 2, 7)
+        # stretch it to fill the available space
         # self.fit_tab_grid.setColumnStretch(5, 2)
         # self.fit_tab_grid.setRowStretch(5, 1)
         # row 0 Spike detection threshold
         self.test_specific_settings_table.insertRow(0)
-        self.test_specific_settings_table.setItem(0, 0, QtWidgets.QTableWidgetItem("Spike detection threshold (mV) "))
-        self.test_specific_settings_table.setItem(0, 1, QtWidgets.QTableWidgetItem("0"))
-        self.test_specific_settings_table.item(0, 0).setFlags(QtCore.Qt.NoItemFlags)
+        self.test_specific_settings_table.setItem(
+            0, 0, QtWidgets.QTableWidgetItem("Spike detection threshold (mV) "))
+        self.test_specific_settings_table.setItem(
+            0, 1, QtWidgets.QTableWidgetItem("0"))
+        self.test_specific_settings_table.item(
+            0, 0).setFlags(QtCore.Qt.NoItemFlags)
         self.test_specific_settings_table.item(0, 0).setForeground(BLACK)
         # row 1 Spike Window (ms)
         self.test_specific_settings_table.insertRow(1)
-        self.test_specific_settings_table.setItem(1, 0, QtWidgets.QTableWidgetItem("Spike Window (ms)"))
-        self.test_specific_settings_table.setItem(1, 1, QtWidgets.QTableWidgetItem("1.0"))
-        self.test_specific_settings_table.item(1, 0).setFlags(QtCore.Qt.NoItemFlags)
+        self.test_specific_settings_table.setItem(
+            1, 0, QtWidgets.QTableWidgetItem("Spike Window (ms)"))
+        self.test_specific_settings_table.setItem(
+            1, 1, QtWidgets.QTableWidgetItem("1.0"))
+        self.test_specific_settings_table.item(
+            1, 0).setFlags(QtCore.Qt.NoItemFlags)
         self.test_specific_settings_table.item(1, 0).setForeground(BLACK)
 
-        
-        
+        # appending these components to  hippounit_test_specific_settings_widgets
+        self.hippounit_settings_widgets.append(
+            self.hippounit_test_specific_settings_label)
 
+        self.hippounit_settings_widgets.append(
+            self.test_specific_settings_table)
 
-        #appending these components to  hippounit_test_specific_settings_widgets
-        self.hippounit_settings_widgets.append(self.hippounit_test_specific_settings_label)
-       
-        self.hippounit_settings_widgets.append(self.test_specific_settings_table)
+        self.hippounit_test_specific_settings_label.setAlignment(
+            QtCore.Qt.AlignCenter)
+        self.hippounit_test_specific_settings_label.setStyleSheet(
+            "QGroupBox {font-weight: bold;}")
 
-
-
-        self.hippounit_test_specific_settings_label.setAlignment(QtCore.Qt.AlignCenter)
-        self.hippounit_test_specific_settings_label.setStyleSheet("QGroupBox {font-weight: bold;}")
-
-        
-        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
+        self.test_specific_settings_table.horizontalHeader(
+        ).setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
         self.test_specific_settings_table.horizontalHeader().setStretchLastSection(True)
-        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-       
-        #block signals of the table to prevent the user from editing it
+        self.test_specific_settings_table.horizontalHeader(
+        ).setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.test_specific_settings_table.horizontalHeader().setSectionResizeMode(
+            0, QtWidgets.QHeaderView.ResizeToContents)
+
+        # block signals of the table to prevent the user from editing it
         self.fitlist.blockSignals(True)
         self.prepare_fitnessFunctions_table()
         self.fitlist.blockSignals(False)
 
-        #when a cell value  is edited in the table, call fitchanged function
+        # when a cell value  is edited in the table, call fitchanged function
         # self.fitlist.itemChanged.connect(self.fitchanged)
         self.fitlist.cellChanged.connect(self.fitchanged)
 
-
-
-
-
-
-
-
-
-
-
-
         self.fittab.setLayout(self.fit_tab_grid)
 
-
-
-
-        #run tab 5
+        # run tab 5
         self.tabwidget.addTab(self.fittab, "")
         self.runtab = QtWidgets.QWidget()
         self.runtab.setObjectName("runtab")
@@ -1325,10 +1295,12 @@ class Ui_Neuroptimus(QMainWindow):
         self.algolist = QtWidgets.QTableWidget(self.runtab)
         self.algolist.setGeometry(QtCore.QRect(10, 120, 441, 321))
         self.algolist.setObjectName("algolist")
-        #setting selection model to have always one active selected
-        self.algolist.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        # setting selection model to have always one active selected
+        self.algolist.setSelectionMode(
+            QtWidgets.QAbstractItemView.SingleSelection)
         self.algorithm_parameter_list = QtWidgets.QTableWidget(self.runtab)
-        self.algorithm_parameter_list.setGeometry(QtCore.QRect(470, 90, 241, 351))
+        self.algorithm_parameter_list.setGeometry(
+            QtCore.QRect(470, 90, 241, 351))
         self.algorithm_parameter_list.setObjectName("algorithm_parameter_list")
         self.label_60 = QtWidgets.QLabel(self.runtab)
         self.label_60.setGeometry(QtCore.QRect(470, 70, 200, 16))
@@ -1345,7 +1317,7 @@ class Ui_Neuroptimus(QMainWindow):
 
         grid = QtWidgets.QGridLayout(self.runtab)
 
-        grid.addWidget(self.label_59, 0, 0, 1, 2) #Algorithm label
+        grid.addWidget(self.label_59, 0, 0, 1, 2)  # Algorithm label
 
         # group the push buttons in a tight horizontal group
         button_layout = QtWidgets.QHBoxLayout()
@@ -1355,7 +1327,7 @@ class Ui_Neuroptimus(QMainWindow):
         button_layout.addWidget(self.pushButton_Bluepyopt)
         button_layout.addWidget(self.pushButton_Scipy)
 
-        #setting all the labels in the run tab to bold
+        # setting all the labels in the run tab to bold
         for widget in self.runtab.findChildren(QtWidgets.QLabel):
             font = QtGui.QFont()
             font.setFamily("Ubuntu")
@@ -1363,52 +1335,52 @@ class Ui_Neuroptimus(QMainWindow):
             font.setBold(True)
             widget.setFont(font)
 
-
-
         # Creating and configuring the progress bar
         self.progressBar = QProgressBar(self.runtab)
-        self.progressBar.setGeometry(QtCore.QRect(10, 500, 441, 23))  
-        self.progressBar.setMinimum(0)  # Set the minimum value of the progress bar
-        self.progressBar.setMaximum(100)  # Set the maximum value of the progress bar
-        self.progressBar.setValue(0)  # Set the initial value of the progress bar
+        self.progressBar.setGeometry(QtCore.QRect(10, 500, 441, 23))
+        # Set the minimum value of the progress bar
+        self.progressBar.setMinimum(0)
+        # Set the maximum value of the progress bar
+        self.progressBar.setMaximum(100)
+        # Set the initial value of the progress bar
+        self.progressBar.setValue(0)
 
         # show the percentage:
         self.progressBar.setFormat('%p%')  # Display the percentage completed
         self.progressBar.setAlignment(QtCore.Qt.AlignCenter)  # Center the text
-        self.progressBar.setStyleSheet("QProgressBar {border: 1px solid grey; border-radius: 5px; text-align: center;} QProgressBar::chunk {background-color: #05B8CC; width: 20px;}")
-                
+        self.progressBar.setStyleSheet(
+            "QProgressBar {border: 1px solid grey; border-radius: 5px; text-align: center;} QProgressBar::chunk {background-color: #05B8CC; width: 20px;}")
 
-        #making the buttons layout very tight
+        # making the buttons layout very tight
         button_layout.setSpacing(0)
         button_layout.setContentsMargins(0, 0, 0, 0)
-    
+
         grid.addLayout(button_layout, 1, 0, 1, 2)
-        
-        #make the table widget stretch to fill the available space
+
+        # make the table widget stretch to fill the available space
         self.algolist.horizontalHeader().setStretchLastSection(True)
 
         grid.addWidget(self.algolist, 2, 0, 1, 4)
 
-        grid.addWidget(self.label_60,0,2,1,1) #Parameters label
-        grid.addWidget(self.algorithm_parameter_list,1,2,2,4)
+        grid.addWidget(self.label_60, 0, 2, 1, 1)  # Parameters label
+        grid.addWidget(self.algorithm_parameter_list, 1, 2, 2, 4)
         self.algorithm_parameter_list.horizontalHeader().setStretchLastSection(True)
 
-        grid.addWidget(self.pushButton_32, 3, 0, 1, 1) #Boundaries
-        grid.addWidget(self.pushButton_33, 3, 2, 1, 1) #Evaluate
-        grid.addWidget(self.pushButton_30, 3, 3, 1, 1) #Run
-        grid.addWidget(self.progressBar, 4, 0, 1, 6) #Progress bar
+        grid.addWidget(self.pushButton_32, 3, 0, 1, 1)  # Boundaries
+        grid.addWidget(self.pushButton_33, 3, 2, 1, 1)  # Evaluate
+        grid.addWidget(self.pushButton_30, 3, 3, 1, 1)  # Run
+        grid.addWidget(self.progressBar, 4, 0, 1, 6)  # Progress bar
 
-        self.pushButton_32.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.pushButton_33.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self.pushButton_30.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-
-
-        
+        self.pushButton_32.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.pushButton_33.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.pushButton_30.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
 
         self.runtab.setLayout(grid)
 
-
-        #plot tab 6
+        # plot tab 6
         font = QtGui.QFont()
         font.setFamily("Ubuntu")
         font.setPointSize(11)
@@ -1427,41 +1399,31 @@ class Ui_Neuroptimus(QMainWindow):
         self.pushButton_34.setGeometry(QtCore.QRect(30, 400, 121, 22))
         self.pushButton_34.setObjectName("pushButton_34")
 
-        
-
-
         self.results_tab_grid = QtWidgets.QGridLayout(self.results_tab)
 
         grid.addWidget(self.label_72, 0, 0, 1, 1)
-        self.label_72.sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.label_72.sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self.results_tab_grid.addWidget(self.pushButton_34, 2, 0, 1, 2)
 
         self.results_tab_grid.addWidget(self.plot_widget, 0, 4, 4, 3)
         # self.plot_widget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Expanding)
 
-      
-        #making pushButton 34 not to stretch and be fixed
+        # making pushButton 34 not to stretch and be fixed
         for widget in self.results_tab.findChildren(QtWidgets.QPushButton):
-            widget.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+            widget.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
+                                 QtWidgets.QSizePolicy.Fixed)
 
-
-       
         self.results_tab.setLayout(self.results_tab_grid)
 
-       
-
-
-
-
-        
-        #stat tab 7
+        # stat tab 7
         self.stat_tab = QtWidgets.QWidget()
         self.stat_tab.setObjectName("stat_tab")
         self.tabwidget.addTab(self.stat_tab, "")
         self.pushButton_35 = QtWidgets.QPushButton(self.stat_tab)
         self.pushButton_35.setGeometry(QtCore.QRect(30, 400, 111, 22))
         self.pushButton_35.setObjectName("pushButton_34")
-        self.pushButton_36 = QtWidgets.QPushButton(self.stat_tab)  
+        self.pushButton_36 = QtWidgets.QPushButton(self.stat_tab)
         self.pushButton_36.setGeometry(QtCore.QRect(150, 400, 111, 22))
         self.pushButton_36.setObjectName("pushButton_34")
         self.pushButton_37 = QtWidgets.QPushButton(self.stat_tab)
@@ -1475,7 +1437,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.errorlist.setGeometry(QtCore.QRect(300, 200, 350, 180))
         self.errorlist.setObjectName("errorlist")
         self.fitstat = QtWidgets.QLabel(self.stat_tab)
-        self.fitstat.setGeometry(QtCore.QRect(300, 50,200, 24))
+        self.fitstat.setGeometry(QtCore.QRect(300, 50, 200, 24))
         font = QtGui.QFont()
         font.setFamily("Ubuntu")
         font.setPointSize(10)
@@ -1483,33 +1445,26 @@ class Ui_Neuroptimus(QMainWindow):
         font.setWeight(50)
         self.fitstat.setFont(font)
         self.fitstat.setObjectName("label")
-        self.fitstat.setText(QtCore.QCoreApplication.translate("Neuroptimus", 'Fitness statistics'))
+        self.fitstat.setText(QtCore.QCoreApplication.translate(
+            "Neuroptimus", 'Fitness statistics'))
 
-
-        #grid layout
+        # grid layout
         self.statLayout = QtWidgets.QGridLayout(self.stat_tab)
         # self.statLayout.addWidget(self.label_74, 0, 0, 1, 2)
         # self.statLayout.addWidget(self.pushButton_35, 2, 0, 1, 2)
         # self.statLayout.addWidget(self.fitstat, 0, 1, 1, 1)
-        # self.statLayout.addWidget(self.errorlist, 1, 1, 1, 2) 
+        # self.statLayout.addWidget(self.errorlist, 1, 1, 1, 2)
         # self.statLayout.addWidget(self.pushButton_37, 2, 1, 1, 1)
-        
-        #making pushButtons 37,35 not to stretch and be fixed
-        self.pushButton_37.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
-        self.pushButton_35.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
-        #making all coloumns of the errorlist table widget stretch to fill the available space
+
+        # making pushButtons 37,35 not to stretch and be fixed
+        self.pushButton_37.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        self.pushButton_35.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        # making all coloumns of the errorlist table widget stretch to fill the available space
         self.errorlist.horizontalHeader().setStretchLastSection(True)
 
-
-
-
         self.stat_tab.setLayout(self.statLayout)
-
-
-
-
-
-
 
         Neuroptimus.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(Neuroptimus)
@@ -1523,7 +1478,7 @@ class Ui_Neuroptimus(QMainWindow):
         Neuroptimus.setStatusBar(self.statusbar)
         self.actionunlock = QtWidgets.QAction(Neuroptimus)
         self.actionunlock.setObjectName("actionunlock")
-        #for unlock action we place a check box in the menu left
+        # for unlock action we place a check box in the menu left
         self.actionunlock.setCheckable(True)
 
         self.actionexit = QtWidgets.QAction(Neuroptimus)
@@ -1538,7 +1493,6 @@ class Ui_Neuroptimus(QMainWindow):
         self.actionLoadSettings.setObjectName("actionLoadSettings")
         self.actionLoadSettings.setIcon(QIcon.fromTheme("document-open"))
 
-        
         self.fileMenu.addAction(self.actionSaveSettings)
         self.fileMenu.addAction(self.actionLoadSettings)
         self.fileMenu.addAction(self.actionunlock)
@@ -1547,25 +1501,23 @@ class Ui_Neuroptimus(QMainWindow):
         self.menubar.addAction(self.fileMenu.menuAction())
 
         self.container = []
-        self.temp=[]
+        self.temp = []
 
-
-        self.SW = SecondWindow(self) 
+        self.SW = SecondWindow(self)
         self.SW.setObjectName("Neuroptimus")
         self.SW.resize(500, 500)
 
-        #Amplitudes window
-        self.SiW = StimuliWindow(self) 
+        # Amplitudes window
+        self.SiW = StimuliWindow(self)
         self.SiW.setObjectName("Neuroptimus")
         self.SiW.resize(400, 500)
 
-        
-        #Parameters boundaries window
-        self.BW = BoundaryWindow(self) 
+        # Parameters boundaries window
+        self.BW = BoundaryWindow(self)
 
-        #when actionSaveSettings clicked call function self.save_gui_state
+        # when actionSaveSettings clicked call function self.save_gui_state
         self.actionSaveSettings.triggered.connect(self.save_gui_state)
-        #when actionLoadSettings clicked call function self.load_gui_state
+        # when actionLoadSettings clicked call function self.load_gui_state
         self.actionLoadSettings.triggered.connect(self.load_gui_state)
 
         self.retranslateUi(Neuroptimus)
@@ -1578,20 +1530,18 @@ class Ui_Neuroptimus(QMainWindow):
         else:
             self.gui_elements_state[key] = value_dict
 
-
-
     def save_gui_state(self):
         """
         Save the current state of the GUI to a file.
         """
-        #get the file name from the user
-        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self.centralwidget, "Save File", "", "JSON files (*.json)")
+        # get the file name from the user
+        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self.centralwidget, "Save File", "", "JSON files (*.json)")
         if file_name:
-            #save the state of the GUI to the file
+            # save the state of the GUI to the file
             self.serialize_gui_state(file_name)
 
-    
-    def get_deep_attribute(self,obj, attr_path):
+    def get_deep_attribute(self, obj, attr_path):
         try:
             attrs = attr_path.split('.')
             for attr in attrs:
@@ -1600,49 +1550,57 @@ class Ui_Neuroptimus(QMainWindow):
         except AttributeError:
             return None
 
-    def serialize_gui_state(self,file_name):
+    def serialize_gui_state(self, file_name):
         """
         Serialize the state of the GUI to a file.
         """
-        
+
         for component_name in self.gui_elements_state:
             # self.gui_elements_state[component_name] = {"type": type(getattr(self, component_name)).__name__, "value": self.agnostic_component_getter(getattr(self, component_name)), "enabled": getattr(self, component_name).isEnabled()}
 
             if component_name == "SW.plaintext":
 
-                self.gui_elements_state[component_name] = {"type": "QPlainTextEdit", "value": self.SW.plaintext.toPlainText()}
+                self.gui_elements_state[component_name] = {
+                    "type": "QPlainTextEdit", "value": self.SW.plaintext.toPlainText()}
             elif component_name == "SW.pushButton_46":
 
-                self.gui_elements_state[component_name] = {"type": "QPushButton", "value": self.SW.was_loaded}
+                self.gui_elements_state[component_name] = {
+                    "type": "QPushButton", "value": self.SW.was_loaded}
             elif component_name == "SiW.stim_table":
-                self.gui_elements_state[component_name] = {"type": type(self.SiW.stim_table).__name__, "value": self.agnostic_component_getter(self.SiW.stim_table), "enabled": self.SiW.stim_table.isEnabled()}
+                self.gui_elements_state[component_name] = {"type": type(self.SiW.stim_table).__name__, "value": self.agnostic_component_getter(
+                    self.SiW.stim_table), "enabled": self.SiW.stim_table.isEnabled()}
             elif component_name == "SiW.amplit_edit":
-                self.gui_elements_state[component_name] = {"type": "QLineEdit", "value": self.SiW.amplit_edit.text()}
+                self.gui_elements_state[component_name] = {
+                    "type": "QLineEdit", "value": self.SiW.amplit_edit.text()}
             elif component_name == "SiW.pushButton_create":
-                self.gui_elements_state[component_name] = {"type": "QPushButton", "value": self.SiW.is_stimuli_created}
+                self.gui_elements_state[component_name] = {
+                    "type": "QPushButton", "value": self.SiW.is_stimuli_created}
             elif component_name == "SiW.pushButton_accept":
-                self.gui_elements_state[component_name] = {"type": "QPushButton", "value": self.SiW.is_stimuli_accepted}
+                self.gui_elements_state[component_name] = {
+                    "type": "QPushButton", "value": self.SiW.is_stimuli_accepted}
 
             elif component_name == "algolist":
                 # self.gui_elements_state[component_name] = {"type": "QTabelWidget", "value": self.agnostic_component_getter(self.algolist), "current_row": self.algolist.currentRow() }
                 table_cells = []
                 for row in range(self.algolist.rowCount()):
-                    #it is a single column table
+                    # it is a single column table
                     table_cells.append(self.algolist.item(row, 0).text())
-                self.gui_elements_state[component_name] = {"type": "QTabelWidget", "value": table_cells, "current_row": self.algolist.currentRow() }
+                self.gui_elements_state[component_name] = {
+                    "type": "QTabelWidget", "value": table_cells, "current_row": self.algolist.currentRow()}
             elif component_name == "fitlist":
-                #get text of each cell and save it in a list
+                # get text of each cell and save it in a list
                 table = []
                 for row in range(self.fitlist.rowCount()):
                     row_values = []
                     for col in range(self.fitlist.columnCount()):
                         row_values.append(self.fitlist.item(row, col).text())
                     table.append(row_values)
-                self.gui_elements_state[component_name] = {"type": "CustomTableWidget", "value": table}
-            
+                self.gui_elements_state[component_name] = {
+                    "type": "CustomTableWidget", "value": table}
+
             elif component_name == "algorithm_parameter_list":
                 table = []
-                #if not empty save it else save []
+                # if not empty save it else save []
                 if self.algorithm_parameter_list.rowCount() > 0:
                     # iterate over rows and columns if a cell is checkable save it as true or false else save it's text
                     for row in range(self.algorithm_parameter_list.rowCount()):
@@ -1650,35 +1608,40 @@ class Ui_Neuroptimus(QMainWindow):
                         for col in range(self.algorithm_parameter_list.columnCount()):
                             item = self.algorithm_parameter_list.item(row, col)
                             if (item.flags() & QtCore.Qt.ItemIsUserCheckable) and not self.algorithm_parameter_list.item(row, col).text():
-                                row_values.append(item.checkState() == QtCore.Qt.Checked)
+                                row_values.append(
+                                    item.checkState() == QtCore.Qt.Checked)
                             else:
-                                row_values.append(self.algorithm_parameter_list.item(row, col).text())
+                                row_values.append(
+                                    self.algorithm_parameter_list.item(row, col).text())
                         table.append(row_values)
-                self.gui_elements_state[component_name] = {"type": "QTabelWidget", "value": table}
-            
+                self.gui_elements_state[component_name] = {
+                    "type": "QTabelWidget", "value": table}
+
             elif component_name == "BW.boundary_table":
                 if self.BW.boundary_table.rowCount() > 0:
-                    self.gui_elements_state[component_name] = {"type": type(self.BW.boundary_table).__name__, "value": self.agnostic_component_getter(self.BW.boundary_table), "enabled": self.BW.boundary_table.isEnabled()}
+                    self.gui_elements_state[component_name] = {"type": type(self.BW.boundary_table).__name__, "value": self.agnostic_component_getter(
+                        self.BW.boundary_table), "enabled": self.BW.boundary_table.isEnabled()}
             else:
-                self.gui_elements_state[component_name] = {"type": type(getattr(self, component_name)).__name__, "value": self.agnostic_component_getter(getattr(self, component_name)), "enabled": getattr(self, component_name).isEnabled()}
+                self.gui_elements_state[component_name] = {"type": type(getattr(self, component_name)).__name__, "value": self.agnostic_component_getter(
+                    getattr(self, component_name)), "enabled": getattr(self, component_name).isEnabled()}
 
         # self.gui_elements_state["input_tree"] = {"type": "QTreeWidget", "value": self.input_tree.currentItem().text(0)}
 
         verbose(self.gui_elements_state)
-        #save to json
-        file_name= f"{file_name}.json" if not file_name.endswith(".json") else file_name
+        # save to json
+        file_name = f"{file_name}.json" if not file_name.endswith(
+            ".json") else file_name
         with open(file_name, "w") as file:
             json.dump(self.gui_elements_state, file, indent=4)
-
-
 
     def load_gui_state(self):
         """
         Load the state of the GUI from a file.
         """
-        #open file dialog to get the file name
-        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self.centralwidget, "Open File", "", "")
-        verbose("loading gui state from: ",file_name)
+        # open file dialog to get the file name
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self.centralwidget, "Open File", "", "")
+        verbose("loading gui state from: ", file_name)
         if file_name:
             with open(file_name, "r") as file:
                 loaded_ui_element = json.load(file)
@@ -1698,152 +1661,162 @@ class Ui_Neuroptimus(QMainWindow):
                     if loadedValue["value"]:
                         self.SiW.pushButton_create.click()
                 elif component_name == "SiW.stim_table":
-                    self.agnostic_component_setter(self.SiW.stim_table, loadedValue)
+                    self.agnostic_component_setter(
+                        self.SiW.stim_table, loadedValue)
                 elif component_name == "SiW.pushButton_accept":
                     if loadedValue["value"]:
                         self.SiW.pushButton_accept.click()
                 elif component_name == "fitlist":
-                    table = loadedValue["value"] # [[],[]]
+                    table = loadedValue["value"]  # [[],[]]
                     if table:
                         for row in range(len(table)):
-                            for col in range(1,len(table[row])):
+                            for col in range(1, len(table[row])):
                                 verbose(table[row][1])
-                                #first filling the rows
+                                # first filling the rows
                                 self.fitlist.blockSignals(True)
                                 # self.fitlist.setItem(row, col, QtWidgets.QTableWidgetItem(table[row][col]))
-                                self.fitlist.item(row,col).setText(table[row][col])
-                                self.fitlist.blockSignals(False)                        #then fill the table with the rest of the values except the weight
-                        for col in range(1,len(table[0])):
+                                self.fitlist.item(row, col).setText(
+                                    table[row][col])
+                                # then fill the table with the rest of the values except the weight
+                                self.fitlist.blockSignals(False)
+                        for col in range(1, len(table[0])):
                             for row in range(len(table)):
-                                #then fill the 
-                                self.fitlist.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
+                                # then fill the
+                                self.fitlist.setSelectionBehavior(
+                                    QtWidgets.QTableView.SelectRows)
                                 self.fitlist.selectRow(row)
                                 # self.fitlist.setItem(row, col, QtWidgets.QTableWidgetItem(table[row][col]))
-                                self.fitlist.item(row,col).setText(table[row][col])
+                                self.fitlist.item(row, col).setText(
+                                    table[row][col])
                                 self.fitchanged()
 
                 elif component_name == "test_specific_settings_table":
-                    #update cells value in the table from the loaded table
+                    # update cells value in the table from the loaded table
                     table = loadedValue["value"]
                     if table:
                         for row in range(len(table)):
-                            for column in range(0,len(table[0])):
-                                self.test_specific_settings_table.item(row, column).setText(table[row][column])
+                            for column in range(0, len(table[0])):
+                                self.test_specific_settings_table.item(
+                                    row, column).setText(table[row][column])
 
                 elif component_name == "algolist":
                     selected_row = loadedValue["current_row"]
                     table_cells = loadedValue["value"]
-                    #disable signals to prevent the table from emitting signals
+                    # disable signals to prevent the table from emitting signals
                     self.algolist.blockSignals(True)
                     # self.agnostic_component_setter(self.algolist, loadedValue)
-                    #clear rows first
+                    # clear rows first
                     self.algolist.setRowCount(0)
                     for row in range(len(table_cells)):
                         self.algolist.insertRow(row)
-                        self.algolist.setItem(row, 0, QtWidgets.QTableWidgetItem(table_cells[row]))
+                        self.algolist.setItem(
+                            row, 0, QtWidgets.QTableWidgetItem(table_cells[row]))
 
                     self.algolist.blockSignals(False)
-                    self.algolist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+                    self.algolist.setSelectionBehavior(
+                        QtWidgets.QAbstractItemView.SelectRows)
 
-                    #select as double click
+                    # select as double click
                     self.algolist.selectRow(selected_row)
                     self.algoselect()
-               
-                   
+
                 elif component_name == "algorithm_parameter_list":
                     table = loadedValue["value"]
                     if table:
-                        #iterate over rows and cols
+                        # iterate over rows and cols
                         for row in range(len(table)):
-                            for col in range(1,len(table[0])):
-                                #if the cell is checkable set it's check state else set it's text
-                                if isinstance(table[row][col],bool):
+                            for col in range(1, len(table[0])):
+                                # if the cell is checkable set it's check state else set it's text
+                                if isinstance(table[row][col], bool):
                                     state = QtCore.Qt.Checked if table[row][col] else QtCore.Qt.Unchecked
-                                    self.algorithm_parameter_list.item(row, col).setCheckState(state)
+                                    self.algorithm_parameter_list.item(
+                                        row, col).setCheckState(state)
                                 else:
-                                    self.algorithm_parameter_list.item(row, col).setText(table[row][col])
+                                    self.algorithm_parameter_list.item(
+                                        row, col).setText(table[row][col])
 
-                            
                 elif component_name == "BW.boundary_table":
                     self.boundarywindow()
-                    self.agnostic_component_setter(self.BW.boundary_table, loadedValue)
-                    #clicking self.BW.Setbutton
+                    self.agnostic_component_setter(
+                        self.BW.boundary_table, loadedValue)
+                    # clicking self.BW.Setbutton
                     self.BW.Setbutton.click()
                     self.BW.close()
-                            
+
                 else:
-                    self.agnostic_component_setter(getattr(self,component_name), loadedValue)
+                    self.agnostic_component_setter(
+                        getattr(self, component_name), loadedValue)
 
-
-
-    def agnostic_component_setter(self,component, metadata:dict):
+    def agnostic_component_setter(self, component, metadata: dict):
         """
         Set the value of a component regardless of its type.
         """
         value = metadata["value"]
-        if isinstance(component,QtWidgets.QComboBox):
+        if isinstance(component, QtWidgets.QComboBox):
             component.setCurrentText(value)
-        elif isinstance(component,QtWidgets.QLineEdit):
+        elif isinstance(component, QtWidgets.QLineEdit):
             component.setText(value)
-        elif isinstance(component,QtWidgets.QCheckBox):
+        elif isinstance(component, QtWidgets.QCheckBox):
             component.setChecked(value)
-        elif isinstance(component,QtWidgets.QTreeWidget):
+        elif isinstance(component, QtWidgets.QTreeWidget):
             component.setCurrentItem(value)
-        elif isinstance(component,QtWidgets.QPushButton):
+        elif isinstance(component, QtWidgets.QPushButton):
             if value is True:
-                #click the button to raise the subsequent events
+                # click the button to raise the subsequent events
                 component.setEnabled(True)
                 component.click()
-        elif isinstance(component,QtWidgets.QTableWidget):
+        elif isinstance(component, QtWidgets.QTableWidget):
             # return
-            #iterate over the rows and columns of the table widget and set the values
+            # iterate over the rows and columns of the table widget and set the values
             if value:
                 for row in range(component.rowCount()):
                     for col in range(component.columnCount()):
-                        component.setItem(row, col, QtWidgets.QTableWidgetItem(value[row][col]))
+                        component.setItem(
+                            row, col, QtWidgets.QTableWidgetItem(value[row][col]))
                         # component.item(row,col).setText(text = value[row][col])
         elif isinstance(component, TableSelections):
             if value:
-                table_widget_to_set = getattr(self,component.get_table_widget())
+                table_widget_to_set = getattr(
+                    self, component.get_table_widget())
                 rows_to_select = value
-                #select all the rows in the table widget at once
-                table = table_widget_to_set            
+                # select all the rows in the table widget at once
+                table = table_widget_to_set
                 # Set the selection mode to allow multiple selections
-                table_widget_to_set.setSelectionMode(QTableWidget.MultiSelection)
+                table_widget_to_set.setSelectionMode(
+                    QTableWidget.MultiSelection)
 
                 # Set the selection behavior to select entire rows
-                table_widget_to_set.setSelectionBehavior(QTableWidget.SelectRows)
+                table_widget_to_set.setSelectionBehavior(
+                    QTableWidget.SelectRows)
 
                 for row in rows_to_select:
                     table_widget_to_set.selectRow(row)
-                #reset the multi selection mode to single selection
-                table_widget_to_set.setSelectionMode(QTableWidget.ContiguousSelection)
-        
+                # reset the multi selection mode to single selection
+                table_widget_to_set.setSelectionMode(
+                    QTableWidget.ContiguousSelection)
 
-    def agnostic_component_getter(self,component: QtWidgets.QWidget):
+    def agnostic_component_getter(self, component: QtWidgets.QWidget):
         """
         Get the value of a component regardless of its type.
         """
-        if isinstance(component,QtWidgets.QComboBox):
+        if isinstance(component, QtWidgets.QComboBox):
             return component.currentText()
-        elif isinstance(component,QtWidgets.QLineEdit):
+        elif isinstance(component, QtWidgets.QLineEdit):
             return component.text()
-        elif isinstance(component,QtWidgets.QCheckBox):
+        elif isinstance(component, QtWidgets.QCheckBox):
             return component.isChecked()
-        elif isinstance(component,QtWidgets.QTreeWidget):
+        elif isinstance(component, QtWidgets.QTreeWidget):
             return component.currentItem()
-        elif isinstance(component,QtWidgets.QPushButton):
+        elif isinstance(component, QtWidgets.QPushButton):
             return self.gui_elements_state[component.objectName()].get("value", False)
 
-        elif isinstance(component,QtWidgets.QTableWidget):
-            #print component anme
+        elif isinstance(component, QtWidgets.QTableWidget):
+            # print component anme
             # print(component.objectName())
-            #iterate over the rows and columns of the table widget and get the values
+            # iterate over the rows and columns of the table widget and get the values
             return [[component.item(row, col).text() for col in range(component.columnCount())] for row in range(component.rowCount())]
         elif isinstance(component, TableSelections):
             return component.get_selected_rows_indices()
-        
-
 
     def retranslateUi(self, Neuroptimus):
         """
@@ -1851,45 +1824,54 @@ class Ui_Neuroptimus(QMainWindow):
         """
         _translate = QtCore.QCoreApplication.translate
         Neuroptimus.setWindowTitle(_translate("Neuroptimus", "Neuroptimus"))
-        #self.tabwidget.currentChanged.connect(self.onChange)
-        #modeltab 2 disappearing
+        # self.tabwidget.currentChanged.connect(self.onChange)
+        # modeltab 2 disappearing
         self.actionunlock.triggered.connect(self.toggleTabLock)
-        
+
         self.actionexit.triggered.connect(QApplication.quit)
 
-        self.tabwidget.setTabText(self.tabwidget.indexOf(self.filetab), _translate("Neuroptimus", "Target data"))
-        self.label_23.setText(_translate("Neuroptimus", "Load mod files from:"))
+        self.tabwidget.setTabText(self.tabwidget.indexOf(
+            self.filetab), _translate("Neuroptimus", "Target data"))
+        self.label_23.setText(_translate(
+            "Neuroptimus", "Load mod files from:"))
         self.label_24.setText(_translate("Neuroptimus", "Model file"))
         self.lineEdit_folder2.setEnabled(False)
         self.pushButton_14.setEnabled(False)
         self.load_mods_checkbox.clicked.connect(self.disable_mod_path)
         self.pushButton_13.setText(_translate("Neuroptimus", "Load"))
         self.pushButton_13.clicked.connect(self.Load2)
-        self.pushButton_12.setText(_translate("Neuroptimus", "Load python file"))
+        self.pushButton_12.setText(_translate(
+            "Neuroptimus", "Load python file"))
         self.pushButton_12.clicked.connect(self.Loadpython)
         self.pushButton_12.hide()
-        self.pushButton_14.setText(_translate("Neuroptimus", "Browse...")) 
+        self.pushButton_14.setText(_translate("Neuroptimus", "Browse..."))
         self.pushButton_14.clicked.connect(self.openFolderNameDialog2)
         self.pushButton_15.setText(_translate("Neuroptimus", "Browse..."))
         self.pushButton_15.clicked.connect(self.openFileNameDialog2)
-        self.pushButton_16.setText(_translate("Neuroptimus", "Define parameter mapping"))
+        self.pushButton_16.setText(_translate(
+            "Neuroptimus", "Define parameter mapping"))
         self.pushButton_16.clicked.connect(self.UF)
         self.label_26.setText(_translate("Neuroptimus", "Command"))
         self.label_26.hide()
-        self.label_27.setText(_translate("Neuroptimus", "Number of parameters"))
+        self.label_27.setText(_translate(
+            "Neuroptimus", "Number of parameters"))
         self.label_27.hide()
         self.setter.setText(_translate("Neuroptimus", "Set"))
         self.setter.clicked.connect(self.Set)
         self.remover.setText(_translate("Neuroptimus", "Remove"))
         self.remover.clicked.connect(self.Remove)
         self.modellist.setColumnCount(4)
-        self.modellist.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-        self.modellist.setHorizontalHeaderLabels(("Section;Segment;Mechanism;Parameter").split(";"))
-        #self.modellist.resizeColumnsToContents()
+        self.modellist.setSizeAdjustPolicy(
+            QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.modellist.setHorizontalHeaderLabels(
+            ("Section;Segment;Mechanism;Parameter").split(";"))
+        # self.modellist.resizeColumnsToContents()
         self.modellist.horizontalHeader().setStretchLastSection(True)
-        self.modellist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.modellist.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        
+        self.modellist.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows)
+        self.modellist.setEditTriggers(
+            QtWidgets.QAbstractItemView.NoEditTriggers)
+
         self.input_tree.setWidgetResizable(True)
         font = QtGui.QFont()
         font.setFamily("Ubuntu")
@@ -1900,11 +1882,11 @@ class Ui_Neuroptimus(QMainWindow):
         self.input_label.setObjectName("label")
         self.input_tree.setWidget(self.input_label)
 
-
-        #filetab 1
+        # filetab 1
         self.datfileName = ""
         self.label_3.setText(_translate("Neuroptimus", "Base directory"))
-        self.label_4.setText(_translate("Neuroptimus", "Length of traces (ms)"))
+        self.label_4.setText(_translate(
+            "Neuroptimus", "Length of traces (ms)"))
         self.label_5.setText(_translate("Neuroptimus", "Number of traces"))
         self.label_7.setText(_translate("Neuroptimus", "Units"))
         self.pushButton_3.setText(_translate("Neuroptimus", "Load data"))
@@ -1913,26 +1895,30 @@ class Ui_Neuroptimus(QMainWindow):
         self.label_2.setText(_translate("Neuroptimus", "Data file"))
         self.base_dir_controll.setText(_translate("Neuroptimus", "Browse..."))
         self.base_dir_controll.clicked.connect(self.openFolderNameDialog)
-        self.label_6.setText(_translate("Neuroptimus", "Sampling frequency (Hz)"))
-        self.type_selector.setItemText(0, _translate("Neuroptimus", "Voltage trace"))
-        self.type_selector.setItemText(1, _translate("Neuroptimus", "Current trace"))
-        self.type_selector.setItemText(2, _translate("Neuroptimus", "Features"))
-        if  is_hippounit_installed():
-            self.type_selector.setItemText(3, _translate("Neuroptimus", "HippoUnit"))
+        self.label_6.setText(_translate(
+            "Neuroptimus", "Sampling frequency (Hz)"))
+        self.type_selector.setItemText(
+            0, _translate("Neuroptimus", "Voltage trace"))
+        self.type_selector.setItemText(
+            1, _translate("Neuroptimus", "Current trace"))
+        self.type_selector.setItemText(
+            2, _translate("Neuroptimus", "Features"))
+        if is_hippounit_installed():
+            self.type_selector.setItemText(
+                3, _translate("Neuroptimus", "HippoUnit"))
         else:
-            self.type_selector.setItemText(3, _translate("Neuroptimus", "HippoUnit (not installed)"))
-            #remove last item
+            self.type_selector.setItemText(3, _translate(
+                "Neuroptimus", "HippoUnit (not installed)"))
+            # remove last item
             self.type_selector.removeItem(3)
         # self.type_selector.setItemText(4, _translate("Neuroptimus", "Other"))
 
-
-
-
         self.type_selector.currentTextChanged.connect(self.type_change)
-        #if current tab changed to second tab, then call the function
+        # if current tab changed to second tab, then call the function
         self.tabwidget.currentChanged.connect(self.tabchange)
 
-        self.input_file_controll.setText(_translate("Neuroptimus", "Browse..."))
+        self.input_file_controll.setText(
+            _translate("Neuroptimus", "Browse..."))
         self.input_file_controll.clicked.connect(self.openFileNameDialog)
         self.time_checker.setText(_translate("Neuroptimus", "Contains time"))
         self.time_checker.toggled.connect(self.time_calc)
@@ -1941,97 +1927,102 @@ class Ui_Neuroptimus(QMainWindow):
         self.dropdown.setItemText(2, _translate("Neuroptimus", "V"))
         self.dropdown.setCurrentIndex(1)
 
-        self.tvoltage=None
-        self.tcurrent=None
-        self.tspike_t=None
-        self.tother=None
-        self.tfeatures=None
-    
-        #Input data plot
-        self.figure = plt.figure(figsize=(4,2.5), dpi=80)
+        self.tvoltage = None
+        self.tcurrent = None
+        self.tspike_t = None
+        self.tother = None
+        self.tfeatures = None
+
+        # Input data plot
+        self.figure = plt.figure(figsize=(4, 2.5), dpi=80)
         self.canvas = FigureCanvas(self.figure)
         self.canvas.setParent(self.widget)
         # self.canvas.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        
-        #add to horizontal layout
+
+        # add to horizontal layout
         self.hbox = QtWidgets.QHBoxLayout(self.widget)
         self.hbox.addWidget(self.canvas)
         self.widget.setLayout(self.hbox)
-        
 
-        
-        
         # plot  = MyWidget(parent=self.widget)
         # self.figure = plot.figure
         # self.canvas = plot.canvas
-        #enable this later
-        self.loaded_input_types=[self.tvoltage ,
-                                 self.tcurrent ,
-#                                 self.tspike_t ,
-#                                 self.tother,
-                                  self.tfeatures]
+        # enable this later
+        self.loaded_input_types = [self.tvoltage,
+                                   self.tcurrent,
+                                   #                                 self.tspike_t ,
+                                   #                                 self.tother,
+                                   self.tfeatures]
         # self.core=Core.coreModul()
-        
-        #optiontab 3
-        self.tabwidget.setTabText(self.tabwidget.indexOf(self.modeltab), _translate("Neuroptimus", "Model"))
+
+        # optiontab 3
+        self.tabwidget.setTabText(self.tabwidget.indexOf(
+            self.modeltab), _translate("Neuroptimus", "Model"))
         self.label_44.setText(_translate("Neuroptimus", "Delay (ms)"))
-        self.label_66.setText(_translate("Neuroptimus", "Initial voltage (mV)"))
+        self.label_66.setText(_translate(
+            "Neuroptimus", "Initial voltage (mV)"))
         self.label_67.setText(_translate("Neuroptimus", "tstop (ms)"))
         self.label_45.setText(_translate("Neuroptimus", "Section"))
         self.label_46.setText(_translate("Neuroptimus", "Duration (ms)"))
-        self.base_dir_controll9.setText(_translate("Neuroptimus", "Amplitude(s)"))
+        self.base_dir_controll9.setText(
+            _translate("Neuroptimus", "Amplitude(s)"))
         self.base_dir_controll9.clicked.connect(self.amplitudes_fun)
         self.label_48.setText(_translate("Neuroptimus", "Section"))
         self.label_49.setText(_translate("Neuroptimus", "Stimulus Type"))
         self.label_68.setText(_translate("Neuroptimus", "Time step"))
-        self.label_51.setText(_translate("Neuroptimus", "Position inside section"))
+        self.label_51.setText(_translate(
+            "Neuroptimus", "Position inside section"))
         self.label_52.setText(_translate("Neuroptimus", "Parameter to record"))
-        self.label_55.setText(_translate("Neuroptimus", "Stimulation protocol"))
-        self.label_71.setText(_translate("Neuroptimus", "Position inside section"))
+        self.label_55.setText(_translate(
+            "Neuroptimus", "Stimulation protocol"))
+        self.label_71.setText(_translate(
+            "Neuroptimus", "Position inside section"))
         self.lineEdit_pos.setText("0.5")
         self.lineEdit_posins.setText("0.5")
         self.lineEdit_initv.setText("-65")
         self.lineEdit_dt.setText("0.05")
-        
-        self.stimprot.addItems(["IClamp","VClamp"])
-        self.stimulus_type.addItems(["Step Protocol","Custom Waveform"])
+
+        self.stimprot.addItems(["IClamp", "VClamp"])
+        self.stimulus_type.addItems(["Step Protocol", "Custom Waveform"])
         self.stimulus_type.currentIndexChanged.connect(self.typeChange)
-        self.param_to_record.addItems(["v","i"])
-        #self.stimprot.setItemText(0, _translate("Neuroptimus", "IClamp"))
-        #self.stimprot.setItemText(1, _translate("Neuroptimus", "VClamp"))
+        self.param_to_record.addItems(["v", "i"])
+        # self.stimprot.setItemText(0, _translate("Neuroptimus", "IClamp"))
+        # self.stimprot.setItemText(1, _translate("Neuroptimus", "VClamp"))
         # self.container = []
         # self.temp=[]
 
-
-        #fittab 4
-        self.tabwidget.setTabText(self.tabwidget.indexOf(self.simtab), _translate("Neuroptimus", "Settings"))
+        # fittab 4
+        self.tabwidget.setTabText(self.tabwidget.indexOf(
+            self.simtab), _translate("Neuroptimus", "Settings"))
         self.fitlist.setColumnCount(2)
-        #self.fitlist.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-        #self.flist.setHorizontalHeaderLabels(("Section;Segment;Mechanism;Parameter").split(";"))
+        # self.fitlist.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        # self.flist.setHorizontalHeaderLabels(("Section;Segment;Mechanism;Parameter").split(";"))
         self.fitlist.resizeColumnsToContents()
-        
-        #self.fitlist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.fitlist.setHorizontalHeaderLabels(["Fitness functions","Weights"])
-        #self.fitlist.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.fitlist.setColumnWidth(0,200)
-        self.fitlist.setColumnWidth(1,80)
-        self.fitlist.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        #self.fitlist.itemSelectionChanged.connect(self.fitselect)
-        #self.fitlist.cellClicked.connect(self.fitselect)
+
+        # self.fitlist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.fitlist.setHorizontalHeaderLabels(
+            ["Fitness functions", "Weights"])
+        # self.fitlist.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.fitlist.setColumnWidth(0, 200)
+        self.fitlist.setColumnWidth(1, 80)
+        self.fitlist.setSelectionMode(
+            QtWidgets.QAbstractItemView.SingleSelection)
+        # self.fitlist.itemSelectionChanged.connect(self.fitselect)
+        # self.fitlist.cellClicked.connect(self.fitselect)
         # self.fitlist.horizontalHeader().setStretchLastSection(True)
         # self.label_69.setText(_translate("Neuroptimus", "Spike detection tresh. (mV)"))
         # self.label_70.setText(_translate("Neuroptimus", "Spike window (ms)"))
         self.pushButton_normalize.clicked.connect(self.Fit_normalize)
         # self.HippoTests_parameter_location_in_table = {"TrunkSecList_name":3 , "ObliqueSecList_name":4 , "TuftSecList_name":5, "num_of_dend_locations":6}
-        
-            
-        #self.fittab_help.clicked.connect(self.help_popup_fit)
 
-        #runtab 5
-        self.tabwidget.setTabText(self.tabwidget.indexOf(self.fittab), _translate("Neuroptimus", "Fitness"))
+        # self.fittab_help.clicked.connect(self.help_popup_fit)
+
+        # runtab 5
+        self.tabwidget.setTabText(self.tabwidget.indexOf(
+            self.fittab), _translate("Neuroptimus", "Fitness"))
         self.pushButton_30.setText(_translate("Neuroptimus", "Run"))
         self.pushButton_30.clicked.connect(self.startFittingThread)
-        # self.pushButton_30.clicked.connect(self.runsim)    
+        # self.pushButton_30.clicked.connect(self.runsim)
         # self.pushButton_31.setText(_translate("Neuroptimus", "Starting points"))
         # self.pushButton_31.clicked.connect(self.startingpoints)
         # self.pushButton_31.setEnabled(False)
@@ -2042,148 +2033,166 @@ class Ui_Neuroptimus(QMainWindow):
         self.pushButton_32.clicked.connect(self.boundarywindow)
         self.label_59.setText(_translate("Neuroptimus", "Algorithms"))
         self.label_60.setText(_translate("Neuroptimus", "Parameters"))
-        self.tabwidget.setTabText(self.tabwidget.indexOf(self.runtab), _translate("Neuroptimus", "Run"))
-        
+        self.tabwidget.setTabText(self.tabwidget.indexOf(
+            self.runtab), _translate("Neuroptimus", "Run"))
+
         self.pushButton_Recom.setText(_translate("Neuroptimus", "Recommended"))
-        self.pushButton_Recom.clicked.connect(partial(self.packageselect,"Recommended"))
+        self.pushButton_Recom.clicked.connect(
+            partial(self.packageselect, "Recommended"))
         self.pushButton_Inspyred.setText(_translate("Neuroptimus", "Inspyred"))
-        self.pushButton_Inspyred.clicked.connect(partial(self.packageselect,"Inspyred"))
+        self.pushButton_Inspyred.clicked.connect(
+            partial(self.packageselect, "Inspyred"))
         self.pushButton_Pygmo.setText(_translate("Neuroptimus", "Pygmo"))
-        self.pushButton_Pygmo.clicked.connect(partial(self.packageselect,"Pygmo"))
-        self.pushButton_Bluepyopt.setText(_translate("Neuroptimus", "Bluepyopt"))
-        self.pushButton_Bluepyopt.clicked.connect(partial(self.packageselect,"Bluepyopt"))
+        self.pushButton_Pygmo.clicked.connect(
+            partial(self.packageselect, "Pygmo"))
+        self.pushButton_Bluepyopt.setText(
+            _translate("Neuroptimus", "Bluepyopt"))
+        self.pushButton_Bluepyopt.clicked.connect(
+            partial(self.packageselect, "Bluepyopt"))
         self.pushButton_Scipy.setText(_translate("Neuroptimus", "Scipy"))
-        self.pushButton_Scipy.clicked.connect(partial(self.packageselect,"Scipy"))
+        self.pushButton_Scipy.clicked.connect(
+            partial(self.packageselect, "Scipy"))
         self.algolist.setColumnCount(2)
-        self.algolist.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.algolist.setEditTriggers(
+            QtWidgets.QAbstractItemView.NoEditTriggers)
         self.algolist.clicked.connect(self.algoselect)
-        self.algolist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.algolist.setColumnWidth(0,440)
+        self.algolist.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows)
+        self.algolist.setColumnWidth(0, 440)
         self.algolist.setHorizontalHeaderLabels(['Algorithms'])
         self.algorithm_parameter_list.setColumnCount(2)
         self.algorithm_parameter_list.horizontalHeader().setStretchLastSection(True)
-        self.algorithm_parameter_list.setHorizontalHeaderLabels(["Option","Value"])
+        self.algorithm_parameter_list.setHorizontalHeaderLabels(
+            ["Option", "Value"])
         self.seed = []
-        self.resolution=0
-        self.Recom=["Classical Evolution Strategy (CES) - Inspyred","Covariance Matrix Adaptation ES (CMAES) - Cmaes", "Covariance Matrix Adaptation ES (CMAES) - Pygmo",
-                "Particle Swarm (PSO) - Inspyred","Particle Swarm Gen (PSOG) - Pygmo","Indicator Based (IBEA) - Bluepyopt","L-BFGS-B - Scipy","Random Search"]
-        self.Inspyred=["Classical Evolution Strategy (CES) - Inspyred","Particle Swarm (PSO) - Inspyred",
-                "Differential Evolution (DE) - Inspyred",
-                "Nondominated Sorted GA (NSGA2) - Inspyred","Pareto Archived ES (PAES) - Inspyred",
-                "Simulated Annealing (SA) - Inspyred"]
-        self.Scipy=["Basinhopping (BH) - Scipy","Nelder-Mead (NM) - Scipy","L-BFGS-B - Scipy"]
-        self.Bluepyopt=["Nondominated Sorted GA (NSGA2) - Bluepyopt","Indicator Based (IBEA) - Bluepyopt"]
-        self.Pygmo=["Particle Swarm Gen (PSOG) - Pygmo","Nondominated Sorted Particle Swarm (NSPSO) - Pygmo",
-                "Nondominated Sorted GA (NSGA2) - Pygmo","Differential Evolution (DE) - Pygmo",
-                "Extended Ant Colony (GACO) - Pygmo","Multi-Objective Ant Colony (MACO) - Pygmo","Self-Adaptive DE (SADE) - Pygmo",
-                "Particle Swarm (PSO) - Pygmo","Exponential Natural ES (XNES) - Pygmo",
-                "Simple Genetic Algorithm (SGA) - Pygmo","Covariance Matrix Adaptation ES (CMAES) - Pygmo",
-                "Differential Evolution (DE1220) - Pygmo", "Bee Colony (ABC) - Pygmo","Praxis - Pygmo","Nelder-Mead (NM) - Pygmo"] #"FullGrid - Pygmo","Single Differential Evolution (SDE) - Pygmo"
-        self.algos={
-            'Recommended':self.Recom,
+        self.resolution = 0
+        self.Recom = ["Classical Evolution Strategy (CES) - Inspyred", "Covariance Matrix Adaptation ES (CMAES) - Cmaes", "Covariance Matrix Adaptation ES (CMAES) - Pygmo",
+                      "Particle Swarm (PSO) - Inspyred", "Particle Swarm Gen (PSOG) - Pygmo", "Indicator Based (IBEA) - Bluepyopt", "L-BFGS-B - Scipy", "Random Search"]
+        self.Inspyred = ["Classical Evolution Strategy (CES) - Inspyred", "Particle Swarm (PSO) - Inspyred",
+                         "Differential Evolution (DE) - Inspyred",
+                         "Nondominated Sorted GA (NSGA2) - Inspyred", "Pareto Archived ES (PAES) - Inspyred",
+                         "Simulated Annealing (SA) - Inspyred"]
+        self.Scipy = [
+            "Basinhopping (BH) - Scipy", "Nelder-Mead (NM) - Scipy", "L-BFGS-B - Scipy"]
+        self.Bluepyopt = [
+            "Nondominated Sorted GA (NSGA2) - Bluepyopt", "Indicator Based (IBEA) - Bluepyopt"]
+        self.Pygmo = ["Particle Swarm Gen (PSOG) - Pygmo", "Nondominated Sorted Particle Swarm (NSPSO) - Pygmo",
+                      "Nondominated Sorted GA (NSGA2) - Pygmo", "Differential Evolution (DE) - Pygmo",
+                      "Extended Ant Colony (GACO) - Pygmo", "Multi-Objective Ant Colony (MACO) - Pygmo", "Self-Adaptive DE (SADE) - Pygmo",
+                      "Particle Swarm (PSO) - Pygmo", "Exponential Natural ES (XNES) - Pygmo",
+                      "Simple Genetic Algorithm (SGA) - Pygmo", "Covariance Matrix Adaptation ES (CMAES) - Pygmo",
+                      # "FullGrid - Pygmo","Single Differential Evolution (SDE) - Pygmo"
+                      "Differential Evolution (DE1220) - Pygmo", "Bee Colony (ABC) - Pygmo", "Praxis - Pygmo", "Nelder-Mead (NM) - Pygmo"]
+        self.algos = {
+            'Recommended': self.Recom,
             'Inspyred': self.Inspyred,
             'Scipy': self.Scipy,
             'Bluepyopt': self.Bluepyopt,
             'Pygmo': self.Pygmo}
         self.algolist.setRowCount(len(self.Recom))
-        for index,item in enumerate(self.Recom): 
-            self.algolist.setItem(index, 0, QTableWidgetItem(item))  
-        
-        self.algo_param_dict = {"ker" : "Kernel: number of solutions stored in the solution archive.",
-                                "q" : "Convergence speed parameter: this parameter is useful for managing \nthe convergence speed towards the found minima (the smaller the faster).",
-                                "oracle" : "Oracle parameter: this is the oracle parameter used in the penalty method.",
-                                "acc" : "Accuracy parameter: for maintaining a minimum penalty function's values distances.",
-                                "threshold" : "Threshold parameter: when the generations reach the threshold \nthen q is set to 0.01 automatically.",
-                                "n_gen_mark" : "Standard deviations convergence speed parameter: this parameters \ndetermines the convergence speed of the standard deviations values.",
-                                "impstop" : "Improvement stopping criterion: if a positive integer is assigned here, \nthe algorithm will count the runs without improvements, \nif this number will exceed impstop value, the algorithm will be stopped.",
-                                "evalstop" : "Evaluation stopping criterion: same as previous one, but with function evaluations.",
-                                "focus" : "Focus parameter: this parameter makes the search for the optimum greedier \nand more focused on local improvements (the higher the greedier). \nIf the value is very high, the search is more focused around the current best solutions.",
-                                "memory" : " Memory parameter: if true, memory is activated in the algorithm for multiple calls",
-                                "cc"  :  "backward time horizon for the evolution path",
-                                "cs"  :  "makes partly up for the small variance loss in case the indicator is zero",
-                                "c1"  :  "CMAES: learning rate for the rank-one update of the covariance matrix \nNSPSO: magnitude of the force, applied to the particle's velocity, in the direction of its previous best position.",
-                                "cmu"  :  "learning rate for the rank - update of the covariance matrix",
-                                "sigma0"  :  "initial step-size",
-                                "ftol"  :  "stopping criteria on the x tolerance",
-                                "xtol"  :  "stopping criteria on the f tolerance",
-                                "memory"  :  "when true the adapted parameters are not reset between successive calls to the evolve method",
-                                "force_bounds"  :  "when true the box bounds are enforced. The fitness will never be called outside the bounds but the covariance matrix adaptation mechanism will worsen",
-                                "omega"  :  "particles' inertia weight, or alternatively, the constriction coefficient (definition depends on the variant used)",
-                                "eta1"  :  "magnitude of the force, applied to the particle's velocity, in the direction of its previous best position",
-                                "eta2"  :  "magnitude of the force, applied to the particle's velocity, in the direction of the best position in its neighborhood",
-                                "max_vel"  :  "maximum allowed particle velocity (as a fraction of the box bounds)",
-                                "variant"  :  "PSO: algorithm variant to use (one of 1 .. 6) \nDE: mutation variant",
-                                "neighb_type"  :  "swarm topology to use (one of 1 .. 4) [gbest, lbest, Von Neumann, adaptive random]",
-                                "neighb_param"  :  "the neighbourhood parameter. If the lbest topology is selected (neighb_type=2), it represents each particle's indegree (also outdegree) in the swarm topology. Particles have neighbours up to a radius of k = neighb_param / 2 in the ring. If the Randomly-varying neighbourhood topology is selected (neighb_type=4), it represents each particle's maximum outdegree in the swarm topology. The minimum outdegree is 1 (the particle always connects back to itself). If neighb_type is 1 or 3 this parameter is ignored.",
-                                "F" : "weight coefficient",
-                                "CR" : "crossover probability",
-                                "cr" : "crossover probability",
-                                "variant_adptv" : "weight coefficient and crossover probability parameter adaptation scheme to be used (one of 1..2)",
-                                "c2" : "magnitude of the force, applied to the particle's velocity, in the direction of its global best (i.e., leader).",
-                                "chi" : "velocity scaling factor.",
-                                "v_coeff" : "velocity coefficient (determining the maximum allowed particle velocity).",
-                                "leader_selection_range" : "leader selection range parameter (i.e., the leader of each particle is selected among the best).",
-                                "diversity_mechanism" : "the diversity mechanism used to maintain diversity on the Pareto front.",
-                                "cr" : "Crossover probability.",
-                                "eta_c" : "Distribution index for crossover.",
-                                "m" : "Mutation probability.",
-                                "eta_m" : "Distribution index for mutation.",
-                                "eta_c" : "distribution index for “sbx” crossover. This is an inactive parameter if other types of crossovers are selected.",
-                                "m" : "mutation probability.",
-                                "param_m" : "distribution index (“polynomial” mutation), gaussian width (“gaussian” mutation) or inactive (“uniform” mutation)",
-                                "param_s" : "when “truncated” selection is used this indicates the number of best individuals to use. When “tournament” selection is used this indicates the size of the tournament.",
-                                "eta_mu" : "learning rate for mean update ",
-                                "eta_sigma" : "learning rate for step-size update",
-                                "eta_b" : "learning rate for the covariance matrix update",
-                                "fatol"  :  "stopping criteria on the x tolerance",
-                                "xatol"  :  "stopping criteria on the f tolerance",
-                                "mutpb" : "Mutation probability",
-                                "cxpb" : "Crossover probability",
-                                "sigma" : "coordinate wise standard deviation (step size)"
+        for index, item in enumerate(self.Recom):
+            self.algolist.setItem(index, 0, QTableWidgetItem(item))
+
+        self.algo_param_dict = {"ker": "Kernel: number of solutions stored in the solution archive.",
+                                "q": "Convergence speed parameter: this parameter is useful for managing \nthe convergence speed towards the found minima (the smaller the faster).",
+                                "oracle": "Oracle parameter: this is the oracle parameter used in the penalty method.",
+                                "acc": "Accuracy parameter: for maintaining a minimum penalty function's values distances.",
+                                "threshold": "Threshold parameter: when the generations reach the threshold \nthen q is set to 0.01 automatically.",
+                                "n_gen_mark": "Standard deviations convergence speed parameter: this parameters \ndetermines the convergence speed of the standard deviations values.",
+                                "impstop": "Improvement stopping criterion: if a positive integer is assigned here, \nthe algorithm will count the runs without improvements, \nif this number will exceed impstop value, the algorithm will be stopped.",
+                                "evalstop": "Evaluation stopping criterion: same as previous one, but with function evaluations.",
+                                "focus": "Focus parameter: this parameter makes the search for the optimum greedier \nand more focused on local improvements (the higher the greedier). \nIf the value is very high, the search is more focused around the current best solutions.",
+                                "memory": " Memory parameter: if true, memory is activated in the algorithm for multiple calls",
+                                "cc":  "backward time horizon for the evolution path",
+                                "cs":  "makes partly up for the small variance loss in case the indicator is zero",
+                                "c1":  "CMAES: learning rate for the rank-one update of the covariance matrix \nNSPSO: magnitude of the force, applied to the particle's velocity, in the direction of its previous best position.",
+                                "cmu":  "learning rate for the rank - update of the covariance matrix",
+                                "sigma0":  "initial step-size",
+                                "ftol":  "stopping criteria on the x tolerance",
+                                "xtol":  "stopping criteria on the f tolerance",
+                                "memory":  "when true the adapted parameters are not reset between successive calls to the evolve method",
+                                "force_bounds":  "when true the box bounds are enforced. The fitness will never be called outside the bounds but the covariance matrix adaptation mechanism will worsen",
+                                "omega":  "particles' inertia weight, or alternatively, the constriction coefficient (definition depends on the variant used)",
+                                "eta1":  "magnitude of the force, applied to the particle's velocity, in the direction of its previous best position",
+                                "eta2":  "magnitude of the force, applied to the particle's velocity, in the direction of the best position in its neighborhood",
+                                "max_vel":  "maximum allowed particle velocity (as a fraction of the box bounds)",
+                                "variant":  "PSO: algorithm variant to use (one of 1 .. 6) \nDE: mutation variant",
+                                "neighb_type":  "swarm topology to use (one of 1 .. 4) [gbest, lbest, Von Neumann, adaptive random]",
+                                "neighb_param":  "the neighbourhood parameter. If the lbest topology is selected (neighb_type=2), it represents each particle's indegree (also outdegree) in the swarm topology. Particles have neighbours up to a radius of k = neighb_param / 2 in the ring. If the Randomly-varying neighbourhood topology is selected (neighb_type=4), it represents each particle's maximum outdegree in the swarm topology. The minimum outdegree is 1 (the particle always connects back to itself). If neighb_type is 1 or 3 this parameter is ignored.",
+                                "F": "weight coefficient",
+                                "CR": "crossover probability",
+                                "cr": "crossover probability",
+                                "variant_adptv": "weight coefficient and crossover probability parameter adaptation scheme to be used (one of 1..2)",
+                                "c2": "magnitude of the force, applied to the particle's velocity, in the direction of its global best (i.e., leader).",
+                                "chi": "velocity scaling factor.",
+                                "v_coeff": "velocity coefficient (determining the maximum allowed particle velocity).",
+                                "leader_selection_range": "leader selection range parameter (i.e., the leader of each particle is selected among the best).",
+                                "diversity_mechanism": "the diversity mechanism used to maintain diversity on the Pareto front.",
+                                "cr": "Crossover probability.",
+                                "eta_c": "Distribution index for crossover.",
+                                "m": "Mutation probability.",
+                                "eta_m": "Distribution index for mutation.",
+                                "eta_c": "distribution index for “sbx” crossover. This is an inactive parameter if other types of crossovers are selected.",
+                                "m": "mutation probability.",
+                                "param_m": "distribution index (“polynomial” mutation), gaussian width (“gaussian” mutation) or inactive (“uniform” mutation)",
+                                "param_s": "when “truncated” selection is used this indicates the number of best individuals to use. When “tournament” selection is used this indicates the size of the tournament.",
+                                "eta_mu": "learning rate for mean update ",
+                                "eta_sigma": "learning rate for step-size update",
+                                "eta_b": "learning rate for the covariance matrix update",
+                                "fatol":  "stopping criteria on the x tolerance",
+                                "xatol":  "stopping criteria on the f tolerance",
+                                "mutpb": "Mutation probability",
+                                "cxpb": "Crossover probability",
+                                "sigma": "coordinate wise standard deviation (step size)"
                                 }
 
-
-        self.algo_dict=self.core.option_handler.algorithm_parameters_dict.copy()
-        self.tabwidget.setTabText(self.tabwidget.indexOf(self.results_tab), _translate("Neuroptimus", "Results"))
+        self.algo_dict = self.core.option_handler.algorithm_parameters_dict.copy()
+        self.tabwidget.setTabText(self.tabwidget.indexOf(
+            self.results_tab), _translate("Neuroptimus", "Results"))
         self.label_72.setText(_translate("Neuroptimus", "Final Result"))
-        self.figure2, self.results_tab_axes = plt.subplots( dpi=80)
+        self.figure2, self.results_tab_axes = plt.subplots(dpi=80)
         self.canvas2 = FigureCanvas(self.figure2)
         self.canvas2.setParent(self.plot_widget)
         hbox2 = QtWidgets.QHBoxLayout(self.plot_widget)
         hbox2.addWidget(self.canvas2)
         self.plot_widget.setLayout(hbox2)
-       
-        self.pushButton_34.setText(_translate("Neuroptimus", "Save Parameters"))
+
+        self.pushButton_34.setText(_translate(
+            "Neuroptimus", "Save Parameters"))
         self.pushButton_34.clicked.connect(self.SaveParam)
 
-
-        self.tabwidget.setTabText(self.tabwidget.indexOf(self.stat_tab), _translate("Neuroptimus", "Statistics"))
+        self.tabwidget.setTabText(self.tabwidget.indexOf(
+            self.stat_tab), _translate("Neuroptimus", "Statistics"))
         self.label_74.setText(_translate("Neuroptimus", "Analysis"))
-        self.pushButton_35.setText(_translate("Neuroptimus", "Generation Plot"))
+        self.pushButton_35.setText(_translate(
+            "Neuroptimus", "Generation Plot"))
         self.pushButton_35.clicked.connect(self.PlotGen)
         self.pushButton_37.setText(_translate("Neuroptimus", "Error Details"))
         self.pushButton_37.clicked.connect(self.ShowErrorDialog)
         self.errorlist.setColumnCount(4)
-        self.errorlist.setHorizontalHeaderLabels(["Error Functions","Value","Weight","Weighted Value"])
-        self.errorlist.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-
+        self.errorlist.setHorizontalHeaderLabels(
+            ["Error Functions", "Value", "Weight", "Weighted Value"])
+        self.errorlist.setEditTriggers(
+            QtWidgets.QAbstractItemView.NoEditTriggers)
 
         self.fileMenu.setTitle(_translate("Neuroptimus", "File"))
         self.actionunlock.setText(_translate("Neuroptimus", "Unlock Tabs"))
         self.actionexit.setText(_translate("Neuroptimus", "Exit"))
-        self.actionSaveSettings.setText(_translate("Neuroptimus", "Save Settings"))
-        self.actionLoadSettings.setText(_translate("Neuroptimus", "Load Settings"))
+        self.actionSaveSettings.setText(
+            _translate("Neuroptimus", "Save Settings"))
+        self.actionLoadSettings.setText(
+            _translate("Neuroptimus", "Load Settings"))
 
-        self.tabwidget.setTabEnabled(1,False)
-        self.tabwidget.setTabEnabled(2,False)
-        self.tabwidget.setTabEnabled(3,False)
-        self.tabwidget.setTabEnabled(4,False)
-        self.tabwidget.setTabEnabled(5,False)
-        self.tabwidget.setTabEnabled(6,False)
+        self.tabwidget.setTabEnabled(1, False)
+        self.tabwidget.setTabEnabled(2, False)
+        self.tabwidget.setTabEnabled(3, False)
+        self.tabwidget.setTabEnabled(4, False)
+        self.tabwidget.setTabEnabled(5, False)
+        self.tabwidget.setTabEnabled(6, False)
         self.result_labels = []
         self.algorithm_parameter_list.cellChanged.connect(self.aspect_changed)
 
-        for curr_tab in [self.results_tab,self.stat_tab]:
+        for curr_tab in [self.results_tab, self.stat_tab]:
             label = QtWidgets.QLabel()
             font = QtGui.QFont()
             font.setFamily("Ubuntu")
@@ -2200,19 +2209,18 @@ class Ui_Neuroptimus(QMainWindow):
             scroll_area.setWidget(label)
             scroll_area.setWidgetResizable(True)
 
-
-
-            
             if curr_tab is self.results_tab:
-                scroll_area.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-                self.canvas2.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-                self.results_tab_grid.addWidget(self.label_72, 0, 0, 1, 2)          
+                scroll_area.setSizePolicy(
+                    QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                self.canvas2.setSizePolicy(
+                    QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                self.results_tab_grid.addWidget(self.label_72, 0, 0, 1, 2)
                 self.results_tab_grid.addWidget(scroll_area, 1, 0, 1, 2)
                 self.results_tab_grid.addWidget(self.plot_widget, 0, 3, 2, 3)
 
             elif curr_tab is self.stat_tab:
                 self.statLayout.addWidget(self.label_74, 0, 0, 1, 2)
-                self.statLayout.addWidget(scroll_area,1,0,2,2)
+                self.statLayout.addWidget(scroll_area, 1, 0, 2, 2)
                 self.scroll_area2_stat = QtWidgets.QScrollArea(self.stat_tab)
                 self.stats_label = QtWidgets.QLabel(self.stat_tab)
                 self.stats_label.setGeometry(QtCore.QRect(300, 80, 250, 146))
@@ -2224,38 +2232,33 @@ class Ui_Neuroptimus(QMainWindow):
                 self.stats_label.setFont(font)
                 self.stats_label.setObjectName("label")
                 # scroll_area_2.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-                self.scroll_area2_stat.setGeometry(QtCore.QRect(300,80, 350, 100))
+                self.scroll_area2_stat.setGeometry(
+                    QtCore.QRect(300, 80, 350, 100))
                 self.scroll_area2_stat.setWidgetResizable(True)
                 self.statLayout.addWidget(self.pushButton_35, 3, 0, 1, 2)
 
-
-                self.statLayout.addWidget(self.fitstat, 0, 4, 1, 4) #label
+                self.statLayout.addWidget(self.fitstat, 0, 4, 1, 4)  # label
                 self.statLayout.addWidget(self.scroll_area2_stat, 1, 4, 1, 2)
-                #making a bold label
+                # making a bold label
                 font = QtGui.QFont()
                 font.setFamily("Ubuntu")
                 font.setPointSize(10)
                 font.setBold(True)
                 font.setWeight(75)
                 self.fitstat.setFont(font)
-                self.statLayout.addWidget(self.errorlist, 2, 4, 1, 4) 
+                self.statLayout.addWidget(self.errorlist, 2, 4, 1, 4)
                 self.statLayout.addWidget(self.pushButton_37, 3, 4, 1, 1)
-                self.errorlist.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                self.errorlist.setSizePolicy(
+                    QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 self.errorlist.horizontalHeader().setStretchLastSection(True)
                 # self.statLayout.setColumnStretch(0, 1)
                 # self.statLayout.setColumnStretch(1, 2)
 
-
-
-
-
     # def startFittingThread(self):
-    
 
     #     # Create a new thread for optimization
     #     optimization_thread = threading.Thread(target=self.runsim)
     #     optimization_thread.start()
-
 
     def tabchange(self):
         """if current tab changed to second tab and the file is loaded with Hippounit mode selected, then disable the simulation type selection"""
@@ -2263,14 +2266,15 @@ class Ui_Neuroptimus(QMainWindow):
         self.model_name_label.setEnabled(True)
         self.model_name_input.setEnabled(True)
         # self.simtab_neuroptimus_group_boxes.setEnabled(True)
-        [widget.setEnabled(True) for widget in self.simtab_neuroptimus_group_boxes]
-        if self.type_selector.currentText() == "HippoUnit" :
+        [widget.setEnabled(True)
+         for widget in self.simtab_neuroptimus_group_boxes]
+        if self.type_selector.currentText() == "HippoUnit":
             self.dd_type.setEnabled(False)
-            [widget.setEnabled(False) for widget in self.simtab_neuroptimus_group_boxes]
+            [widget.setEnabled(False)
+             for widget in self.simtab_neuroptimus_group_boxes]
 
         else:
             self.dd_type.setEnabled(True)
-            
 
     def startFittingThread(self):
         # Create a new thread for optimization
@@ -2279,16 +2283,14 @@ class Ui_Neuroptimus(QMainWindow):
         # self.fitting_thread.error.connect(self.on_fitting_error)
 
         # Start the thread
-        self.fitting_thread.start()    
+        self.fitting_thread.start()
 
-        
     def help_popup_fit(self):
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Question)
         msg.setText("""Normalize button will adjust active fitness weights sum to 1
         \nFitness functions with 0 values considered as inactive""")
         msg.exec()
-
 
     def toggleTabLock(self):
         """
@@ -2308,19 +2310,19 @@ class Ui_Neuroptimus(QMainWindow):
         else:
             for i in range(self.tabwidget.currentIndex() + 1, self.tabwidget.count()):
                 self.tabwidget.setTabEnabled(i, False)
-        
-                
 
-    def openFileNameDialog(self): 
+    def openFileNameDialog(self):
         """
         File dialog for the file tab to open file.
         """
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        self.datfileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Data files (*.dat *.json);;All Files (*);;", options=options)
+        self.datfileName, _ = QFileDialog.getOpenFileName(
+            None, "QFileDialog.getOpenFileName()", "", "Data files (*.dat *.json);;All Files (*);;", options=options)
         if self.datfileName:
             self.lineEdit_file.setText(self.datfileName)
-            self.lineEdit_folder.setText(os.path.dirname(os.path.realpath(self.datfileName)))
+            self.lineEdit_folder.setText(os.path.dirname(
+                os.path.realpath(self.datfileName)))
             self.pushButton_3.setEnabled(True)
             if self.time_checker.isChecked():
                 self.time_calc()
@@ -2328,57 +2330,62 @@ class Ui_Neuroptimus(QMainWindow):
     def time_calc(self):
         try:
             with open(str(self.lineEdit_file.text())) as data:
-                all_line=data.read().splitlines()
-                time_vec=[float(x.split()[0]) for x in all_line]
+                all_line = data.read().splitlines()
+                time_vec = [float(x.split()[0]) for x in all_line]
                 self.length_ctrl.setText(str(round(max(time_vec))))
-                self.freq_ctrl.setText(str(((len(time_vec)-1)*1000)/(max(time_vec)-min(time_vec))))   #frequency 
-                self.size_ctrl.setText(str(len(all_line[0].split())-1))  #trace number
+                self.freq_ctrl.setText(
+                    # frequency
+                    str(((len(time_vec)-1)*1000)/(max(time_vec)-min(time_vec))))
+                self.size_ctrl.setText(
+                    str(len(all_line[0].split())-1))  # trace number
         except:
-                print('No data file selected')
+            print('No data file selected')
 
-    def set_widgets_in_list(self, widget_list,enabled):
+    def set_widgets_in_list(self, widget_list, enabled):
         for widget in widget_list:
-            widget.setEnabled(enabled)  
+            widget.setEnabled(enabled)
 
-    def openFolderNameDialog2(self): 
+    def openFolderNameDialog2(self):
         """
         File dialog for the model tab to open folder.
-        """ 
+        """
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        folderName= QFileDialog.getExistingDirectory(None, options=options)
+        folderName = QFileDialog.getExistingDirectory(None, options=options)
         if folderName:
             self.lineEdit_folder2.setText(folderName)
 
-    def openFileNameDialog2(self):  
+    def openFileNameDialog2(self):
         """
         File dialog for the model tab to open file.
-        """  
+        """
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Hoc Files (*.hoc);;All Files (*);;", options=options)
+        fileName, _ = QFileDialog.getOpenFileName(
+            None, "QFileDialog.getOpenFileName()", "", "Hoc Files (*.hoc);;All Files (*);;", options=options)
         if fileName:
             self.lineEdit_file2.setText(fileName)
-            self.lineEdit_folder2.setText(os.path.dirname(os.path.realpath(fileName)))
+            self.lineEdit_folder2.setText(
+                os.path.dirname(os.path.realpath(fileName)))
             self.pushButton_3.setEnabled(True)
 
     def openFolderNameDialog(self):
         """
         File dialog for the file tab to open folder.
-        """  
+        """
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        folderName= QFileDialog.getExistingDirectory(None, options=options)
+        folderName = QFileDialog.getExistingDirectory(None, options=options)
         if folderName:
             self.lineEdit_folder.setText(folderName)
-            if self.type_selector.currentText() == "HippoUnit" :
+            if self.type_selector.currentText() == "HippoUnit":
                 self.pushButton_3.setEnabled(True)
-
 
     def set_hippounit_output_dir(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        folderName = QFileDialog.getExistingDirectory(None, options=options, caption="Select HippoUnit output folder")
+        folderName = QFileDialog.getExistingDirectory(
+            None, options=options, caption="Select HippoUnit output folder")
         if folderName:
             # Add a trailing slash to the folder name based on the operating system
             if os.name == 'posix':
@@ -2388,17 +2395,17 @@ class Ui_Neuroptimus(QMainWindow):
                 if not folderName.endswith('\\'):
                     folderName += '\\'
             self.output_dir_input.setText(folderName)
-    
 
     def prepare_fitnessFunctions_table(self):
         """
         Prepares the table for HippoUnit fitness functions settings to be displayed in the GUI
         """
-    
-        #if type is hippounit:
-        if self.type_selector.currentText() == "HippoUnit"  :
+
+        # if type is hippounit:
+        if self.type_selector.currentText() == "HippoUnit":
             self.fitlist.setColumnCount(5)
-            self.fitlist.setHorizontalHeaderLabels(["Fitness functions","Weights", "Target data path","Stimuli file path","Feature penalty"])
+            self.fitlist.setHorizontalHeaderLabels(
+                ["Fitness functions", "Weights", "Target data path", "Stimuli file path", "Feature penalty"])
             # self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
             self.fitlist.resizeColumnToContents(2)
             self.fitlist.resizeColumnToContents(3)
@@ -2406,138 +2413,141 @@ class Ui_Neuroptimus(QMainWindow):
             self.fitlist.verticalHeader().setVisible(False)
             self.fitlist.setRowCount(0)
             self.fitlist.setAlternatingRowColors(False)
-            self.fitlist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-            self.fitlist.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+            self.fitlist.setSelectionBehavior(
+                QtWidgets.QAbstractItemView.SelectRows)
+            self.fitlist.setSelectionMode(
+                QtWidgets.QAbstractItemView.SingleSelection)
             # self.fitlist.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
             self.fitlist.setSortingEnabled(False)
             self.fitlist.setShowGrid(True)
             self.fitlist.setWordWrap(True)
             self.fitlist.setCornerButtonEnabled(True)
             self.fitlist.horizontalHeader().setStretchLastSection(True)
-            min_width = sum([self.fitlist.columnWidth(i) for i in range(self.fitlist.columnCount())])
+            min_width = sum([self.fitlist.columnWidth(i)
+                            for i in range(self.fitlist.columnCount())])
             self.fitlist.setMinimumWidth(min_width)
-           
 
-
-
-            # if cell in column 2 or 3  doubel clicked, open file dialog 
-            self.fitlist.cellDoubleClicked.connect(self.browse_file_for_hippounit_data_paths)
-
-           
-           
-
+            # if cell in column 2 or 3  doubel clicked, open file dialog
+            self.fitlist.cellDoubleClicked.connect(
+                self.browse_file_for_hippounit_data_paths)
 
             # #selection is by cell not row
-            self.fitlist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectItems)
-            self.HippoTests_parameter_location_in_table = {"TrunkSecList_name":3 , "ObliqueSecList_name":4 , "TuftSecList_name":5, "num_of_dend_locations":6}
-            self.tests_ui_names = {"SomaticFeaturesTest":"Somatic Features Test",
-                                    "PSPAttenuationTest":"PSP Attenuation Test",
-                                    "BackpropagatingAPTest":"Backpropagating AP Test",
-                                    "PathwayInteraction":"Pathway Interaction Test",
-                                    "DepolarizationBlockTest":"Depolarization Block Test",
-                                    "ObliqueIntegrationTest":"Oblique Integration Test"}
-            self.HippoTests_required_parameters = {self.tests_ui_names["PSPAttenuationTest"]: ["TrunkSecList_name","num_of_dend_locations"],
-                                            self.tests_ui_names["BackpropagatingAPTest"]: ["TrunkSecList_name"],
-                                            self.tests_ui_names["ObliqueIntegrationTest"]: ["ObliqueSecList_name", "TrunkSecList_name"],
-                                            self.tests_ui_names["PathwayInteraction"]: ["TuftSecList_name","num_of_dend_locations"]}
-            
-            #inverse of the above dictionary
-            self.tests_real_names = {v: k for k, v in self.tests_ui_names.items()}
+            self.fitlist.setSelectionBehavior(
+                QtWidgets.QAbstractItemView.SelectItems)
+            self.HippoTests_parameter_location_in_table = {
+                "TrunkSecList_name": 3, "ObliqueSecList_name": 4, "TuftSecList_name": 5, "num_of_dend_locations": 6}
+            self.tests_ui_names = {"SomaticFeaturesTest": "Somatic Features Test",
+                                   "PSPAttenuationTest": "PSP Attenuation Test",
+                                   "BackpropagatingAPTest": "Backpropagating AP Test",
+                                   "PathwayInteraction": "Pathway Interaction Test",
+                                   "DepolarizationBlockTest": "Depolarization Block Test",
+                                   "ObliqueIntegrationTest": "Oblique Integration Test"}
+            self.HippoTests_required_parameters = {self.tests_ui_names["PSPAttenuationTest"]: ["TrunkSecList_name", "num_of_dend_locations"],
+                                                   self.tests_ui_names["BackpropagatingAPTest"]: ["TrunkSecList_name"],
+                                                   self.tests_ui_names["ObliqueIntegrationTest"]: ["ObliqueSecList_name", "TrunkSecList_name"],
+                                                   self.tests_ui_names["PathwayInteraction"]: ["TuftSecList_name", "num_of_dend_locations"]}
+
+            # inverse of the above dictionary
+            self.tests_real_names = {v: k for k,
+                                     v in self.tests_ui_names.items()}
 
             # #fill the table with the test specific settings configurations paths
             # self.fitlist.setRowCount(0)
             # #row 0 SomaticFeaturesTest target_data_path , second column to be filled with stimuli_file_path
-            
-
-
 
             self.fitlist.insertRow(0)
             # self.fitlist.setItem(0, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["SomaticFeaturesTest"]))
-            self.fitlist.setItem(0, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["SomaticFeaturesTest"]))
+            self.fitlist.setItem(0, 0, QtWidgets.QTableWidgetItem(
+                self.tests_ui_names["SomaticFeaturesTest"]))
             self.fitlist.setItem(0, 2, fitlistTableItem(""))
             self.fitlist.setItem(0, 3, fitlistTableItem(""))
             self.fitlist.setItem(0, 4, QtWidgets.QTableWidgetItem("250"))
-            
-            #row 1 PSPAttenuationTest
+
+            # row 1 PSPAttenuationTest
             self.fitlist.insertRow(1)
-            self.fitlist.setItem(1, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["PSPAttenuationTest"]))
+            self.fitlist.setItem(1, 0, QtWidgets.QTableWidgetItem(
+                self.tests_ui_names["PSPAttenuationTest"]))
             self.fitlist.setItem(1, 2, fitlistTableItem(""))
             self.fitlist.setItem(1, 3, fitlistTableItem(""))
             self.fitlist.setItem(1, 4, QtWidgets.QTableWidgetItem("250"))
-            #BackpropagatingAPTest
+            # BackpropagatingAPTest
             self.fitlist.insertRow(2)
-            self.fitlist.setItem(2, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["BackpropagatingAPTest"]))
+            self.fitlist.setItem(2, 0, QtWidgets.QTableWidgetItem(
+                self.tests_ui_names["BackpropagatingAPTest"]))
             self.fitlist.setItem(2, 2, fitlistTableItem(""))
             self.fitlist.setItem(2, 3, fitlistTableItem(""))
             self.fitlist.setItem(2, 4, QtWidgets.QTableWidgetItem("250"))
-            #PathwayInteraction
+            # PathwayInteraction
             self.fitlist.insertRow(3)
-            self.fitlist.setItem(3, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["PathwayInteraction"]))
+            self.fitlist.setItem(3, 0, QtWidgets.QTableWidgetItem(
+                self.tests_ui_names["PathwayInteraction"]))
             self.fitlist.setItem(3, 2, fitlistTableItem(""))
             self.fitlist.setItem(3, 3, fitlistTableItem(""))
             self.fitlist.setItem(3, 4, QtWidgets.QTableWidgetItem("250"))
 
-            #non editable and non selectable cell
+            # non editable and non selectable cell
             self.fitlist.item(3, 3).setFlags(QtCore.Qt.NoItemFlags)
-            #setting color to gray rgb(192,192,192)
+            # setting color to gray rgb(192,192,192)
             self.fitlist.item(3, 3).setBackground(GRAY)
-            #BackpropagatingAPTest
+            # BackpropagatingAPTest
             self.fitlist.insertRow(4)
-            self.fitlist.setItem(4, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["DepolarizationBlockTest"]))
+            self.fitlist.setItem(4, 0, QtWidgets.QTableWidgetItem(
+                self.tests_ui_names["DepolarizationBlockTest"]))
             self.fitlist.setItem(4, 2, fitlistTableItem(""))
             self.fitlist.setItem(4, 3, QtWidgets.QTableWidgetItem(""))
             self.fitlist.setItem(4, 4, QtWidgets.QTableWidgetItem("250"))
 
-        
-            #non editable and non selectable cell
+            # non editable and non selectable cell
             self.fitlist.item(4, 3).setFlags(QtCore.Qt.NoItemFlags)
-            #setting color to gray rgb(192,192,192)
+            # setting color to gray rgb(192,192,192)
             self.fitlist.item(4, 3).setBackground(GRAY)
-            #non clickable cell
+            # non clickable cell
             # self.fitlist.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
             # column 2 3 have fixed width enough for the header text
             # self.fitlist.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Fixed)
             # self.fitlist.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.Fixed)
-            #set the width of column 2 3 to 200
+            # set the width of column 2 3 to 200
             self.fitlist.setColumnWidth(2, 130)
             self.fitlist.setColumnWidth(3, 130)
-            
 
-            #ObliqueIntegrationTest
+            # ObliqueIntegrationTest
             self.fitlist.insertRow(5)
-            self.fitlist.setItem(5, 0, QtWidgets.QTableWidgetItem(self.tests_ui_names["ObliqueIntegrationTest"]))
+            self.fitlist.setItem(5, 0, QtWidgets.QTableWidgetItem(
+                self.tests_ui_names["ObliqueIntegrationTest"]))
             self.fitlist.setItem(5, 2, fitlistTableItem(""))
             self.fitlist.setItem(5, 3, QtWidgets.QTableWidgetItem(" "))
             self.fitlist.setItem(5, 4, QtWidgets.QTableWidgetItem("250"))
-            #set its color to gray
+            # set its color to gray
             self.fitlist.item(5, 3).setBackground(GRAY)
-            
-            #make it non editable and non selectable
+
+            # make it non editable and non selectable
             self.fitlist.item(5, 3).setFlags(QtCore.Qt.NoItemFlags)
             self.fitlist.resizeRowsToContents()
-             # write a hint text to the table cells "Double click to Browse"
+            # write a hint text to the table cells "Double click to Browse"
             for row in range(self.fitlist.rowCount()):
                 for column in range(self.fitlist.columnCount()):
-                    if column == 2 :
-                        self.fitlist.item(row, column).setToolTip("click to Browse")
+                    if column == 2:
+                        self.fitlist.item(row, column).setToolTip(
+                            "click to Browse")
                     elif column == 3:
-                        #if last three rows:
+                        # if last three rows:
                         if row >= self.fitlist.rowCount()-2:
                             self.fitlist.item(row, column).setToolTip("N/A")
                         else:
-                            self.fitlist.item(row, column).setToolTip("click to Browse")
+                            self.fitlist.item(row, column).setToolTip(
+                                "click to Browse")
             # self.fitlist.horizontalHeader().setStretchLastSection(True)
-            
-            #gray #4th 5th 6th columns
+
+            # gray #4th 5th 6th columns
             self.fitlist.blockSignals(True)
             for row in range(self.fitlist.rowCount()):
-                for column in range(2,5):
-                    self.fitlist.item(row, column).setFlags(QtCore.Qt.NoItemFlags)
+                for column in range(2, 5):
+                    self.fitlist.item(row, column).setFlags(
+                        QtCore.Qt.NoItemFlags)
                     self.fitlist.item(row, column).setBackground(GRAY)
             self.fitlist.blockSignals(False)
 
-
-            #4th 5th 6th columns to be non editable and gray
+            # 4th 5th 6th columns to be non editable and gray
             # self.fitlist.blockSignals(True)
             # for row in range(self.fitlist.rowCount()):
             #     for column in range(2,5):
@@ -2545,94 +2555,111 @@ class Ui_Neuroptimus(QMainWindow):
             #         self.fitlist.item(row, column).setBackground(GRAY)
             # self.fitlist.blockSignals(False)
 
-            #first row of test_specific_settings_table value be -20 
-            self.test_specific_settings_table.setItem(0, 1, QtWidgets.QTableWidgetItem("-20"))
+            # first row of test_specific_settings_table value be -20
+            self.test_specific_settings_table.setItem(
+                0, 1, QtWidgets.QTableWidgetItem("-20"))
 
-
-            #populating SomaSecList_name,  TrunkSecList_name, ObliqueSecList_name
+            # populating SomaSecList_name,  TrunkSecList_name, ObliqueSecList_name
             # row 2 SomaSecList_name
             self.test_specific_settings_table.insertRow(2)
-            self.test_specific_settings_table.setItem(2, 0, QtWidgets.QTableWidgetItem("SomaSecList_name  (leave empty if no template is used)"))
-            self.test_specific_settings_table.setItem(2, 1, QtWidgets.QTableWidgetItem(""))
-            self.test_specific_settings_table.item(2, 0).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.setItem(2, 0, QtWidgets.QTableWidgetItem(
+                "SomaSecList_name  (leave empty if no template is used)"))
+            self.test_specific_settings_table.setItem(
+                2, 1, QtWidgets.QTableWidgetItem(""))
+            self.test_specific_settings_table.item(
+                2, 0).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(2, 0).setForeground(BLACK)
             # row 3 TrunkSecList_name
             self.test_specific_settings_table.insertRow(3)
-            self.test_specific_settings_table.setItem(3, 0, QtWidgets.QTableWidgetItem("TrunkSecList_name"))
-            self.test_specific_settings_table.setItem(3, 1, QtWidgets.QTableWidgetItem(""))
-            self.test_specific_settings_table.item(3, 0).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.setItem(
+                3, 0, QtWidgets.QTableWidgetItem("TrunkSecList_name"))
+            self.test_specific_settings_table.setItem(
+                3, 1, QtWidgets.QTableWidgetItem(""))
+            self.test_specific_settings_table.item(
+                3, 0).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(3, 0).setForeground(BLACK)
 
             # row 4 ObliqueSecList_name
             self.test_specific_settings_table.insertRow(4)
-            self.test_specific_settings_table.setItem(4, 0, QtWidgets.QTableWidgetItem("ObliqueSecList_name"))
-            self.test_specific_settings_table.setItem(4, 1, QtWidgets.QTableWidgetItem(""))
-            self.test_specific_settings_table.item(4, 0).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.setItem(
+                4, 0, QtWidgets.QTableWidgetItem("ObliqueSecList_name"))
+            self.test_specific_settings_table.setItem(
+                4, 1, QtWidgets.QTableWidgetItem(""))
+            self.test_specific_settings_table.item(
+                4, 0).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(4, 0).setForeground(BLACK)
             # row 5 TuftSecList_name
             self.test_specific_settings_table.insertRow(5)
-            self.test_specific_settings_table.setItem(5, 0, QtWidgets.QTableWidgetItem("TuftSecList_name"))
-            self.test_specific_settings_table.setItem(5, 1, QtWidgets.QTableWidgetItem(""))
-            self.test_specific_settings_table.item(5, 0).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.setItem(
+                5, 0, QtWidgets.QTableWidgetItem("TuftSecList_name"))
+            self.test_specific_settings_table.setItem(
+                5, 1, QtWidgets.QTableWidgetItem(""))
+            self.test_specific_settings_table.item(
+                5, 0).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(5, 0).setForeground(BLACK)
 
-            #row 6 num_of_dend_locations
+            # row 6 num_of_dend_locations
             self.test_specific_settings_table.insertRow(6)
-            self.test_specific_settings_table.setItem(6, 0, QtWidgets.QTableWidgetItem("num_of_dend_locations"))
-            self.test_specific_settings_table.setItem(6, 1, QtWidgets.QTableWidgetItem("15"))
-            self.test_specific_settings_table.item(6, 0).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.setItem(
+                6, 0, QtWidgets.QTableWidgetItem("num_of_dend_locations"))
+            self.test_specific_settings_table.setItem(
+                6, 1, QtWidgets.QTableWidgetItem("15"))
+            self.test_specific_settings_table.item(
+                6, 0).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(6, 0).setForeground(BLACK)
 
-
-            #make these rows gray  TrunkSecList_name ObliqueSecList_name TuftSecList_name  rows and make them non editable
+            # make these rows gray  TrunkSecList_name ObliqueSecList_name TuftSecList_name  rows and make them non editable
             # self.hippounit_test_sections_names_table.item(2, 1).setFlags(QtCore.Qt.NoItemFlags)
             # self.hippounit_test_sections_names_table.item(2, 1).setBackground(GRAY)
             # self.hippounit_test_sections_names_table.item(2, 0).setBackground(GRAY)
 
-
-            self.test_specific_settings_table.item(3, 1).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.item(
+                3, 1).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(3, 1).setBackground(GRAY)
             self.test_specific_settings_table.item(3, 0).setBackground(GRAY)
 
-            self.test_specific_settings_table.item(4, 1).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.item(
+                4, 1).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(4, 1).setBackground(GRAY)
             self.test_specific_settings_table.item(4, 0).setBackground(GRAY)
 
-            self.test_specific_settings_table.item(5, 1).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.item(
+                5, 1).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(5, 1).setBackground(GRAY)
             self.test_specific_settings_table.item(5, 0).setBackground(GRAY)
 
-            self.test_specific_settings_table.item(6, 1).setFlags(QtCore.Qt.NoItemFlags)
+            self.test_specific_settings_table.item(
+                6, 1).setFlags(QtCore.Qt.NoItemFlags)
             self.test_specific_settings_table.item(6, 1).setBackground(GRAY)
             self.test_specific_settings_table.item(6, 0).setBackground(GRAY)
 
-            
-            
-          
         else:
             self.fitlist.setColumnCount(2)
-            #self.fitlist.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-            #self.flist.setHorizontalHeaderLabels(("Section;Segment;Mechanism;Parameter").split(";"))
+            # self.fitlist.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+            # self.flist.setHorizontalHeaderLabels(("Section;Segment;Mechanism;Parameter").split(";"))
             self.fitlist.resizeColumnsToContents()
-            
-            #self.fitlist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-            self.fitlist.setHorizontalHeaderLabels(["Fitness functions","Weights"])
-            #self.fitlist.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-            self.fitlist.setColumnWidth(0,200)
-            self.fitlist.setColumnWidth(1,80)
-            self.fitlist.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-            #self.fitlist.itemSelectionChanged.connect(self.fitselect)
-            #self.fitlist.cellClicked.connect(self.fitselect)
+
+            # self.fitlist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+            self.fitlist.setHorizontalHeaderLabels(
+                ["Fitness functions", "Weights"])
+            # self.fitlist.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+            self.fitlist.setColumnWidth(0, 200)
+            self.fitlist.setColumnWidth(1, 80)
+            self.fitlist.setSelectionMode(
+                QtWidgets.QAbstractItemView.SingleSelection)
+            # self.fitlist.itemSelectionChanged.connect(self.fitselect)
+            # self.fitlist.cellClicked.connect(self.fitselect)
             # self.fitlist.horizontalHeader().setStretchLastSection(True)
-            #set value of the first row to 0
-            self.test_specific_settings_table.setItem(0, 1, QtWidgets.QTableWidgetItem("0.0"))
-            #if hippounit_test_sections_names_table has more than 2 rows, remove them
+            # set value of the first row to 0
+            self.test_specific_settings_table.setItem(
+                0, 1, QtWidgets.QTableWidgetItem("0.0"))
+            # if hippounit_test_sections_names_table has more than 2 rows, remove them
             if self.test_specific_settings_table.rowCount() > 2:
-                for row in range(self.test_specific_settings_table.rowCount()-1,1,-1):
+                for row in range(self.test_specific_settings_table.rowCount()-1, 1, -1):
                     self.test_specific_settings_table.removeRow(row)
-    
+
         self._disable_column_editing(self.fitlist, 0)
-        #stretch the last column
+        # stretch the last column
         # self.fitlist.horizontalHeader().setStretchLastSection(True)
 
     def _disable_column_editing(self, table_widget, column_index):
@@ -2640,7 +2667,8 @@ class Ui_Neuroptimus(QMainWindow):
         Disables editing of a column in a table widget
         """
         for row in range(table_widget.rowCount()):
-            table_widget.item(row, column_index).setFlags(QtCore.Qt.NoItemFlags)
+            table_widget.item(row, column_index).setFlags(
+                QtCore.Qt.NoItemFlags)
             table_widget.item(row, column_index).setForeground(BLACK)
 
     def disable_mod_path(self):
@@ -2654,8 +2682,6 @@ class Ui_Neuroptimus(QMainWindow):
             self.lineEdit_folder2.setEnabled(False)
             self.pushButton_14.setEnabled(False)
 
-
-
     def type_change(self):
         """
         Sets units for drop down widget selecting simulation type.
@@ -2663,73 +2689,75 @@ class Ui_Neuroptimus(QMainWindow):
         self.dropdown.clear()
         # if not is_hippounit_installed():
         #     self.type_selector[2] = None
-        self.set_widgets_in_list(self.target_data_ui_components,True)
-        self.set_widgets_in_list(self.simtab_neuroptimus_group_boxes,True)
-        type_index=self.type_selector.currentIndex()
-        #block signals to avoid triggering the signal handler
+        self.set_widgets_in_list(self.target_data_ui_components, True)
+        self.set_widgets_in_list(self.simtab_neuroptimus_group_boxes, True)
+        type_index = self.type_selector.currentIndex()
+        # block signals to avoid triggering the signal handler
         self.fitlist.blockSignals(True)
         self.prepare_fitnessFunctions_table()
         self.fitlist.blockSignals(False)
-        if type_index in [0,1,2]:
+        if type_index in [0, 1, 2]:
             self.pushButton_3.setText("Load data")
             self.hippounit_group.setEnabled(False)
             # self.spike_group_box.setEnabled(True)
             # self.set_widgets_in_list(self.hippounit_settings_widgets,False)
-            if self.type_selector.currentIndex()==0:
-                self.dropdown.addItems(["uV","mV","V"])
-            elif self.type_selector.currentIndex()==1:
-                self.dropdown.addItems(["pA","nA","uA"])
-            elif self.type_selector.currentIndex()==2:
-                self.dropdown.addItems(["uV","mV","V","pA","nA","uA"])
-   
-        elif self.type_selector.currentIndex()==3: #Hippounit
+            if self.type_selector.currentIndex() == 0:
+                self.dropdown.addItems(["uV", "mV", "V"])
+            elif self.type_selector.currentIndex() == 1:
+                self.dropdown.addItems(["pA", "nA", "uA"])
+            elif self.type_selector.currentIndex() == 2:
+                self.dropdown.addItems(["uV", "mV", "V", "pA", "nA", "uA"])
+
+        elif self.type_selector.currentIndex() == 3:  # Hippounit
             self.pushButton_3.setText("Confirm")
-            self.set_widgets_in_list(self.target_data_ui_components,False) #first tab
-            self.set_widgets_in_list(self.simtab_neuroptimus_group_boxes,False) #settings tab (3rd)
+            self.set_widgets_in_list(
+                self.target_data_ui_components, False)  # first tab
+            self.set_widgets_in_list(
+                # settings tab (3rd)
+                self.simtab_neuroptimus_group_boxes, False)
             self.hippounit_group.setEnabled(True)
             # self.set_widgets_in_list(self.hippounit_settings_widgets,True)
             # self.spike_group_box.setEnabled(False)
-      
+
         else:
             self.dropdown.addItems(["none"])
         self.dropdown.setCurrentIndex(1)
         self.settings_tab_mode_change()
-    
+
     def settings_tab_mode_change(self):
-        if self.type_selector.currentText() == "HippoUnit" :
-            #hide all group boxes in self.neuroptimus_settings_widgets list
+        if self.type_selector.currentText() == "HippoUnit":
+            # hide all group boxes in self.neuroptimus_settings_widgets list
             for widget in self.neuroptimus_settings_widgets:
                 widget.hide()
-            #add self.hippounit_group to first place  self.settings_tab_grid  and hide the rest
+            # add self.hippounit_group to first place  self.settings_tab_grid  and hide the rest
             self.settings_tab_grid.addWidget(self.hippounit_group, 0, 0, 1, 2)
             self.hippounit_group.show()
-        elif self.type_selector.currentIndex() in [0,1,2]:
-            #unhide all group boxes in self.neuroptimus_settings_widgets list
+        elif self.type_selector.currentIndex() in [0, 1, 2]:
+            # unhide all group boxes in self.neuroptimus_settings_widgets list
             for widget in self.neuroptimus_settings_widgets:
                 widget.show()
             self.settings_tab_grid.addWidget(self.hippounit_group, 6, 1, 7, 1)
             self.hippounit_group.hide()
-        
-    def add_data_dict(self,data_dict):
+
+    def add_data_dict(self, data_dict):
         """
         Creates Input tree *not implemented yet*
         :param data_dict:
         :param root:
         """
-        
+
         stack = data_dict
-        string=""
+        string = ""
         while stack:
             key, value = stack.popitem()
             if isinstance(value, dict):
-                string+=str("{0} : ".format(key))+"\n"
+                string += str("{0} : ".format(key))+"\n"
                 stack.update(value)
             else:
-                string+=str("  {0} : {1}".format(key, value))+"\n"  
-        
-        
+                string += str("  {0} : {1}".format(key, value))+"\n"
+
         return string
-    
+
     # def save_state_decorator(func):
     #     @wraps(func)
     #     def wrapper( *args, **kwargs):
@@ -2748,9 +2776,9 @@ class Ui_Neuroptimus(QMainWindow):
     #         return result
 
     #     return wrapper
-    
+
     @save_state_decorator
-    def Load(self,*args):
+    def Load(self, *args):
         """
         Loads the model after the 'Load Trace' clicked
 
@@ -2762,82 +2790,82 @@ class Ui_Neuroptimus(QMainWindow):
         if (self.type_selector.currentText() == 'Features'):
             try:
 
-                kwargs = {"file" : str(self.lineEdit_folder.text()),
-                        "input" : [str(self.lineEdit_file.text()),
-                                   None,
-                                   str(self.dropdown.currentText()),
-                                   None,
-                                   None,
-                                   None,
-                                   self.type_selector.currentText().split()[0].lower()]}
-                
+                kwargs = {"file": str(self.lineEdit_folder.text()),
+                          "input": [str(self.lineEdit_file.text()),
+                                    None,
+                                    str(self.dropdown.currentText()),
+                                    None,
+                                    None,
+                                    None,
+                                    self.type_selector.currentText().split()[0].lower()]}
+
             except ValueError as ve:
                 print(ve)
                 traceback.print_exc()
-        elif self.type_selector.currentIndex()==3:  #Hippounit
-            self.tabwidget.setTabEnabled(1,True)
-            kwargs = {"file" : str(self.lineEdit_folder.text()),
-            "input": [ ""]*6 + ["hippounit"]}
+        elif self.type_selector.currentIndex() == 3:  # Hippounit
+            self.tabwidget.setTabEnabled(1, True)
+            kwargs = {"file": str(self.lineEdit_folder.text()),
+                      "input": [""]*6 + ["hippounit"]}
             # "input":[str(self.lineEdit_file.text()),None,None,None,None,None,"hippounit"]}
             self.kwargs = kwargs
-            pass  #TODO load_neuroptimus()
+            pass  # TODO load_neuroptimus()
         else:
             try:
 
-                kwargs = {"file" : str(self.lineEdit_folder.text()),
-                        "input" : [str(self.lineEdit_file.text()),
-                                   int(self.size_ctrl.text()),
-                                   str(self.dropdown.currentText()),
-                                   float(self.length_ctrl.text()),
-                                   float(self.freq_ctrl.text()),
-                                   self.time_checker.isChecked(),
-                                   self.type_selector.currentText().split()[0].lower()]}
-                
+                kwargs = {"file": str(self.lineEdit_folder.text()),
+                          "input": [str(self.lineEdit_file.text()),
+                                    int(self.size_ctrl.text()),
+                                    str(self.dropdown.currentText()),
+                                    float(self.length_ctrl.text()),
+                                    float(self.freq_ctrl.text()),
+                                    self.time_checker.isChecked(),
+                                    self.type_selector.currentText().split()[0].lower()]}
+
             except ValueError as ve:
                 print(ve)
                 traceback.print_exc()
-        
+
         self.core.FirstStep(kwargs)
-        self.tabwidget.setTabEnabled(1,True)
+        self.tabwidget.setTabEnabled(1, True)
         if self.type_selector.currentText().lower() in ["voltage trace", "current trace"]:
-            
+
             f = self.core.option_handler.input_freq
             t = self.core.option_handler.input_length
-            no_traces=self.core.option_handler.input_size
-            _type="voltage" if self.type_selector.currentIndex==0 else "current" if self.type_selector.currentIndex==1 else "unkown"
+            no_traces = self.core.option_handler.input_size
+            _type = "voltage" if self.type_selector.currentIndex == 0 else "current" if self.type_selector.currentIndex == 1 else "unkown"
             exp_data = []
-            
-            freq=float(self.freq_ctrl.text())
+
+            freq = float(self.freq_ctrl.text())
             for k in range(self.core.data_handler.number_of_traces()):
                 exp_data.extend(self.core.data_handler.data.GetTrace(k))
-            
+
             self.figure.clf()
             ax = self.figure.add_subplot(111)
             ax.cla()
             if self.time_checker.isChecked():
-               ax.plot([x/freq*1000 for x in range(len(exp_data))],exp_data) 
+                ax.plot([x/freq*1000 for x in range(len(exp_data))], exp_data)
             else:
                 ax.plot(exp_data)
             self.canvas.draw()
-            
-            
-            
+
             for k in range(self.core.data_handler.number_of_traces()):
                 exp_data.extend(self.core.data_handler.data.GetTrace(k))
             self.model.insertRow(0)
-            if self.type_selector.currentIndex()==0:
-                for n in [x for x in enumerate(self.loaded_input_types) if x[1]!=None and x[0]!=2]:
-                    self.loaded_input_types[n[0]]=None
-                input_string="Voltage trace \n" 
-                self.loaded_input_types[0]=self.tvoltage
-                
-                input_string+=str(str(self.lineEdit_file.text()).split("/")[-1])+"\n"
-            elif self.type_selector.currentIndex()==1:
-                for n in [x for x in enumerate(self.loaded_input_types) if x[1]!=None and x[0]!=2]:
-                    self.loaded_input_types[n[0]]=None
-                input_string="Current trace"
-                self.loaded_input_types[1]=self.tcurrent
-                input_string+=str(str(self.lineEdit_file.text()).split("/")[-1])+"\n"
+            if self.type_selector.currentIndex() == 0:
+                for n in [x for x in enumerate(self.loaded_input_types) if x[1] != None and x[0] != 2]:
+                    self.loaded_input_types[n[0]] = None
+                input_string = "Voltage trace \n"
+                self.loaded_input_types[0] = self.tvoltage
+
+                input_string += str(str(self.lineEdit_file.text()
+                                        ).split("/")[-1])+"\n"
+            elif self.type_selector.currentIndex() == 1:
+                for n in [x for x in enumerate(self.loaded_input_types) if x[1] != None and x[0] != 2]:
+                    self.loaded_input_types[n[0]] = None
+                input_string = "Current trace"
+                self.loaded_input_types[1] = self.tcurrent
+                input_string += str(str(self.lineEdit_file.text()
+                                        ).split("/")[-1])+"\n"
 
             '''
             elif self.type_selector.GetSelection()==3:
@@ -2848,83 +2876,91 @@ class Ui_Neuroptimus(QMainWindow):
                 self.tspike_t=self.input_tree.AppendItem(self.troot,"Spike times")
                 self.input_tree.AppendItem(self.tspike_t,self.input_file_controll.GetValue().split("/")[-1])
                 '''
-        
 
         elif self.type_selector.currentText().lower() == "features":
-            for n in [x for x in enumerate(self.loaded_input_types) if x[1]!=None and x[0]!=2]:
-                self.loaded_input_types[n[0]]=None
-            input_string="Features"
-            input_string+=str(str(self.lineEdit_file.text()).split("/")[-1])+"\n"
-            input_string+=self.add_data_dict(self.core.data_handler.features_dict)
-        
-        elif self.type_selector.currentText().lower() == "hippounit": 
-            input_string="Hippounit"
+            for n in [x for x in enumerate(self.loaded_input_types) if x[1] != None and x[0] != 2]:
+                self.loaded_input_types[n[0]] = None
+            input_string = "Features"
+            input_string += str(str(self.lineEdit_file.text()
+                                    ).split("/")[-1])+"\n"
+            input_string += self.add_data_dict(
+                self.core.data_handler.features_dict)
+
+        elif self.type_selector.currentText().lower() == "hippounit":
+            input_string = "Hippounit"
         #     self.tabwidget.setTabEnabled(1,True)
         #     pass  #TODO load_neuroptimus()
 
         else:
             raise NotImplementedError("Input type not implemented yet")
-        
-        self.input_label.setText(QtCore.QCoreApplication.translate("Neuroptimus", input_string))
-        if self.core.option_handler.type[-1].lower()  in ["voltage", "current"]:
-                self.my_list = copy(self.core.ffun_calc_list)
+
+        self.input_label.setText(
+            QtCore.QCoreApplication.translate("Neuroptimus", input_string))
+        if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
+            self.my_list = copy(self.core.ffun_calc_list)
         elif self.core.option_handler.type[-1].lower() == "hippounit":
-                verbose("hippounit tests loading in table")
-                self.my_list = copy(self.core.hippounit_tests_names)               
-        else: #features
-            self.my_list=list(self.core.data_handler.features_data.keys())[3:]
+            verbose("hippounit tests loading in table")
+            self.my_list = copy(self.core.hippounit_tests_names)
+        else:  # features
+            self.my_list = list(
+                self.core.data_handler.features_data.keys())[3:]
         self.param_list = [[]] * len(self.my_list)
         if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
-            self.param_list[2] = [("Spike detection thres. (mV)",0.0)]
-            self.param_list[1] = [("Spike detection thres. (mV)",0.0), ("Spike Window (ms)",1.0)]
-            
-        elif self.core.option_handler.type[-1].lower() == "features":
-            self.param_list[0] = [("Spike detection thres. (mV)",0.0)]
+            self.param_list[2] = [("Spike detection thres. (mV)", 0.0)]
+            self.param_list[1] = [
+                ("Spike detection thres. (mV)", 0.0), ("Spike Window (ms)", 1.0)]
 
-        if self.core.option_handler.type[-1]=="features":
+        elif self.core.option_handler.type[-1].lower() == "features":
+            self.param_list[0] = [("Spike detection thres. (mV)", 0.0)]
+
+        if self.core.option_handler.type[-1] == "features":
             for l in range(len(self.core.data_handler.features_data["stim_amp"])):
-                self.container.append(float(self.core.data_handler.features_data["stim_amp"][l]))
+                self.container.append(
+                    float(self.core.data_handler.features_data["stim_amp"][l]))
 
         self.fitlist.setRowCount(len(self.my_list))
-        for index,elems in enumerate(self.my_list):  
-            item = QTableWidgetItem(self.tests_ui_names[elems] if self.core.option_handler.type[-1].lower() == "hippounit" else elems)
-            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable)      
+        for index, elems in enumerate(self.my_list):
+            item = QTableWidgetItem(
+                self.tests_ui_names[elems] if self.core.option_handler.type[-1].lower() == "hippounit" else elems)
+            item.setFlags(QtCore.Qt.ItemIsSelectable |
+                          QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable)
             self.fitlist.setItem(index, 0, item)
-            if self.core.option_handler.type[-1]=="features":
-                itemv = QTableWidgetItem(str(self.core.data_handler.features_data[self.my_list[index]]["weight"]))
+            if self.core.option_handler.type[-1] == "features":
+                itemv = QTableWidgetItem(
+                    str(self.core.data_handler.features_data[self.my_list[index]]["weight"]))
             else:
                 itemv = QTableWidgetItem("0")
             self.fitlist.setItem(index, 1, itemv)
         self._disable_column_editing(self.fitlist, 0)
         if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
-            self.kwargs={"runparam" : [self.core.data_handler.data.t_length,
+            self.kwargs = {"runparam": [self.core.data_handler.data.t_length,
                                         self.core.data_handler.data.step,
                                         "record",
                                         "soma",
                                         "pos",
                                         "vrest"]
-                            }
+                           }
         elif self.core.option_handler.type[-1].lower() == "features":
-            self.kwargs={"runparam" : [self.core.data_handler.features_data["stim_delay"] + self.core.data_handler.features_data["stim_duration"]+100,
+            self.kwargs = {"runparam": [self.core.data_handler.features_data["stim_delay"] + self.core.data_handler.features_data["stim_duration"]+100,
                                         0.05,
                                         "record",
                                         "soma",
                                         "pos",
                                         "vrest"]}
-        if self.core.option_handler.output_level=="1":
+        if self.core.option_handler.output_level == "1":
             self.core.Print()
-        self.fit_container=[]
+        self.fit_container = []
         if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
-            self.lineEdit_tstop.setText(str(self.core.data_handler.data.t_length))
+            self.lineEdit_tstop.setText(
+                str(self.core.data_handler.data.t_length))
         elif self.core.option_handler.type[-1].lower() == "features":
-            self.lineEdit_tstop.setText(str(self.core.data_handler.features_data["stim_delay"] + self.core.data_handler.features_data["stim_duration"]+100))
-            self.lineEdit_delay.setText(str(self.core.data_handler.features_data["stim_delay"]))
-            self.lineEdit_duration.setText(str(self.core.data_handler.features_data["stim_duration"]))    
+            self.lineEdit_tstop.setText(str(
+                self.core.data_handler.features_data["stim_delay"] + self.core.data_handler.features_data["stim_duration"]+100))
+            self.lineEdit_delay.setText(
+                str(self.core.data_handler.features_data["stim_delay"]))
+            self.lineEdit_duration.setText(
+                str(self.core.data_handler.features_data["stim_duration"]))
 
-        
-
-        
-        
     @save_state_decorator
     def Set(self, e):
         """
@@ -2933,39 +2969,35 @@ class Ui_Neuroptimus(QMainWindow):
         Loop through every selected line.
         """
         items = self.modellist.selectionModel().selectedRows()
-        #save the selected items rows to self.gui_elements_state
-        self.modellist_selected_rows.add_selected_rows_index([x.row() for x in items])
+        # save the selected items rows to self.gui_elements_state
+        self.modellist_selected_rows.add_selected_rows_index(
+            [x.row() for x in items])
         self.modellist_selected_rows.set_table_widget("modellist")
         self.remover.setEnabled(True)
         for item_selected in items:
-                selected_row=item_selected.row()
-                section = str(self.modellist.item(selected_row, 0).text())
-                segment = str(self.modellist.item(selected_row, 1).text())
-                chan = str(self.modellist.item(selected_row, 2).text())
-                morph=""
-                par = str(self.modellist.item(selected_row, 3).text())
-                if chan == "morphology":
-                    chan = "None"
-                    par= "None"
-                    morph = str(self.modellist.item(selected_row, 3).text())
+            selected_row = item_selected.row()
+            section = str(self.modellist.item(selected_row, 0).text())
+            segment = str(self.modellist.item(selected_row, 1).text())
+            chan = str(self.modellist.item(selected_row, 2).text())
+            morph = ""
+            par = str(self.modellist.item(selected_row, 3).text())
+            if chan == "morphology":
+                chan = "None"
+                par = "None"
+                morph = str(self.modellist.item(selected_row, 3).text())
 
+            kwargs = {"section": section,
+                      "segment": segment,
+                      "channel": chan,
+                      "morph": morph,
+                      "params": par,
+                      "values": 0}
 
+            for j in range(4):
+                self.modellist.item(selected_row, j).setBackground(
+                    QtGui.QColor(255, 0, 0))
 
-                kwargs = {"section" : section,
-                        "segment" : segment,
-                        "channel" : chan,
-                        "morph" : morph,
-                        "params" : par,
-                        "values" : 0}
-
-      
-                for j in range(4):
-                    self.modellist.item(selected_row,j).setBackground(QtGui.QColor(255,0,0))
-
-
-                self.core.SetModel2(kwargs)
-                
-            
+            self.core.SetModel2(kwargs)
 
     def Remove(self, e):
         """
@@ -2973,46 +3005,48 @@ class Ui_Neuroptimus(QMainWindow):
         Loop through every selected line.
         """
         items = self.modellist.selectionModel().selectedRows()
-        self.modellist_selected_rows.remove_selected_rows_indices([x.row() for x in items])
+        self.modellist_selected_rows.remove_selected_rows_indices(
+            [x.row() for x in items])
         for item_selected in items:
-                selected_row=item_selected.row()
-                section = str(self.modellist.item(selected_row, 0).text())
-                segment = str(self.modellist.item(selected_row, 1).text())
-                chan = str(self.modellist.item(selected_row, 2).text())
-                morph=""
-                par = str(self.modellist.item(selected_row, 3).text())
-                if chan == "morphology":
-                    chan = "None"
-                    par= "None"
-                    morph = str(self.modellist.item(selected_row, 3).text())
+            selected_row = item_selected.row()
+            section = str(self.modellist.item(selected_row, 0).text())
+            segment = str(self.modellist.item(selected_row, 1).text())
+            chan = str(self.modellist.item(selected_row, 2).text())
+            morph = ""
+            par = str(self.modellist.item(selected_row, 3).text())
+            if chan == "morphology":
+                chan = "None"
+                par = "None"
+                morph = str(self.modellist.item(selected_row, 3).text())
 
-                kwargs = {"section" : section,
-                        "segment" : segment,
-                        "channel" : chan,
-                        "morph" : morph,
-                        "params" : par}
+            kwargs = {"section": section,
+                      "segment": segment,
+                      "channel": chan,
+                      "morph": morph,
+                      "params": par}
 
-                if kwargs["channel"] == "None":
-                    temp = kwargs["section"] + " " + kwargs["morph"]
-                else:
-                    temp = kwargs["section"] + " " + kwargs["segment"] +  " " + kwargs["channel"] + " " + kwargs["params"]
-                self.core.option_handler.param_vals.pop(self.core.option_handler.GetObjTOOpt().index(temp))
-                self.core.option_handler.adjusted_params.remove(temp)
-                if len(self.core.option_handler.GetObjTOOpt()) == 0:
-                    self.remover.setEnabled(False )
-                for j in range(4):
-                    self.modellist.item(selected_row,j).setBackground(WHITE)
-
-
+            if kwargs["channel"] == "None":
+                temp = kwargs["section"] + " " + kwargs["morph"]
+            else:
+                temp = kwargs["section"] + " " + kwargs["segment"] + \
+                    " " + kwargs["channel"] + " " + kwargs["params"]
+            self.core.option_handler.param_vals.pop(
+                self.core.option_handler.GetObjTOOpt().index(temp))
+            self.core.option_handler.adjusted_params.remove(temp)
+            if len(self.core.option_handler.GetObjTOOpt()) == 0:
+                self.remover.setEnabled(False)
+            for j in range(4):
+                self.modellist.item(selected_row, j).setBackground(WHITE)
 
     def sim_plat(self):
         """
         Called when simulation platform changed, locks unnecessary widgets and swap Label of Load button.
         """
-        if self.dd_type.currentIndex()==1:
+        if self.dd_type.currentIndex() == 1:
             self.sim_path.show()
             self.sim_param.show()
-            self.pushButton_13.setText(QtCore.QCoreApplication.translate("Neuroptimus", "Set"))
+            self.pushButton_13.setText(
+                QtCore.QCoreApplication.translate("Neuroptimus", "Set"))
             self.pushButton_12.show()
             self.pushButton_14.hide()
             self.pushButton_15.hide()
@@ -3027,10 +3061,11 @@ class Ui_Neuroptimus(QMainWindow):
             self.label_26.show()
             self.label_27.show()
             self.load_mods_checkbox.hide()
-        elif self.dd_type.currentIndex()==2:        
+        elif self.dd_type.currentIndex() == 2:
             self.sim_path.show()
             self.sim_param.show()
-            self.pushButton_13.setText(QtCore.QCoreApplication.translate("Neuroptimus", "Set"))
+            self.pushButton_13.setText(
+                QtCore.QCoreApplication.translate("Neuroptimus", "Set"))
             self.pushButton_12.hide()
             self.pushButton_14.hide()
             self.pushButton_15.hide()
@@ -3046,7 +3081,8 @@ class Ui_Neuroptimus(QMainWindow):
             self.label_27.show()
             self.load_mods_checkbox.hide()
         else:
-            self.pushButton_13.setText(QtCore.QCoreApplication.translate("Neuroptimus", "Load"))
+            self.pushButton_13.setText(
+                QtCore.QCoreApplication.translate("Neuroptimus", "Load"))
             self.sim_path.hide()
             self.sim_param.hide()
             self.pushButton_12.hide()
@@ -3067,25 +3103,26 @@ class Ui_Neuroptimus(QMainWindow):
     def Loadpython(self, e):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Python files (*.py);;All Files (*);;", options=options)
+        fileName, _ = QFileDialog.getOpenFileName(
+            None, "QFileDialog.getOpenFileName()", "", "Python files (*.py);;All Files (*);;", options=options)
         if fileName:
             self.sim_path.setText("python "+str(fileName))
 
     @save_state_decorator
-    def Load2(self,e):
+    def Load2(self, e):
         """
         Load the selected Neuron model and displays the sections in a tablewidget
         """
         self.model_file = self.lineEdit_file2.text()
         if not os.path.isfile(self.model_file):
-            #focus on the model path input
+            # focus on the model path input
             self.lineEdit_file2.setFocus()
-            #error popup
+            # error popup
             popup("Invalid model path")
             return None
-        self.tabwidget.setTabEnabled(2,True)
-        self.tabwidget.setTabEnabled(3,True)
-        self.tabwidget.setTabEnabled(4,True)
+        self.tabwidget.setTabEnabled(2, True)
+        self.tabwidget.setTabEnabled(3, True)
+        self.tabwidget.setTabEnabled(4, True)
         if self.load_mods_checkbox.isChecked():
             self.spec_file = self.lineEdit_folder2.text()
         else:
@@ -3097,31 +3134,33 @@ class Ui_Neuroptimus(QMainWindow):
             self.model_name = self.model_name_input.text()
             self._write_on_status_bar("Model loaded Successfully!")
 
-
-
             return
 
         try:
-            self.core.LoadModel({"model" : [self.model_file, self.spec_file],
-                                 "simulator" : simulator_selected,
-                                 "sim_command" : self.sim_path.text() if not self.dd_type else self.sim_path.text()+" "+self.sim_param.text()})
+            self.core.LoadModel({"model": [self.model_file, self.spec_file],
+                                 "simulator": simulator_selected,
+                                 "sim_command": self.sim_path.text() if not self.dd_type else self.sim_path.text()+" "+self.sim_param.text()})
             temp = self.core.model_handler.GetParameters()
-            if temp!=None:
+            if temp != None:
                 with open("model.txt", 'w+') as out:
                     for i in temp:
                         out.write(str(i))
                         out.write("\n")
-                    index=0
+                    index = 0
                 self.modellist.setRowCount(self.recursive_len(temp))
                 for row in temp:
                     for k in (row[1]):
                         if k != []:
                             for s in (k[2]):
-                                self.modellist.setItem(index, 0, QTableWidgetItem(row[0]))
-                                self.modellist.setItem(index, 1, QTableWidgetItem(str(k[0])))
-                                self.modellist.setItem(index, 2, QTableWidgetItem(k[1]))
-                                self.modellist.setItem(index, 3, QTableWidgetItem(s))
-                                index+=1
+                                self.modellist.setItem(
+                                    index, 0, QTableWidgetItem(row[0]))
+                                self.modellist.setItem(
+                                    index, 1, QTableWidgetItem(str(k[0])))
+                                self.modellist.setItem(
+                                    index, 2, QTableWidgetItem(k[1]))
+                                self.modellist.setItem(
+                                    index, 3, QTableWidgetItem(s))
+                                index += 1
                 self.modellist.setRowCount(index)
             else:
                 pass
@@ -3131,9 +3170,9 @@ class Ui_Neuroptimus(QMainWindow):
         except Exception as e:
             print("Error in Load2:")
             traceback.print_exc()
-        if not self.dd_type.currentIndex():  
+        if not self.dd_type.currentIndex():
             try:
-                tmp=self.core.ReturnSections()
+                tmp = self.core.ReturnSections()
                 [tmp.remove("None") for i in range(tmp.count("None"))]
                 self.section_rec.addItems(tmp)
                 self.section_stim.addItems(tmp)
@@ -3145,66 +3184,70 @@ class Ui_Neuroptimus(QMainWindow):
 
     def typeChange(self):
         _translate = QtCore.QCoreApplication.translate
-        if self.stimulus_type.currentIndex()==0:#step prot
+        if self.stimulus_type.currentIndex() == 0:  # step prot
             self.lineEdit_delay.setDisabled(False)
             self.lineEdit_duration.setDisabled(False)
-            self.base_dir_controll9.clicked.disconnect(self.openFileNameDialogWaveform)
+            self.base_dir_controll9.clicked.disconnect(
+                self.openFileNameDialogWaveform)
             self.base_dir_controll9.clicked.connect(self.amplitudes_fun)
-            self.base_dir_controll9.setText(_translate("Neuroptimus", "Amplitude(s)"))
-        if self.stimulus_type.currentIndex()==1:#wave prot
+            self.base_dir_controll9.setText(
+                _translate("Neuroptimus", "Amplitude(s)"))
+        if self.stimulus_type.currentIndex() == 1:  # wave prot
             self.lineEdit_delay.setDisabled(True)
             self.lineEdit_delay.setText("0")
             self.lineEdit_duration.setDisabled(True)
             self.lineEdit_duration.setText("1e9")
-            self.base_dir_controll9.setText(_translate("Neuroptimus", "Load Waveform"))
+            self.base_dir_controll9.setText(
+                _translate("Neuroptimus", "Load Waveform"))
             self.base_dir_controll9.clicked.disconnect(self.amplitudes_fun)
-            self.base_dir_controll9.clicked.connect(self.openFileNameDialogWaveform)
+            self.base_dir_controll9.clicked.connect(
+                self.openFileNameDialogWaveform)
 
-    def openFileNameDialogWaveform(self): 
+    def openFileNameDialogWaveform(self):
         """
         File dialog for the file tab to open file.
         """
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Data files (*.dat *.json);;All Files (*);;", options=options)
+        fileName, _ = QFileDialog.getOpenFileName(
+            None, "QFileDialog.getOpenFileName()", "", "Data files (*.dat *.json);;All Files (*);;", options=options)
         if fileName:
-            self.container=[fileName]
-               
+            self.container = [fileName]
+
     def _write_on_status_bar(self, message, color="green", timeout=5000):
-        
+
         self.statusbar.setStyleSheet("color: "+color)
         self.statusbar.showMessage(message, timeout)
 
-    def recursive_len(self,item):
+    def recursive_len(self, item):
         if type(item) == list:
             return sum(self.recursive_len(subitem) for subitem in item)
         else:
             return 1
-
 
     def UF(self):
         """
         Calls the user function window for the Model tab.
         """
 
-        # self.SW = SecondWindow(self) 
+        # self.SW = SecondWindow(self)
         # self.SW.setObjectName("Neuroptimus")
         # self.SW.resize(500, 500)
         self.SW.show()
+
     @save_state_decorator
-    def amplitudes_fun(self,*args):
+    def amplitudes_fun(self, *args):
         """
         Calls the amplitude window for the Options tab.
         """
 
-        # self.SiW = StimuliWindow(self) 
+        # self.SiW = StimuliWindow(self)
         # self.SiW.setObjectName("Neuroptimus")
         # self.SiW.resize(400, 500)
 
         self.SiW.initialize()
         self.SiW.show()
 
-    
     # def fitselect(self):
     #     """
     #     Calls when fitness functions selected, colours the item and adds them to a set.
@@ -3221,140 +3264,146 @@ class Ui_Neuroptimus(QMainWindow):
     #                 self.fitlist.item(item_selected.row(),0).setBackground(QtGui.QColor(0,255,0))
     #                 self.fitset.add(current_item)
 
-
-    def _check_fitlist_weight(self,selected_row):
-        if self.fitlist.item(selected_row, 1) != None and self.fitlist.item(selected_row, 1).text() != ""  and float(self.fitlist.item(selected_row, 1).text()) != 0:
+    def _check_fitlist_weight(self, selected_row):
+        if self.fitlist.item(selected_row, 1) != None and self.fitlist.item(selected_row, 1).text() != "" and float(self.fitlist.item(selected_row, 1).text()) != 0:
             return True
-
-
 
     def fitchanged(self):
         """
         Calls when the weights changed for the fitness functions. Checks which Hippounit test is selected and enables the corresponding row in the settings table.
         """
-        
-        
-        #first check if hippounit test is selected
+
+        # first check if hippounit test is selected
         if self.type_selector.currentText().lower() == "hippounit":
-            
-           
+
             # self.HippoTests_required_parameters = {self.tests_ui_names["PSPAttenuationTest"]: ["TrunkSecList_name","num_of_dend_locations"],
             #                                 self.tests_ui_names["BackpropagatingAPTest"]: ["TrunkSecList_name"],
             #                                 self.tests_ui_names["ObliqueIntegrationTest"]: ["ObliqueSecList_name", "TrunkSecList_name"],
             #                                 self.tests_ui_names["PathwayInteraction"]: ["TuftSecList_name","num_of_dend_locations"]}
-            
-            
+
             # self.HippoTests_parameter_location_in_table = {"TrunkSecList_name":3 , "ObliqueSecList_name":4 , "TuftSecList_name":5, "num_of_dend_locations":6}
-            #get currently selected row 
+            # get currently selected row
             selected_row = self.fitlist.currentRow()
             # verbose("Current selected row ---------->",selected_row)
 
-            #get the name of the test if not its's weight (2nd column) is not none and not empty and not 0
+            # get the name of the test if not its's weight (2nd column) is not none and not empty and not 0
             try:
                 test_name = self.fitlist.item(selected_row, 0).text()
                 is_test_weighted = self._check_fitlist_weight(selected_row)
-                if is_test_weighted: #Weight is a number and not 0
-                    #make  its corresponding property row in the table to the selected row be editable and non grayed
-                    #enable the row in fitlist and make it white columns 2 , 3 ,4
+                if is_test_weighted:  # Weight is a number and not 0
+                    # make  its corresponding property row in the table to the selected row be editable and non grayed
+                    # enable the row in fitlist and make it white columns 2 , 3 ,4
                     self.fitlist.blockSignals(True)
-                    for column in range(2,5): #do this except cells (5,2) , (5,3), (4,2) , (4,3)
+                    # do this except cells (5,2) , (5,3), (4,2) , (4,3)
+                    for column in range(2, 5):
                         # #set text "Double click to Browse" if it is not last column
                         is_penalty_coulmn = column == self.fitlist.columnCount() - 1
                         if is_penalty_coulmn:
-                            is_penalty_already_set = self.fitlist.item(selected_row, column).text().isnumeric()
+                            is_penalty_already_set = self.fitlist.item(
+                                selected_row, column).text().isnumeric()
                             if not is_penalty_already_set:
-                                self.fitlist.item(selected_row, column).setText("250")
+                                self.fitlist.item(
+                                    selected_row, column).setText("250")
                             else:
-                                pass #keep the value
-                        elif  not os.path.isfile(self.fitlist.item(selected_row, column).text()) :
+                                pass  # keep the value
+                        elif not os.path.isfile(self.fitlist.item(selected_row, column).text()):
                             self.fitlist.item(selected_row, column).setText("")
-                            
-                        else :
+
+                        else:
                             pass
                         # if column == 4:#set value to 255
                         #     #if it's text is not numeric (not already set to a number), set it to 250
                         #     if not self.fitlist.item(selected_row, column).text().isnumeric():
-                        #         self.fitlist.item(selected_row, column).setText("250") 
-                                # self.fitlist.item(selected_row, column).setPlaceholderText("250") 
-                        if (column == 3 and selected_row == 4) or (column == 3 and selected_row == 5)  :
-                            self.fitlist.item(selected_row, column).setBackground(GRAY)
-                            self.fitlist.item(selected_row, column).setForeground(BLACK)
-                            self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
-                            self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.NoItemFlags)
+                        #         self.fitlist.item(selected_row, column).setText("250")
+                            # self.fitlist.item(selected_row, column).setPlaceholderText("250")
+                        if (column == 3 and selected_row == 4) or (column == 3 and selected_row == 5):
+                            self.fitlist.item(
+                                selected_row, column).setBackground(GRAY)
+                            self.fitlist.item(
+                                selected_row, column).setForeground(BLACK)
+                            self.fitlist.item(selected_row, column).setFlags(
+                                QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+                            self.fitlist.item(selected_row, column).setFlags(
+                                QtCore.Qt.NoItemFlags)
                             self.fitlist.item(selected_row, column).setText("")
-                        
+
                         else:
-                            self.fitlist.item(selected_row, column).setBackground(WHITE)
-                            self.fitlist.item(selected_row, column).setForeground(BLACK)
-                            self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
-                        
+                            self.fitlist.item(
+                                selected_row, column).setBackground(WHITE)
+                            self.fitlist.item(
+                                selected_row, column).setForeground(BLACK)
+                            self.fitlist.item(selected_row, column).setFlags(
+                                QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+
                     self.fitlist.blockSignals(False)
-                    #disable callbacks for the table
-                    
+                    # disable callbacks for the table
 
                     if test_name in self.HippoTests_required_parameters.keys():
                         required_properties_by_test = self.HippoTests_required_parameters[test_name]
                         for property in required_properties_by_test:
                             property_row = self.HippoTests_parameter_location_in_table[property]
-                            self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
-                            self.test_specific_settings_table.item(property_row, 1).setBackground(WHITE)
-                            self.test_specific_settings_table.item(property_row, 0).setBackground(WHITE)
-                   
-                   
-                else : # Weight is 0 or none
-                    #make uneditable and grayed out rows if the weight is 0 or none
+                            self.test_specific_settings_table.item(property_row, 1).setFlags(
+                                QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+                            self.test_specific_settings_table.item(
+                                property_row, 1).setBackground(WHITE)
+                            self.test_specific_settings_table.item(
+                                property_row, 0).setBackground(WHITE)
+
+                else:  # Weight is 0 or none
+                    # make uneditable and grayed out rows if the weight is 0 or none
                     self.fitlist.blockSignals(True)
-                    for column in range(2,5): 
-                        self.fitlist.item(selected_row, column).setBackground(GRAY)
-                        self.fitlist.item(selected_row, column).setForeground(BLACK)
-                        self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
-                        self.fitlist.item(selected_row, column).setFlags(QtCore.Qt.NoItemFlags)
-                        self.fitlist.item(selected_row, column).setText("") 
-            
+                    for column in range(2, 5):
+                        self.fitlist.item(
+                            selected_row, column).setBackground(GRAY)
+                        self.fitlist.item(
+                            selected_row, column).setForeground(BLACK)
+                        self.fitlist.item(selected_row, column).setFlags(
+                            QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+                        self.fitlist.item(selected_row, column).setFlags(
+                            QtCore.Qt.NoItemFlags)
+                        self.fitlist.item(selected_row, column).setText("")
+
                     self.fitlist.blockSignals(False)
-            
-    
+
                     if test_name in self.HippoTests_required_parameters.keys():
                         required_properties_by_test = self.HippoTests_required_parameters[test_name]
                         # print("required_properties_by_test",required_properties_by_test)
                         for property in required_properties_by_test:
                             # print("property",property)
                             property_row = self.HippoTests_parameter_location_in_table[property]
-                            self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.NoItemFlags)
-                            self.test_specific_settings_table.item(property_row, 1).setBackground(GRAY)
-                            self.test_specific_settings_table.item(property_row, 0).setBackground(GRAY)
-                        
+                            self.test_specific_settings_table.item(
+                                property_row, 1).setFlags(QtCore.Qt.NoItemFlags)
+                            self.test_specific_settings_table.item(
+                                property_row, 1).setBackground(GRAY)
+                            self.test_specific_settings_table.item(
+                                property_row, 0).setBackground(GRAY)
+
             except AttributeError as ae:
-                pass    
-                    
+                pass
+
             except Exception as e:
 
                 traceback.print_exc()
                 # print(e)
                 pass
 
-
-        
     def browse_file_for_hippounit_data_paths(self):
         """
         File dialog for the file tab to open file.
         """
-        row = self.fitlist.currentRow() #get the selected row
-        column = self.fitlist.currentColumn() #get the selected column
-        if column in [0, 1, 4]: #if the selected cell is the first column
-            return #do nothing
-        
-            
+        row = self.fitlist.currentRow()  # get the selected row
+        column = self.fitlist.currentColumn()  # get the selected column
+        if column in [0, 1, 4]:  # if the selected cell is the first column
+            return  # do nothing
+
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        filePath, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Data files (*.json);;All Files (*);;", options=options)
+        filePath, _ = QFileDialog.getOpenFileName(
+            None, "QFileDialog.getOpenFileName()", "", "Data files (*.json);;All Files (*);;", options=options)
         if filePath:
-            #set the file name to the selected cell, do not resize the column
-            self.fitlist.setItem(self.fitlist.currentRow(),self.fitlist.currentColumn(), QTableWidgetItem(filePath))
-            
-
-
-
+            # set the file name to the selected cell, do not resize the column
+            self.fitlist.setItem(self.fitlist.currentRow(
+            ), self.fitlist.currentColumn(), QTableWidgetItem(filePath))
 
     def Fit_normalize(self, e):
         """
@@ -3362,17 +3411,19 @@ class Ui_Neuroptimus(QMainWindow):
         Iterates through all fitness functions and scans the ones contained in the fitness set (selected ones) with an 'if' statement.
         """
         try:
-            #self.fitselect()
-            #self.432eanged()
+            # self.fitselect()
+            # self.432eanged()
             allRows = self.fitlist.rowCount()
-            self.weights=[float(self.fitlist.item(row, 1).text()) for row in range(0,allRows)] 
+            self.weights = [float(self.fitlist.item(row, 1).text())
+                            for row in range(0, allRows)]
             sum_o_weights = float(sum(self.weights))
-            for row in range(0,allRows):
-                current_fun=str(self.fitlist.item(row, 0).text())
-                current_weight=float(str(self.fitlist.item(row, 1).text()))
+            for row in range(0, allRows):
+                current_fun = str(self.fitlist.item(row, 0).text())
+                current_weight = float(str(self.fitlist.item(row, 1).text()))
                 if current_weight:
                     try:
-                        self.fitlist.item(row, 1).setText(str(round(current_weight / sum_o_weights,4)))
+                        self.fitlist.item(row, 1).setText(
+                            str(round(current_weight / sum_o_weights, 4)))
                     except:
                         continue
                 else:
@@ -3383,20 +3434,19 @@ class Ui_Neuroptimus(QMainWindow):
         except Exception as e:
             popup("Wrong values given. "+str(e))
 
-    
-    def packageselect(self,pack_name):
-            """
-            Writes the given aspects to algorithm in an other table, where the user can change the option (generation, population size, etc.).
-            Iterates through the selected algorithms options list and writes the names of it to the first column and sets the cell immutable, 
-            and the values to the second row.
-            """
+    def packageselect(self, pack_name):
+        """
+        Writes the given aspects to algorithm in an other table, where the user can change the option (generation, population size, etc.).
+        Iterates through the selected algorithms options list and writes the names of it to the first column and sets the cell immutable, 
+        and the values to the second row.
+        """
 
-            selected_package = self.algos.get(pack_name)
-            self.algolist.setRowCount(len(selected_package))
-            for index,elems in enumerate(selected_package):
-                item = QTableWidgetItem(str(elems))   
-                self.algolist.setItem(index, 0, item)
-            self.algolist.item(0,0)
+        selected_package = self.algos.get(pack_name)
+        self.algolist.setRowCount(len(selected_package))
+        for index, elems in enumerate(selected_package):
+            item = QTableWidgetItem(str(elems))
+            self.algolist.setItem(index, 0, item)
+        self.algolist.item(0, 0)
 
     def algoselect(self):
         """
@@ -3405,36 +3455,42 @@ class Ui_Neuroptimus(QMainWindow):
         and the values to the second row.
         """
         try:
-            selected_algo = self.algolist.selectionModel().selectedRows()[0].row()
-            algo_name = str(self.algolist.item(selected_algo, 0).text()).upper()
-            self.aspects = self.algo_dict[algo_name[algo_name.find("(")+1:].replace(")","").replace(" - ","_").replace("-","_").replace(" ","_")]
+            selected_algo = self.algolist.selectionModel().selectedRows()[
+                0].row()
+            algo_name = str(self.algolist.item(
+                selected_algo, 0).text()).upper()
+            self.aspects = self.algo_dict[algo_name[algo_name.find(
+                "(")+1:].replace(")", "").replace(" - ", "_").replace("-", "_").replace(" ", "_")]
             self.algorithm_parameter_list.setRowCount(len(self.aspects)+1)
             item = QTableWidgetItem('Seed')
-            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
+            item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.algorithm_parameter_list.setItem(0, 0, item)
-            item2 = QTableWidgetItem('1234')   
+            item2 = QTableWidgetItem('1234')
             self.algorithm_parameter_list.setItem(0, 1, item2)
             for index, (key, value) in enumerate(self.aspects.items()):
                 item = QTableWidgetItem(key)
                 if self.algo_param_dict.get(key):
-                    item.setToolTip(str(self.algo_param_dict.get(key)).rjust(30))
-                item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
-                self.algorithm_parameter_list.setItem(index+1, 0, item)     
+                    item.setToolTip(
+                        str(self.algo_param_dict.get(key)).rjust(30))
+                item.setFlags(QtCore.Qt.ItemIsSelectable |
+                              QtCore.Qt.ItemIsEnabled)
+                self.algorithm_parameter_list.setItem(index+1, 0, item)
                 item2 = QTableWidgetItem(str(value))
-                if str(value)=='True' or str(value)=='False':
+                if str(value) == 'True' or str(value) == 'False':
                     item2 = QTableWidgetItem()
-                    #select the cell if checked
-                    item2.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-                    if str(value)=='True':
-                        item2.setCheckState(QtCore.Qt.Checked) 
+                    # select the cell if checked
+                    item2.setFlags(QtCore.Qt.ItemIsUserCheckable |
+                                   QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+                    if str(value) == 'True':
+                        item2.setCheckState(QtCore.Qt.Checked)
                     else:
-                        item2.setCheckState(QtCore.Qt.Unchecked)    
+                        item2.setCheckState(QtCore.Qt.Unchecked)
                 self.algorithm_parameter_list.setItem(index+1, 1, item2)
-            self.algorithm_parameter_list.resizeColumnsToContents() #setSectionResizeMode(0,QtWidgets.QHeaderView.ResizeToContents)
+            # setSectionResizeMode(0,QtWidgets.QHeaderView.ResizeToContents)
+            self.algorithm_parameter_list.resizeColumnsToContents()
         except Exception as e:
             print('Algorithm parameter error')
             print(e)
-
 
     def aspect_changed(self):
         """
@@ -3442,7 +3498,7 @@ class Ui_Neuroptimus(QMainWindow):
         Clears selection, because if other algorithm clicked after change, it's counts as a change again.
         So the same value is going to be stored for the next algorirhm selection.
         """
-        #get current cell focused in self.algorithm_parameter_list
+        # get current cell focused in self.algorithm_parameter_list
         current_row = self.algorithm_parameter_list.currentRow()
         item = self.algorithm_parameter_list.item(current_row, 1)
         if item is not None:
@@ -3454,213 +3510,220 @@ class Ui_Neuroptimus(QMainWindow):
                     val = False
                 else:
                     val = True
-                self.aspects[str(self.algorithm_parameter_list.item(0, 0).text())] = val
+                self.aspects[str(
+                    self.algorithm_parameter_list.item(0, 0).text())] = val
                 return
             # if val is numeric
             if val.isnumeric():
                 val = float(val)
-            else: #string
+            else:  # string
                 val = str(val)
-                if val.lower()== "none" or val.lower() == "null":
+                if val.lower() == "none" or val.lower() == "null":
                     val = None
             # store the value
-            self.aspects[str(self.algorithm_parameter_list.item(0, 0).text())] = val
+            self.aspects[str(
+                self.algorithm_parameter_list.item(0, 0).text())] = val
             self.algorithm_parameter_list.clearSelection()
 
-
-       
-    
     def hippounit_gui_to_json(self):
-        self.hippounit_config = {"model":{}, "tests":{}}
+        self.hippounit_config = {"model": {}, "tests": {}}
 
-        #collect the following information from the GUI, the info found in this json config file
-        
-        #the model name
+        # collect the following information from the GUI, the info found in this json config file
+
+        # the model name
         self.hippounit_config["model"]["name"] = self.model_name_input.text()
         if self.hippounit_config["model"]["name"] == "":
-            
+
             # go to the Model tab
             self.tabwidget.setCurrentIndex(1)
-            #focus on the model name input
+            # focus on the model name input
             self.model_name_input.setFocus()
             popup("Model name must be set")
             return None
-        #the model path
-        self.hippounit_config["model"]["mod_files_path"] = add_trailing_slash(self.lineEdit_folder2.text())
-        #if the path is not valid or empty popup error
-        if not os.path.isdir(self.hippounit_config["model"]["mod_files_path"]): #TODO: Do we always need to have mod files path?
-            
+        # the model path
+        self.hippounit_config["model"]["mod_files_path"] = add_trailing_slash(
+            self.lineEdit_folder2.text())
+        # if the path is not valid or empty popup error
+        # TODO: Do we always need to have mod files path?
+        if not os.path.isdir(self.hippounit_config["model"]["mod_files_path"]):
+
             # go to the Model tab
             self.tabwidget.setCurrentIndex(1)
-            #focus on the model path input
+            # focus on the model path input
             self.lineEdit_folder2.setFocus()
             popup("Mod Files Path must be set to a valid directory")
-            return None 
+            return None
 
-
-        #the output path
-        self.hippounit_config["model"]["output_dir"] = self.output_dir_input.text()
-        #if the path is not valid or empty popup error
+        # the output path
+        self.hippounit_config["model"]["output_dir"] = self.output_dir_input.text(
+        )
+        # if the path is not valid or empty popup error
         if not os.path.isdir(self.hippounit_config["model"]["output_dir"]):
-            
+
             # go to the Model tab
             self.tabwidget.setCurrentIndex(2)
-            #focus on the output path input
+            # focus on the output path input
             self.output_dir_input.setFocus()
             popup("Output path must be set to a valid directory")
             return None
-        #the template name
-        self.hippounit_config["model"]["template_name"] = self.template_name_input.text() if self.template_name_input.text() != "" else None
-        #threshold
+        # the template name
+        self.hippounit_config["model"]["template_name"] = self.template_name_input.text(
+        ) if self.template_name_input.text() != "" else None
+        # threshold
         try:
-            #first row, second column
-            self.hippounit_config["model"]["threshold"] = float(self.test_specific_settings_table.item(0,1).text())
+            # first row, second column
+            self.hippounit_config["model"]["threshold"] = float(
+                self.test_specific_settings_table.item(0, 1).text())
         except:
-            self.test_specific_settings_table.item(0,1).setBackground(QtGui.QColor(255,0,0))
-            #goto to tab 3
+            self.test_specific_settings_table.item(
+                0, 1).setBackground(QtGui.QColor(255, 0, 0))
+            # goto to tab 3
             self.tabwidget.setCurrentIndex(3)
-            #focus on the threshold input
-            self.test_specific_settings_table.item(0,1).setSelected(True)
-            #error popup
+            # focus on the threshold input
+            self.test_specific_settings_table.item(0, 1).setSelected(True)
+            # error popup
             popup("Spike detection thres. (mV) must be set to a number")
             return None
-        
-        #v_init
+
+        # v_init
         try:
-            self.hippounit_config["model"]["v_init"] = float(self.v_init_input.text())
+            self.hippounit_config["model"]["v_init"] = float(
+                self.v_init_input.text())
         except:
-            #goto to tab 3
+            # goto to tab 3
             self.tabwidget.setCurrentIndex(2)
-            #focus on the v_init input
+            # focus on the v_init input
             self.v_init_input.setFocus()
-            #error popup
+            # error popup
             popup("v_init must be set to a number")
             return None
 
         try:
-            #celsius
-            self.hippounit_config["model"]["celsius"] = float(self.celsius_input.text())
+            # celsius
+            self.hippounit_config["model"]["celsius"] = float(
+                self.celsius_input.text())
         except:
-            #goto to tab 2
+            # goto to tab 2
             self.tabwidget.setCurrentIndex(2)
-            #focus on the celsius input
+            # focus on the celsius input
             self.celsius_input.setFocus()
-            #error popup
+            # error popup
             popup("Temperature must be set to a number")
             return None
 
-        #the soma section name
+        # the soma section name
         try:
             self.hippounit_config["model"]["soma"] = self.soma_input.text()
         except:
-            #goto to tab 2
+            # goto to tab 2
             self.tabwidget.setCurrentIndex(2)
-            #focus on the soma section name input
+            # focus on the soma section name input
             self.soma_input.setFocus()
-            #error popup
+            # error popup
             popup("Soma Section Name must be set")
             return None
 
         if self.hippounit_config["model"]["soma"] == "":
-            #goto to tab 2
+            # goto to tab 2
             self.tabwidget.setCurrentIndex(2)
-            #focus on the soma section name input
+            # focus on the soma section name input
             self.soma_input.setFocus()
-            #error popup
+            # error popup
             popup("Soma Section Name must be set")
             return None
 
         # #the soma section list name
-        self.hippounit_config["model"]["SomaSecList_name"] = self.test_specific_settings_table.item(2,1).text() if self.test_specific_settings_table.item(2,1).text() != "" else None
+        self.hippounit_config["model"]["SomaSecList_name"] = self.test_specific_settings_table.item(
+            2, 1).text() if self.test_specific_settings_table.item(2, 1).text() != "" else None
 
-        #the trunk section list name
-        hippo_paramaters_to_check = ["TrunkSecList_name", "ObliqueSecList_name", "TuftSecList_name", "num_of_dend_locations"] 
-        #Assign the values of these parameters to the config file, if they are not empty or none and was supposed to be set
+        # the trunk section list name
+        hippo_paramaters_to_check = [
+            "TrunkSecList_name", "ObliqueSecList_name", "TuftSecList_name", "num_of_dend_locations"]
+        # Assign the values of these parameters to the config file, if they are not empty or none and was supposed to be set
         for param in hippo_paramaters_to_check:
             # get the value of the parameter based on the configuaration dictionary HippoTests_parameter_location_in_table which maps the parameter name to the row in the table
             property_row = self.HippoTests_parameter_location_in_table[param]
-            value_of_param = self.test_specific_settings_table.item(property_row, 1).text()
-            
-            #if their cell not grayed, it means they are supposed to be set, the color is handled in the fitchanged function
+            value_of_param = self.test_specific_settings_table.item(
+                property_row, 1).text()
+
+            # if their cell not grayed, it means they are supposed to be set, the color is handled in the fitchanged function
             if self.test_specific_settings_table.item(property_row, 1).flags() != QtCore.Qt.NoItemFlags:
-                #if their cell is not empty or none
+                # if their cell is not empty or none
                 if value_of_param != "" and value_of_param != None:
                     self.hippounit_config["model"][param] = value_of_param
                 else:
-                    #go to tab 3 
+                    # go to tab 3
                     self.tabwidget.setCurrentIndex(3)
-                    #focus on the parameter input
-                    self.test_specific_settings_table.item(property_row, 1).setSelected(True)
-                    #error popup
+                    # focus on the parameter input
+                    self.test_specific_settings_table.item(
+                        property_row, 1).setSelected(True)
+                    # error popup
                     popup(param+" must be set")
                     return None
             else:
                 self.hippounit_config["model"][param] = None
-             
+
         self.hippounit_config["model"]["tests"] = []
 
-        #fil tests from fitlist  1st row cellls whoose 2nd columns are not 0 or empty
-        for row in range(0,self.fitlist.rowCount()):
-            #fitness weight
-            fitness_weight = self.fitlist.item(row,1).text()
-            #if not a number (int or float) or 0 or empty 
-             
+        # fil tests from fitlist  1st row cellls whoose 2nd columns are not 0 or empty
+        for row in range(0, self.fitlist.rowCount()):
+            # fitness weight
+            fitness_weight = self.fitlist.item(row, 1).text()
+            # if not a number (int or float) or 0 or empty
 
-            if float(self.fitlist.item(row,1).text()) != 0 and self.fitlist.item(row,1).text() != "":
-                self.hippounit_config["model"]["tests"].append(self.tests_real_names[self.fitlist.item(row,0).text()])
+            if float(self.fitlist.item(row, 1).text()) != 0 and self.fitlist.item(row, 1).text() != "":
+                self.hippounit_config["model"]["tests"].append(
+                    self.tests_real_names[self.fitlist.item(row, 0).text()])
         if not self.hippounit_config["model"]["tests"]:
-            #go to tab 4 
+            # go to tab 4
             self.tabwidget.setCurrentIndex(3)
-            #focus on the test list
-            self.fitlist.item(0,0).setSelected(True)
+            # focus on the test list
+            self.fitlist.item(0, 0).setSelected(True)
             popup("At least one test must be selected")
             return None
         self.hippounit_config["model"]["dataset"] = "test_dataset"
 
-
-        
-        
-
         # from self.fitlist get the test name and the path to the json file of tests that are in self.hippounit_config["tests"]
-        for row in range(0,self.fitlist.rowCount()):
+        for row in range(0, self.fitlist.rowCount()):
             # if self.fitlist.item(row,0).text() in  self.hippounit_config["model"]["tests"]:
-            test_name = self.fitlist.item(row,0).text()
+            test_name = self.fitlist.item(row, 0).text()
             test_real_name = self.tests_real_names[test_name]
-            if test_real_name in  self.hippounit_config["model"]["tests"]:
-                test_name = self.fitlist.item(row,0).text()
-                test_path = self.fitlist.item(row,2).text()
-                stimuli_path = self.fitlist.item(row,3).text()
+            if test_real_name in self.hippounit_config["model"]["tests"]:
+                test_name = self.fitlist.item(row, 0).text()
+                test_path = self.fitlist.item(row, 2).text()
+                stimuli_path = self.fitlist.item(row, 3).text()
                 self.hippounit_config["tests"][test_real_name] = {}
-                #if not valid path, popup error
+                # if not valid path, popup error
                 if not os.path.isfile(test_path):
-                    #go to tab 4 
+                    # go to tab 4
                     self.tabwidget.setCurrentIndex(3)
-                    #focus on the test path input
-                    self.fitlist.item(row,2).setSelected(True)
-                    self.fitlist.setCurrentCell(row,2)
+                    # focus on the test path input
+                    self.fitlist.item(row, 2).setSelected(True)
+                    self.fitlist.setCurrentCell(row, 2)
                     popup("Test path must be set to a valid file path!")
                     return None
-                
+
                 self.hippounit_config["tests"][test_real_name]["target_data_path"] = test_path
-                if test_real_name not in ["DepolarizationBlockTest","ObliqueIntegrationTest","PathwayInteraction"]:
-                    #if not valid path, popup error
+                if test_real_name not in ["DepolarizationBlockTest", "ObliqueIntegrationTest", "PathwayInteraction"]:
+                    # if not valid path, popup error
                     if not os.path.isfile(stimuli_path):
-                        #go to tab 4 
+                        # go to tab 4
                         self.tabwidget.setCurrentIndex(3)
-                        #focus on the stimuli path input
-                        self.fitlist.item(row,3).setSelected(True)
-                        self.fitlist.setCurrentCell(row,3)
+                        # focus on the stimuli path input
+                        self.fitlist.item(row, 3).setSelected(True)
+                        self.fitlist.setCurrentCell(row, 3)
                         popup("Stimuli path must be set to a valid file path!")
                         return None
                     self.hippounit_config["tests"][test_real_name]["stimuli_file_path"] = stimuli_path
-                #get penalty of missing feature for the test, the 5th column of the row
+                # get penalty of missing feature for the test, the 5th column of the row
                 try:
-                    self.hippounit_config["tests"][test_real_name]["unevaluated_feature_penalty"] = float(self.fitlist.item(row,4).text())
+                    self.hippounit_config["tests"][test_real_name]["unevaluated_feature_penalty"] = float(
+                        self.fitlist.item(row, 4).text())
                 except:
-                    #go to tab 4
+                    # go to tab 4
                     self.tabwidget.setCurrentIndex(3)
-                    #focus on the penalty input
-                    self.fitlist.item(row,4).setSelected(True)
+                    # focus on the penalty input
+                    self.fitlist.item(row, 4).setSelected(True)
                     popup("Missing feature penalty must be set to a number!")
                     return None
         # print(self.hippounit_config)
@@ -3669,92 +3732,97 @@ class Ui_Neuroptimus(QMainWindow):
         # Now we will preparet the neuroptimus json config file from the GUI
         # get paramaters from self.BW.boundary_table save them to ordered dict
         self.adjusted_params_boundaries = OrderedDict()
-        try : 
-            for row in range(0,self.BW.boundary_table.rowCount()):
+        try:
+            for row in range(0, self.BW.boundary_table.rowCount()):
                 try:
-                    self.adjusted_params_boundaries[self.BW.boundary_table.item(row,0).text()] = [float(self.BW.boundary_table.item(row,1).text()),float(self.BW.boundary_table.item(row,2).text())]
+                    self.adjusted_params_boundaries[self.BW.boundary_table.item(row, 0).text()] = [float(
+                        self.BW.boundary_table.item(row, 1).text()), float(self.BW.boundary_table.item(row, 2).text())]
                 except:
-                    #go to tab 5
+                    # go to tab 5
                     self.tabwidget.setCurrentIndex(4)
-                    #open boundary window
-                    self.BW.show()                   
+                    # open boundary window
+                    self.BW.show()
                     popup("Boundary values must be numbers")
                     return None
         except:
             popup("You must set boundaries for all parameters")
             return None
         base_dir = self.lineEdit_folder.text()
-        #boundaries is a list of 2 lists, the first list contains the lower boundaries, the second list contains the upper boundaries
-        boundaries = [list(self.adjusted_params_boundaries.values())[i][0] for i in range(len(self.adjusted_params_boundaries.values()))] , [list(self.adjusted_params_boundaries.values())[i][1] for i in range(len(self.adjusted_params_boundaries.values()))]
+        # boundaries is a list of 2 lists, the first list contains the lower boundaries, the second list contains the upper boundaries
+        boundaries = [list(self.adjusted_params_boundaries.values())[i][0] for i in range(len(self.adjusted_params_boundaries.values()))], [
+            list(self.adjusted_params_boundaries.values())[i][1] for i in range(len(self.adjusted_params_boundaries.values()))]
         num_params = len(boundaries[0])
         # print("algos list", self.algolist.selectionModel().selectedRows())
-        algo_ui_name = self.algolist.item(self.algolist.selectionModel().selectedRows()[0].row(),0).text()
-        algo_name = algo_ui_name[algo_ui_name.find("(")+1:].replace(")","").replace(" - ","_").replace("-","_").replace(" ","_")
+        algo_ui_name = self.algolist.item(
+            self.algolist.selectionModel().selectedRows()[0].row(), 0).text()
+        algo_name = algo_ui_name[algo_ui_name.find(
+            "(")+1:].replace(")", "").replace(" - ", "_").replace("-", "_").replace(" ", "_")
         model_path = self.model_file
         mods_path = self.spec_file
         type_ = "hippounit"
         u_fun_string = self.SW.plaintext.toPlainText()
         simulator = "hippounit"
         algo_param_dict = {}
-        weights = [float(self.fitlist.item(row,1).text()) for row in range(0,self.fitlist.rowCount())]
-        #get parameters from self.algorithm_parameter_list
-        for row in range(1,self.algorithm_parameter_list.rowCount()):
-            val = self.algorithm_parameter_list.item(row,1).text()
+        weights = [float(self.fitlist.item(row, 1).text())
+                   for row in range(0, self.fitlist.rowCount())]
+        # get parameters from self.algorithm_parameter_list
+        for row in range(1, self.algorithm_parameter_list.rowCount()):
+            val = self.algorithm_parameter_list.item(row, 1).text()
             # handling cell has checkbox
-            if val == "": #bool
-                val = self.algorithm_parameter_list.item(row,1).checkState()
+            if val == "":  # bool
+                val = self.algorithm_parameter_list.item(row, 1).checkState()
                 if val == 0:
                     val = False
                 else:
                     val = True
             elif val.isnumeric():
                 val = float(val)
-            else: #string
+            else:  # string
                 val = str(val)
-                if val.lower()== "none" or val.lower() == "null":
+                if val.lower() == "none" or val.lower() == "null":
                     val = None
-            algo_param_dict[self.algorithm_parameter_list.item(row,0).text()] = val
+            algo_param_dict[self.algorithm_parameter_list.item(
+                row, 0).text()] = val
 
-
-
-
-
-        #save to json file
-        #base directory path
+        # save to json file
+        # base directory path
         base_dir = self.lineEdit_folder.text()
         hippounit_settings_file_name = "hippounit_config_from_gui.json"
-        hippounit_settings_path = os.path.join(base_dir,hippounit_settings_file_name)
+        hippounit_settings_path = os.path.join(
+            base_dir, hippounit_settings_file_name)
         with open(hippounit_settings_path, 'w+') as out:
-            json.dump(self.hippounit_config,out,indent=4)
-            verbose(f"hippounit_config_from_gui.json saved to {hippounit_settings_path}")
-
+            json.dump(self.hippounit_config, out, indent=4)
+            verbose(
+                f"hippounit_config_from_gui.json saved to {hippounit_settings_path}")
 
         neuroptimus_settings_name = "neuroptimus_config_from_gui.json"
-        neuroptimus_settings_path = os.path.join(base_dir,neuroptimus_settings_name)
-        
-    
-        #create a dictionary with the above structure from my variables
+        neuroptimus_settings_path = os.path.join(
+            base_dir, neuroptimus_settings_name)
 
-        neuroptimus_settings = {"attributes":{}}
-        #seed
+        # create a dictionary with the above structure from my variables
+
+        neuroptimus_settings = {"attributes": {}}
+        # seed
         try:
-            neuroptimus_settings["attributes"]["seed"] = int(self.algorithm_parameter_list.item(0,1).text())
+            neuroptimus_settings["attributes"]["seed"] = int(
+                self.algorithm_parameter_list.item(0, 1).text())
         except:
-            #go to tab 5 
+            # go to tab 5
             self.tabwidget.setCurrentIndex(4)
             popup("Seed must be set to a number!")
             return None
-        #check model_path if valid path
+        # check model_path if valid path
         if not os.path.isfile(model_path):
-            #go to tab 1
+            # go to tab 1
             self.tabwidget.setCurrentIndex(1)
-            #focus on the model path input
+            # focus on the model path input
             self.lineEdit_file2.setFocus()
-            #error popup
+            # error popup
             popup("Invalid model path")
             return None
-        
-        neuroptimus_settings["attributes"]["adjusted_params"] = list(self.adjusted_params_boundaries.keys())
+
+        neuroptimus_settings["attributes"]["adjusted_params"] = list(
+            self.adjusted_params_boundaries.keys())
         neuroptimus_settings["attributes"]["boundaries"] = boundaries
         neuroptimus_settings["attributes"]["num_params"] = num_params
         neuroptimus_settings["attributes"]["base_dir"] = base_dir
@@ -3765,52 +3833,24 @@ class Ui_Neuroptimus(QMainWindow):
         neuroptimus_settings["attributes"]["type"] = [type_]
         neuroptimus_settings["attributes"]["simulator"] = simulator
         neuroptimus_settings["attributes"]["hippounit_settings_path"] = hippounit_settings_path
-        neuroptimus_settings["attributes"]["param_vals"] = [0.1 for i in range(num_params)]
-        neuroptimus_settings["attributes"]["current_algorithm"] = {algo_name:algo_param_dict}
+        neuroptimus_settings["attributes"]["param_vals"] = [
+            0.1 for i in range(num_params)]
+        neuroptimus_settings["attributes"]["current_algorithm"] = {
+            algo_name: algo_param_dict}
 
-        #save to json file
+        # save to json file
         with open(neuroptimus_settings_path, 'w+') as out:
-            json.dump(neuroptimus_settings,out,indent=4)
+            json.dump(neuroptimus_settings, out, indent=4)
             # print("neuroptimus_config_from_gui.json saved")
-            verbose(f"neuroptimus_config_from_gui.json saved to {neuroptimus_settings_path}")
+            verbose(
+                f"neuroptimus_config_from_gui.json saved to {neuroptimus_settings_path}")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
         return neuroptimus_settings_path
-        
-        
-    
-
 
     def updateProgressBar(self, value):
         # painter = QtGui.QPainter(self.progressBar)
         # painter.begin(self.progressBar)
-        if self.total_evaluations_required == 1 and value !=-1:
+        if self.total_evaluations_required == 1 and value != -1:
             QtWidgets.QApplication.processEvents()
             self.progressBar.setMaximum(0)
             self.progressBar.setMinimum(0)
@@ -3818,8 +3858,8 @@ class Ui_Neuroptimus(QMainWindow):
             self.progressBar.repaint()
             QtWidgets.QApplication.processEvents()
         elif value == -1:
-            #means that special call for 100% fill
-            #stop the progress bar
+            # means that special call for 100% fill
+            # stop the progress bar
             self.progressBar.setMinimum(0)
             self.progressBar.setMaximum(100)
             self.progressBar.setValue(100)
@@ -3827,7 +3867,7 @@ class Ui_Neuroptimus(QMainWindow):
             # QtWidgets.QApplication.processEvents()
 
         else:
-            percenatge = value * 100/  self.total_evaluations_required
+            percenatge = value * 100 / self.total_evaluations_required
             # self.progressBar.setMinimum(0)
             # self.progressBar.setMaximum(100)
             self.progressBar.setValue(percenatge)
@@ -3835,11 +3875,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.progressBar.repaint()
             QtWidgets.QApplication.processEvents()
 
-    
-
-
-        
-    def runsim(self,singlerun=False)->bool: 
+    def runsim(self, singlerun=False) -> bool:
         """
         Check all the tabs and sends the options to the Core.
         Check the fitness values and if they are normalized.
@@ -3851,21 +3887,18 @@ class Ui_Neuroptimus(QMainWindow):
         if self.is_optimization_active:
             popup("Optimization is already running")
             return False
-        
+
         self.is_optimization_active = True
 
-
-        
-    
         if self.core.option_handler.type[-1].lower() == "hippounit":
-            json_filename =  self.hippounit_gui_to_json()
+            json_filename = self.hippounit_gui_to_json()
             if json_filename is None:
                 popup("There was an error in the Hippounit settings, please check them")
                 return
             try:
                 with open(json_filename, "r") as f:
                     json_data = json.load(f)
-                    
+
             except IOError as ioe:
                 popup("File not found!\n")
                 print(ioe)
@@ -3878,109 +3911,121 @@ class Ui_Neuroptimus(QMainWindow):
                 popup("Error in reading json file")
                 return
         # self.core.option_handler.ReadJson(json_data['attributes'])
-        
-        err=[]
-        errpop=[]
+
+        err = []
+        errpop = []
         if self.core.option_handler.type[-1].lower() != "hippounit" and (not self.dd_type.currentIndex()):
             try:
-                self.core.SecondStep({"stim" : [str(self.stimprot.currentText()), float(self.lineEdit_pos.text()), str(self.section_rec.currentText())],
-                                    "stimparam" : [self.container, float(self.lineEdit_delay.text()), float(self.lineEdit_duration.text())]})
-                self.kwargs = {"runparam":[float(self.lineEdit_tstop.text()),
-                                        float(self.lineEdit_dt.text()),
-                                        str(self.param_to_record.currentText()),
-                                        str(self.section_stim.currentText()),
-                                        float(self.lineEdit_posins.text()),
-                                        float(self.lineEdit_initv.text())]}
+                self.core.SecondStep({"stim": [str(self.stimprot.currentText()), float(self.lineEdit_pos.text()), str(self.section_rec.currentText())],
+                                      "stimparam": [self.container, float(self.lineEdit_delay.text()), float(self.lineEdit_duration.text())]})
+                self.kwargs = {"runparam": [float(self.lineEdit_tstop.text()),
+                                            float(self.lineEdit_dt.text()),
+                                            str(self.param_to_record.currentText()),
+                                            str(self.section_stim.currentText()),
+                                            float(self.lineEdit_posins.text()),
+                                            float(self.lineEdit_initv.text())]}
             except AttributeError:
                 err.append(2)
                 errpop.append("No stimulus amplitude was selected!")
-               
+
             except ValueError:
-                errpop.append('Some of the cells are empty. Please fill out all of them!')
+                errpop.append(
+                    'Some of the cells are empty. Please fill out all of them!')
                 err.append(2)
             except Exception as e:
                 err.append(2)
                 print(e)
                 errpop.append("There was an error")
-        self.fitfun_list=[] 
-        self.weights=[]
+        self.fitfun_list = []
+        self.weights = []
         allRows = self.fitlist.rowCount()
         try:
-            for row in range(0,allRows):
-                current_fun=str(self.fitlist.item(row, 0).text())
-                current_weight=float(self.fitlist.item(row, 1).text())
+            for row in range(0, allRows):
+                current_fun = str(self.fitlist.item(row, 0).text())
+                current_weight = float(self.fitlist.item(row, 1).text())
                 if current_weight:
                     self.fitfun_list.append(current_fun)
-                    self.weights.append(current_weight) 
+                    self.weights.append(current_weight)
             if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
-                spike_threshold = self.test_specific_settings_table.item(0,1).text()
-                spike_window = self.test_specific_settings_table.item(1,1).text() 
+                spike_threshold = self.test_specific_settings_table.item(
+                    0, 1).text()
+                spike_window = self.test_specific_settings_table.item(
+                    1, 1).text()
                 self.kwargs.update({"feat":
-                                    [{"Spike Detection Thres. (mv)": float(self.test_specific_settings_table.item(0,1).text()), "Spike Window (ms)":float(self.test_specific_settings_table.item(1,1).text())},
-                                    self.fitfun_list]
+                                    [{"Spike Detection Thres. (mv)": float(self.test_specific_settings_table.item(0, 1).text()), "Spike Window (ms)": float(self.test_specific_settings_table.item(1, 1).text())},
+                                     self.fitfun_list]
                                     })
-                self.kwargs.update({"weights" : self.weights})
+                self.kwargs.update({"weights": self.weights})
             elif self.core.option_handler.type[-1].lower() == "features":
                 self.kwargs.update({"feat":
-                                    [{"Spike Detection Thres. (mv)": float(self.test_specific_settings_table.item(0,1).text()), "Spike Window (ms)":float(self.test_specific_settings_table.item(1,1).text())},
-                                    self.fitfun_list]
+                                    [{"Spike Detection Thres. (mv)": float(self.test_specific_settings_table.item(0, 1).text()), "Spike Window (ms)": float(self.test_specific_settings_table.item(1, 1).text())},
+                                     self.fitfun_list]
                                     })
-                self.kwargs.update({"weights" : self.weights})
-            if not(0.99<sum(self.kwargs["weights"])<=1.01):
+                self.kwargs.update({"weights": self.weights})
+            if not (0.99 < sum(self.kwargs["weights"]) <= 1.01):
                 msg = QtWidgets.QMessageBox()
                 msg.setIcon(QtWidgets.QMessageBox.Information)
-                msg.setText("You did not normalize your weights! \n Would you like to continue anyway?")
+                msg.setText(
+                    "You did not normalize your weights! \n Would you like to continue anyway?")
                 msg.setWindowTitle('Normalization')
-                msg.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.No)
+                msg.setStandardButtons(
+                    QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.No)
                 retval = msg.exec()
                 if retval == QtWidgets.QMessageBox.No:
                     err.append(3)
-                    errpop.append("Normalize")     
-        except: 
+                    errpop.append("Normalize")
+        except:
             ""
         try:
             if singlerun:
-                tmp = {"seed" : None,
-                    "current_algorithm" : "singleRun"}
+                tmp = {"seed": None,
+                       "current_algorithm": "singleRun"}
             else:
                 selected_algo = self.algolist.selectionModel().selectedRows()
-                algo_name=str(self.algolist.item(selected_algo[0].row(), 0).text())
-                algo_str=algo_name[algo_name.find("(")+1:].replace(")","")
-                tmp = {"seed" : int(self.algorithm_parameter_list.item(0,1).text()),
-                    "current_algorithm" : str(algo_str)
-                    }
+                algo_name = str(self.algolist.item(
+                    selected_algo[0].row(), 0).text())
+                algo_str = algo_name[algo_name.find("(")+1:].replace(")", "")
+                tmp = {"seed": int(self.algorithm_parameter_list.item(0, 1).text()),
+                       "current_algorithm": str(algo_str)
+                       }
                 allRows = self.algorithm_parameter_list.rowCount()
-                for row in range(1,allRows):
-                    aspect = str(self.algorithm_parameter_list.item(row,0).text())
-                    item = self.algorithm_parameter_list.item(row,1).text()
+                for row in range(1, allRows):
+                    aspect = str(
+                        self.algorithm_parameter_list.item(row, 0).text())
+                    item = self.algorithm_parameter_list.item(row, 1).text()
                     if item:
                         try:
-                            if item.find(".")>0:
-                                value=float(self.algorithm_parameter_list.item(row,1).text())
+                            if item.find(".") > 0:
+                                value = float(
+                                    self.algorithm_parameter_list.item(row, 1).text())
                             else:
-                                value=int(self.algorithm_parameter_list.item(row,1).text())
+                                value = int(
+                                    self.algorithm_parameter_list.item(row, 1).text())
                         except ValueError as e:
-                            value=self.algorithm_parameter_list.item(row,1).text()
+                            value = self.algorithm_parameter_list.item(
+                                row, 1).text()
                     else:
-                        value=bool(self.algorithm_parameter_list.item(row,1).checkState())
-                    tmp.update({aspect:value})
+                        value = bool(self.algorithm_parameter_list.item(
+                            row, 1).checkState())
+                    tmp.update({aspect: value})
             tmp.update({
-                "num_params" : len(self.core.option_handler.GetObjTOOpt()),
-                "boundaries" : self.core.option_handler.boundaries,
-                "starting_points" : self.seed
-                })
-            self.kwargs.update({"algo_options":tmp})
+                "num_params": len(self.core.option_handler.GetObjTOOpt()),
+                "boundaries": self.core.option_handler.boundaries,
+                "starting_points": self.seed
+            })
+            self.kwargs.update({"algo_options": tmp})
             number_of_generations = tmp.get("number_of_generations", 1)
             size_of_population = tmp.get("size_of_population", 1)
             self.total_evaluations_required = number_of_generations * size_of_population
-            verbose(f"Total evaluations required: {self.total_evaluations_required}")
+            verbose(
+                f"Total evaluations required: {self.total_evaluations_required}")
 
         except Exception as e:
             err.append(4)
             print(e)
             errpop.append("Please select an algorithm")
         if err:
-            if not errpop[0]=="Normalize":
+            if not errpop[0] == "Normalize":
                 popup(errpop[0])
             self.tabwidget.setCurrentIndex(int(min(err)))
         else:
@@ -3994,39 +4039,37 @@ class Ui_Neuroptimus(QMainWindow):
                 #     self.progress_thread.start()
                 # except Exception as e:
                 #     print(f"Error starting progress thread: {e}")
-                #set None input to third step if the type is  hippounit
+                # set None input to third step if the type is  hippounit
                 if self.core.option_handler.type[-1].lower() == "hippounit":
-                    empty_args = None    
+                    empty_args = None
                     self.core.ThirdStep(empty_args, )
                 else:
                     self.core.ThirdStep(self.kwargs, )
-                #fill the progress bar after finishing the third step
+                # fill the progress bar after finishing the third step
                 self.progress_thread.stop()
                 # self.fill_progrees()
-                #wait for the thread to finish then stop the progress bar
+                # wait for the thread to finish then stop the progress bar
                 # self.updateProgressBar(-1)
-            
-                
-            except Exception as e:
-                    print("Run step error")
-                    print("#"*20)
-                    traceback.print_exc()
-                    print("#"*20)
-                    popup("Run step error")
-                    print(e)
 
-            if self.core.option_handler.output_level=="1":
+            except Exception as e:
+                print("Run step error")
+                print("#"*20)
+                traceback.print_exc()
+                print("#"*20)
+                popup("Run step error")
+                print(e)
+
+            if self.core.option_handler.output_level == "1":
                 self.core.Print()
-            
+
             else:
-                
 
                 try:
                     self.core.FourthStep()
-                    self.tabwidget.setTabEnabled(5,True)
-                    self.tabwidget.setTabEnabled(6,True)
+                    self.tabwidget.setTabEnabled(5, True)
+                    self.tabwidget.setTabEnabled(6, True)
                     self.tabwidget.setCurrentIndex(5)
-                    self.results_tab_plot() #TODO Handle HippoUnit
+                    self.results_tab_plot()  # TODO Handle HippoUnit
                     if not singlerun:
                         self.stat_tab_fun()
                 except Exception as e:
@@ -4038,50 +4081,54 @@ class Ui_Neuroptimus(QMainWindow):
                     popup(message)
         self.is_optimization_active = False
         return True
-        
-        #stop the thread at the end of optimization
-        
 
-
+        # stop the thread at the end of optimization
 
     def results_tab_plot(self):
         text = "Results:"
         if self.core.cands:
             for n, k in zip(self.core.option_handler.GetObjTOOpt(), self.core.optimal_params):
-                if n.split()[0]==n.split()[-1]:
-                    param=[n.split()[0], n.split()[-1]]
+                if n.split()[0] == n.split()[-1]:
+                    param = [n.split()[0], n.split()[-1]]
                     text += "\n" + param[0] + "\n" + "\t" + str(k)
                 else:
-                    param=[n.split()[0], "segment: " + n.split()[1], n.split()[-1]]
-                    if n.split()[1]!=n.split()[-1]:
-                        text += "\n" + ": \n".join(param) + ":" + "\n" + "\t" + str(k)
+                    param = [n.split()[0], "segment: " +
+                             n.split()[1], n.split()[-1]]
+                    if n.split()[1] != n.split()[-1]:
+                        text += "\n" + \
+                            ": \n".join(param) + ":" + "\n" + "\t" + str(k)
                     else:
-                        text += "\n" + param[0] + ": " + param[-1] + "\n" + "\t" + str(k)
+                        text += "\n" + param[0] + ": " + \
+                            param[-1] + "\n" + "\t" + str(k)
         text += "\n" + "Fitness:\n" + "\t" + str(self.core.best_fit)
         for curr_label in self.result_labels:
-            curr_label.setText(QtCore.QCoreApplication.translate("Neuroptimus", text))
-            
+            curr_label.setText(
+                QtCore.QCoreApplication.translate("Neuroptimus", text))
+
         exp_data = []
         model_data = []
-        
+
         self.results_tab_axes.cla()
         mode = self.core.option_handler.type[-1].lower()
         if mode in ["voltage", "current"]:
             for n in range(self.core.data_handler.number_of_traces()):
                 exp_data.extend(self.core.data_handler.data.GetTrace(n))
                 model_data.extend(self.core.final_result[n])
-            no_traces=self.core.data_handler.number_of_traces()
+            no_traces = self.core.data_handler.number_of_traces()
             t = self.core.option_handler.input_length
             step = self.core.option_handler.run_controll_dt
 
             self.results_tab_axes.set_xlabel("time [ms]")
-            _type=self.core.data_handler.data.type
-            unit="mV" if _type=="voltage" else "nA" if _type=="current" else ""
+            _type = self.core.data_handler.data.type
+            unit = "mV" if _type == "voltage" else "nA" if _type == "current" else ""
             self.results_tab_axes.set_ylabel(_type+" [" + unit + "]")
-            self.results_tab_axes.set_xticks([n for n in range(0, int((t * no_traces) / (step)), int((t * no_traces) / (step) / 5.0)) ])
-            self.results_tab_axes.set_xticklabels([str(n) for n in range(0, int(t * no_traces), int((t * no_traces) / 5))])
+            self.results_tab_axes.set_xticks([n for n in range(
+                0, int((t * no_traces) / (step)), int((t * no_traces) / (step) / 5.0))])
+            self.results_tab_axes.set_xticklabels(
+                [str(n) for n in range(0, int(t * no_traces), int((t * no_traces) / 5))])
             self.results_tab_axes.plot(list(range(0, len(exp_data))), exp_data)
-            self.results_tab_axes.plot(list(range(0, len(model_data))), model_data, 'r')
+            self.results_tab_axes.plot(
+                list(range(0, len(model_data))), model_data, 'r')
             self.results_tab_axes.legend(["target", "model"])
             self.canvas2.draw()
             plt.tight_layout()
@@ -4090,25 +4137,29 @@ class Ui_Neuroptimus(QMainWindow):
         elif mode == "features":
             for n in range(len(self.core.data_handler.features_data["stim_amp"])):
                 model_data.extend(self.core.final_result[n])
-            no_traces=len(self.core.data_handler.features_data["stim_amp"])
-            t = int(self.core.option_handler.run_controll_tstop)         # instead of input_length
+            no_traces = len(self.core.data_handler.features_data["stim_amp"])
+            # instead of input_length
+            t = int(self.core.option_handler.run_controll_tstop)
             step = self.core.option_handler.run_controll_dt
             self.results_tab_axes.set_xlabel("time [ms]")
-            _type=str(self.kwargs["runparam"][2])       #parameter to record
-            _type_ = "Voltage" if _type =="v" else "Current" if _type=="c" else ""
-            unit="mV" if _type=="v" else "nA" if _type=="c" else ""
+            _type = str(self.kwargs["runparam"][2])  # parameter to record
+            _type_ = "Voltage" if _type == "v" else "Current" if _type == "c" else ""
+            unit = "mV" if _type == "v" else "nA" if _type == "c" else ""
             self.results_tab_axes.set_ylabel(_type_+" [" + unit + "]")
-            self.results_tab_axes.set_xticks([n for n in range(0, int((t * no_traces) / (step)), int((t * no_traces) / (step) / 5.0)) ])
-            self.results_tab_axes.set_xticklabels([str(n) for n in range(0, int(t * no_traces), int((t * no_traces) / 5))])
-            self.results_tab_axes.plot(list(range(0, len(model_data))),model_data, 'r')
+            self.results_tab_axes.set_xticks([n for n in range(
+                0, int((t * no_traces) / (step)), int((t * no_traces) / (step) / 5.0))])
+            self.results_tab_axes.set_xticklabels(
+                [str(n) for n in range(0, int(t * no_traces), int((t * no_traces) / 5))])
+            self.results_tab_axes.plot(
+                list(range(0, len(model_data))), model_data, 'r')
             self.results_tab_axes.legend(["model"])
             self.canvas2.draw()
             plt.tight_layout()
             plt.close()
         elif mode == "hippounit":
             pass
-            #TODO: ADD hippoUnit plots
-        
+            # TODO: ADD hippoUnit plots
+
     def SaveParam(self, e):
         """
         Saves the found values in a file.
@@ -4116,48 +4167,57 @@ class Ui_Neuroptimus(QMainWindow):
         try:
             options = QtWidgets.QFileDialog.Options()
             options |= QtWidgets.QFileDialog.DontUseNativeDialog
-            save_file_name, _ = QFileDialog.getSaveFileName(None,"QFileDialog.getSaveFileName()", "","Data files (*txt);;All Files (*);;", options=options)
+            save_file_name, _ = QFileDialog.getSaveFileName(
+                None, "QFileDialog.getSaveFileName()", "", "Data files (*txt);;All Files (*);;", options=options)
             if save_file_name[0]:
-                with open(str(save_file_name),"w+") as f:
-                    f.write("\n".join(map(str,self.core.optimal_params)))
+                with open(str(save_file_name), "w+") as f:
+                    f.write("\n".join(map(str, self.core.optimal_params)))
         except Exception as e:
             popup("Couldn't save the parameters." + str(e))
-
 
     def stat_tab_fun(self):
         """
         Writes out the same fitnesses for parameters as in the previous tab.
         """
         try:
-            fits=self.core.fits
-            stats={'best' : str(min(fits)),'worst' : str(max(fits)),'mean' : str(numpy.mean(fits)),'median' : str(numpy.median(fits)), 'std' : str(numpy.std(fits))}
+            fits = self.core.fits
+            stats = {'best': str(min(fits)), 'worst': str(max(fits)), 'mean': str(
+                numpy.mean(fits)), 'median': str(numpy.median(fits)), 'std': str(numpy.std(fits))}
         except AttributeError:
-            stats={'best' : "unkown",'worst' : "unkown",'mean' : "unkown",'median' : "unkown", 'std' : "unkown"}
-        string = "Best: " + str(stats['best']) + "\nWorst: " + str(stats['worst']) + "\nMean: " + str(stats['mean']) + "\nMedian: " + str(stats['median']) + "\nStd:" + str(stats['std'])
-        self.stats_label.setText(QtCore.QCoreApplication.translate("Neuroptimus", string))
+            stats = {'best': "unkown", 'worst': "unkown",
+                     'mean': "unkown", 'median': "unkown", 'std': "unkown"}
+        string = "Best: " + str(stats['best']) + "\nWorst: " + str(stats['worst']) + "\nMean: " + str(
+            stats['mean']) + "\nMedian: " + str(stats['median']) + "\nStd:" + str(stats['std'])
+        self.stats_label.setText(
+            QtCore.QCoreApplication.translate("Neuroptimus", string))
         self.scroll_area2_stat.setWidget(self.stats_label)
         self.errorlist.setRowCount(self.recursive_len(self.core.error_comps))
 
-        idx=0
-        for c_idx,c in enumerate(zip(*self.core.error_comps)):
-            tmp=[0]*4
+        idx = 0
+        for c_idx, c in enumerate(zip(*self.core.error_comps)):
+            tmp = [0]*4
             for t_idx in range(len(c)):
-      
-                tmp[1]+=c[t_idx][2]
-                tmp[2]=c[t_idx][0]
-                tmp[3]+=c[t_idx][2]*c[t_idx][0]
-            if self.core.option_handler.type[-1].lower() in ["voltage","current"]:
-                tmp[0]=self.core.ffun_mapper[c[t_idx][1].__name__]
-            elif self.core.option_handler.type[-1].lower() in ["features", "hippounit"]: #TODO: Check this (is it working as expected? supposed to fill "Error functions" column with the name of the error function in the table)
-                tmp[0]=(c[t_idx][1])
+
+                tmp[1] += c[t_idx][2]
+                tmp[2] = c[t_idx][0]
+                tmp[3] += c[t_idx][2]*c[t_idx][0]
+            if self.core.option_handler.type[-1].lower() in ["voltage", "current"]:
+                tmp[0] = self.core.ffun_mapper[c[t_idx][1].__name__]
+            # TODO: Check this (is it working as expected? supposed to fill "Error functions" column with the name of the error function in the table)
+            elif self.core.option_handler.type[-1].lower() in ["features", "hippounit"]:
+                tmp[0] = (c[t_idx][1])
             else:
-                raise NotImplementedError("Unknown type: {}".format(self.core.option_handler.type[-1]))
-            idx+=1
-            tmp=list(map(str,tmp))
+                raise NotImplementedError("Unknown type: {}".format(
+                    self.core.option_handler.type[-1]))
+            idx += 1
+            tmp = list(map(str, tmp))
             self.errorlist.setItem(c_idx, 0, QTableWidgetItem(tmp[0]))
-            self.errorlist.setItem(c_idx, 1, QTableWidgetItem("{:.4f}".format(float(tmp[1]))))
-            self.errorlist.setItem(c_idx, 2, QTableWidgetItem("{:.4f}".format(float(tmp[2]))))
-            self.errorlist.setItem(c_idx, 3, QTableWidgetItem("{:.4f}".format(float(tmp[3]))))
+            self.errorlist.setItem(c_idx, 1, QTableWidgetItem(
+                "{:.4f}".format(float(tmp[1]))))
+            self.errorlist.setItem(c_idx, 2, QTableWidgetItem(
+                "{:.4f}".format(float(tmp[2]))))
+            self.errorlist.setItem(c_idx, 3, QTableWidgetItem(
+                "{:.4f}".format(float(tmp[3]))))
 
         self.errorlist.setRowCount(idx)
 
@@ -4166,7 +4226,7 @@ class Ui_Neuroptimus(QMainWindow):
         Creates the Generation plot from the statistics file.
         """
         plt.close('all')
-        generation, psize, worst, best, median, average, stdev  = [], [], [], [], [], [], []
+        generation, psize, worst, best, median, average, stdev = [], [], [], [], [], [], []
         import json
         with open("stat_file.txt") as stat_file:
             for line in stat_file:
@@ -4184,7 +4244,8 @@ class Ui_Neuroptimus(QMainWindow):
         labels = ['average', 'median', 'best', 'worst']
         figure = plt.figure()
         try:
-            plt.errorbar(generation, average, stderr, color=colors[0], label=labels[0])
+            plt.errorbar(generation, average, stderr,
+                         color=colors[0], label=labels[0])
         except:
             plt.plot(generation, average, color=colors[0], label=labels[0])
         for d, col, lab in zip(data[1:], colors[1:], labels[1:]):
@@ -4194,63 +4255,63 @@ class Ui_Neuroptimus(QMainWindow):
         ymin = min([min(d) for d in data])
         ymax = max([max(d) for d in data])
         yrange = ymax - ymin
-        plt.ylim((ymin - 0.1*yrange, ymax + 0.1*yrange))  
-        plt.legend(loc='upper left')    
+        plt.ylim((ymin - 0.1*yrange, ymax + 0.1*yrange))
+        plt.legend(loc='upper left')
         plt.xlabel('Generation')
         plt.ylabel('Fitness')
-        plt.show() 
-
+        plt.show()
 
     def PlotGrid(self, e):
-        self.prev_bounds=copy(self.core.option_handler.boundaries)
-        self.PG=gridwindow(self)
+        self.prev_bounds = copy(self.core.option_handler.boundaries)
+        self.PG = gridwindow(self)
         self.PG.setObjectName("Neuroptimus")
         self.PG.resize(400, 500)
         self.PG.show()
 
-    def ShowErrorDialog(self,e):
-        self.extra_error_dialog=ErrorDialog(self)
+    def ShowErrorDialog(self, e):
+        self.extra_error_dialog = ErrorDialog(self)
         self.extra_error_dialog.setObjectName("Neuroptimus")
         self.extra_error_dialog.resize(400, 500)
         self.extra_error_dialog.show()
 
     def boundarywindow(self):
         self.BW = BoundaryWindow(self)
-       
+
         self.BW.show()
 
     def startingpoints(self):
-        num_o_params=len(self.core.option_handler.GetObjTOOpt())
-        self.SPW = Startingpoints(self,num_o_params) 
+        num_o_params = len(self.core.option_handler.GetObjTOOpt())
+        self.SPW = Startingpoints(self, num_o_params)
         self.SPW.setObjectName("Neuroptimus")
         self.SPW.resize(400, 500)
         self.SPW.show()
 
     def evaluatewindow(self):
-        num_o_params=len(self.core.option_handler.GetObjTOOpt())
-        self.EW = EvaluateSingle(self,num_o_params) 
+        num_o_params = len(self.core.option_handler.GetObjTOOpt())
+        self.EW = EvaluateSingle(self, num_o_params)
         self.EW.setObjectName("Neuroptimus")
         self.EW.resize(400, 500)
         self.EW.show()
-    
+
+
 class SecondWindow(QtWidgets.QMainWindow):
-    def __init__(self,parent): 
+    def __init__(self, parent):
         super(SecondWindow, self).__init__()
         _translate = QtCore.QCoreApplication.translate
-        self.core=Core.coreModul()
+        self.core = Core.coreModul()
         self.parent = parent
         self.gui_elements_state = {}
-        
+
         self.plaintext = QtWidgets.QPlainTextEdit(self)
         # self.plaintext.textChanged.connect(self.text_changed)
-        self.plaintext.insertPlainText("#Please define your function below in the template!\n"+
-                "#You may choose an arbitrary name for your function,\n"+
-                "#but the input parameters must be self and a vector!In the first line of the function specify the length of the vector in a comment!\n"+
-                "#In the second line you may specify the names of the parameters in a comment, separated by spaces.\n")
+        self.plaintext.insertPlainText("#Please define your function below in the template!\n" +
+                                       "#You may choose an arbitrary name for your function,\n" +
+                                       "#but the input parameters must be self and a vector!In the first line of the function specify the length of the vector in a comment!\n" +
+                                       "#In the second line you may specify the names of the parameters in a comment, separated by spaces.\n")
         self.was_loaded = False
-        
-        self.plaintext.move(10,10)
-        self.plaintext.resize(350,400)
+
+        self.plaintext.move(10, 10)
+        self.plaintext.resize(350, 400)
         self.pushButton_45 = QtWidgets.QPushButton(self)
         self.pushButton_45.setGeometry(QtCore.QRect(370, 30, 80, 22))
         self.pushButton_45.setObjectName("pushButton_45")
@@ -4266,16 +4327,16 @@ class SecondWindow(QtWidgets.QMainWindow):
         self.pushButton_47.setObjectName("pushButton_47")
         self.pushButton_47.setText(_translate("Ufun", "Cancel"))
         self.pushButton_47.clicked.connect(self.close)
-        self.option_handler= parent.core.option_handler 
-        self.modellist=parent.modellist
+        self.option_handler = parent.core.option_handler
+        self.modellist = parent.modellist
 
         # Create the central widget
         self.central = QtWidgets.QWidget(self)
         self.setCentralWidget(self.central)
-            
+
         # Create a new QGridLayout
         grid = QtWidgets.QGridLayout(self.central)
-        
+
         # Add the widgets to the grid layout
         grid.addWidget(self.plaintext, 0, 0, 1, 2)
         grid.addWidget(self.pushButton_45, 1, 0)
@@ -4289,52 +4350,58 @@ class SecondWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("User Defined Function")
         self.setGeometry(100, 100, 500, 500)
 
-
-    def loaduserfun(self):    
+    def loaduserfun(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Text Files (*.txt);;All Files (*);;", options=options)
+        fileName, _ = QFileDialog.getOpenFileName(
+            None, "QFileDialog.getOpenFileName()", "", "Text Files (*.txt);;All Files (*);;", options=options)
         if fileName:
-            
+
             with open(fileName, "r") as f:
-                fun =   ("#Please define your function below in the template!\n"+
-                    "#You may choose an arbitrary name for your function,\n"+
-                    "#but the input parameters must be self and a vector!In the first line of the function specify the length of the vector in a comment!\n"+
-                    "#In the second line you may specify the names of the parameters in a comment, separated by spaces.\n")
+                fun = ("#Please define your function below in the template!\n" +
+                       "#You may choose an arbitrary name for your function,\n" +
+                       "#but the input parameters must be self and a vector!In the first line of the function specify the length of the vector in a comment!\n" +
+                       "#In the second line you may specify the names of the parameters in a comment, separated by spaces.\n")
                 for l in f:
                     fun = fun + l
             self.plaintext.setPlainText(str(fun))
 
     def text_changed(self):
-        self.parent.modify_gui_state_dict("SW.plaintext", {"type":"QPlainTextEdit", "value":self.plaintext.toPlainText()})
-        
+        self.parent.modify_gui_state_dict(
+            "SW.plaintext", {"type": "QPlainTextEdit", "value": self.plaintext.toPlainText()})
+
     @save_state_decorator
     def OnOk(self, e):
         # self.parent.modify_gui_state_dict("SW.pushButton_46", {"type":"QPushButton", "value":True,'enabled': True} )
         try:
-            self.option_handler.u_fun_string = str(self.plaintext.toPlainText())
-            self.option_handler.adjusted_params=[]
+            self.option_handler.u_fun_string = str(
+                self.plaintext.toPlainText())
+            self.option_handler.adjusted_params = []
             self.modellist.setRowCount(0)
             text = ""
-            text = list(map(str.strip, str(self.plaintext.toPlainText()).split("\n")))[4:-1]
+            text = list(map(str.strip, str(self.plaintext.toPlainText()).split("\n")))[
+                4:-1]
             variables = []
-            variables = list(map(str.strip, str(text[0][text[0].index("(") + 1:text[0].index(")")]).split(",")))
+            variables = list(map(str.strip, str(
+                text[0][text[0].index("(") + 1:text[0].index(")")]).split(",")))
             var_len = int(text[1].lstrip("#"))
-            i=0
-            var_names=[]
-            while text[i+2][0]=="#" and i<var_len:
+            i = 0
+            var_names = []
+            while text[i+2][0] == "#" and i < var_len:
                 var_names.append(text[i+2].lstrip("#"))
-                i+=1
-            if len(var_names)!=var_len and len(var_names)!=0:
-                raise SyntaxError("Number of parameter names must equal to number of parameters")
-            if var_names==[]:
-                var_names=None
+                i += 1
+            if len(var_names) != var_len and len(var_names) != 0:
+                raise SyntaxError(
+                    "Number of parameter names must equal to number of parameters")
+            if var_names == []:
+                var_names = None
             for i in range(var_len):
                 self.option_handler.SetOptParam(0.1)
                 if var_names != None:
                     self.option_handler.SetObjTOOpt(var_names[i])
                 else:
-                    self.option_handler.SetObjTOOpt("Vector" + "[" + str(i) + "]")
+                    self.option_handler.SetObjTOOpt(
+                        "Vector" + "[" + str(i) + "]")
             if variables[0] == '':
                 raise ValueError
             compile(self.plaintext.toPlainText(), '<string>', 'exec')
@@ -4345,14 +4412,14 @@ class SecondWindow(QtWidgets.QMainWindow):
             traceback.print_exc()
             popup("Your function doesn't have any input parameters!")
         except SyntaxError as syn_err:
-            popup(str(syn_err) +"Syntax Error")
-    
+            popup(str(syn_err) + "Syntax Error")
+
 
 class StimuliWindow(QtWidgets.QMainWindow):
-    def __init__(self,parent): 
+    def __init__(self, parent):
         super(StimuliWindow, self).__init__()
         _translate = QtCore.QCoreApplication.translate
-        self.parent=parent
+        self.parent = parent
         # Create the central widget
         self.central = QtWidgets.QWidget(self)
         self.setCentralWidget(self.central)
@@ -4369,7 +4436,8 @@ class StimuliWindow(QtWidgets.QMainWindow):
         font.setWeight(50)
         self.label_amplit.setFont(font)
         self.label_amplit.setObjectName("label_amplit")
-        self.label_amplit.setText(_translate("Neuroptimus", "Number of stimuli:"))
+        self.label_amplit.setText(_translate(
+            "Neuroptimus", "Number of stimuli:"))
         self.pushButton_create = QtWidgets.QPushButton(self)
         self.pushButton_create.setGeometry(QtCore.QRect(250, 10, 61, 21))
         self.pushButton_create.setObjectName("pushButton_create")
@@ -4381,20 +4449,20 @@ class StimuliWindow(QtWidgets.QMainWindow):
         self.pushButton_accept.setText(_translate("Neuroptimus", "Accept"))
         self.pushButton_accept.clicked.connect(self.Accept)
         self.pushButton_accept.setEnabled(False)
-        self.option_handler=self.parent.core.option_handler
-        self.data_handler=self.parent.core.data_handler
-        self.stim_table= QtWidgets.QTableWidget(self)
+        self.option_handler = self.parent.core.option_handler
+        self.data_handler = self.parent.core.data_handler
+        self.stim_table = QtWidgets.QTableWidget(self)
         self.stim_table.setGeometry(QtCore.QRect(80, 50, 150, 361))
         self.stim_table.setObjectName("stim_table")
         self.stim_table.setColumnCount(1)
-        _type=self.parent.stimprot.currentText()
-        unit="mV" if _type=="VClamp" else "nA" if _type=="IClamp" else ""
+        _type = self.parent.stimprot.currentText()
+        unit = "mV" if _type == "VClamp" else "nA" if _type == "IClamp" else ""
         self.stim_table.setHorizontalHeaderLabels(["Amplitude ("+unit+")"])
-        self.stim_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.stim_table.setSizeAdjustPolicy(
+            QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.stim_table.horizontalHeader().setStretchLastSection(True)
-        self.is_stimuli_created= False
+        self.is_stimuli_created = False
         self.is_stimuli_accepted = False
-
 
         # Create a new QGridLayout
         grid = QtWidgets.QGridLayout(self.central)
@@ -4413,18 +4481,16 @@ class StimuliWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("Stimuli Window")
         self.setGeometry(100, 100, 400, 500)
 
-
         # if self.parent.container:
         #     self.amplit_edit.setText(str(len(self.parent.container)))
         #     self.stim_table.setRowCount(len(self.parent.container))
         #     for idx,n in enumerate(self.parent.container):
         #         self.stim_table.setItem(idx, 0, QTableWidgetItem(str(n)))
 
-        
         # try:
         #     if self.option_handler.type[-1]=="features":
         #         self.amplit_edit.setText(str(len(self.data_handler.features_data["stim_amp"])))
-        #         self.Set(self) 
+        #         self.Set(self)
         # except:
         #     print("No input file found")
 
@@ -4432,14 +4498,14 @@ class StimuliWindow(QtWidgets.QMainWindow):
         if self.parent.container:
             self.amplit_edit.setText(str(len(self.parent.container)))
             self.stim_table.setRowCount(len(self.parent.container))
-            for idx,n in enumerate(self.parent.container):
+            for idx, n in enumerate(self.parent.container):
                 self.stim_table.setItem(idx, 0, QTableWidgetItem(str(n)))
 
-        
         try:
-            if self.option_handler.type[-1]=="features":
-                self.amplit_edit.setText(str(len(self.data_handler.features_data["stim_amp"])))
-                self.Set(self) 
+            if self.option_handler.type[-1] == "features":
+                self.amplit_edit.setText(
+                    str(len(self.data_handler.features_data["stim_amp"])))
+                self.Set(self)
         except:
             print("No input file found")
 
@@ -4452,22 +4518,22 @@ class StimuliWindow(QtWidgets.QMainWindow):
         except:
             # self.is_stimuli_created = False
             self.close()
-        
 
     def Accept(self, e):
-        self.parent.container=[]
+        self.parent.container = []
         try:
             for n in range(self.stim_table.rowCount()):
-                self.parent.container.append(float(self.stim_table.item(n, 0).text()))
+                self.parent.container.append(
+                    float(self.stim_table.item(n, 0).text()))
             self.is_stimuli_accepted = True
         except:
-                popup("Stimuli values are missing or incorrect")
-                traceback.print_exception()
+            popup("Stimuli values are missing or incorrect")
+            traceback.print_exception()
         self.close()
 
-    
+
 class BoundaryWindow(QtWidgets.QMainWindow):
-    def __init__(self,parent): 
+    def __init__(self, parent):
         super(BoundaryWindow, self).__init__()
         _translate = QtCore.QCoreApplication.translate
         hstep = 130
@@ -4477,38 +4543,38 @@ class BoundaryWindow(QtWidgets.QMainWindow):
         self.setObjectName("Parameters_Boundaries")
         self.setWindowTitle("Parameters Boundaries")
         self.resize(400, 500)
-        self.option_handler=parent.core.option_handler
+        self.option_handler = parent.core.option_handler
         self.boundary_table = QtWidgets.QTableWidget(self)
         self.boundary_table.setGeometry(QtCore.QRect(10, 10, 302, 361))
         self.boundary_table.setObjectName("boundary_table")
         self.boundary_table.setColumnCount(3)
-        self.boundary_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-        self.boundary_table.setHorizontalHeaderLabels(("Parameters;Minimum;Maximum").split(";"))
+        self.boundary_table.setSizeAdjustPolicy(
+            QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.boundary_table.setHorizontalHeaderLabels(
+            ("Parameters;Minimum;Maximum").split(";"))
         self.boundary_table.setRowCount(len(self.option_handler.GetObjTOOpt()))
-        
 
         for l in range(len(self.option_handler.GetObjTOOpt())):
-            param=self.option_handler.GetObjTOOpt()[l].split()
-            if len(param)==4:
-                label=param[0] + " " + param[1] + " " + param[3]
+            param = self.option_handler.GetObjTOOpt()[l].split()
+            if len(param) == 4:
+                label = param[0] + " " + param[1] + " " + param[3]
             else:
-                if param[0]!=param[-1]:
-                    label=param[0] + " " + param[-1]
+                if param[0] != param[-1]:
+                    label = param[0] + " " + param[-1]
                 else:
-                    label=param[-1]
-           
-            
+                    label = param[-1]
+
             item = QTableWidgetItem(label)
-            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
+            item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.boundary_table.setItem(l, 0, item)
             if len(self.option_handler.boundaries[1]) == len(self.option_handler.GetObjTOOpt()):
-                minitem = QTableWidgetItem(str(self.option_handler.boundaries[0][l]))
-                maxitem = QTableWidgetItem(str(self.option_handler.boundaries[1][l]))
+                minitem = QTableWidgetItem(
+                    str(self.option_handler.boundaries[0][l]))
+                maxitem = QTableWidgetItem(
+                    str(self.option_handler.boundaries[1][l]))
                 self.boundary_table.setItem(l, 1, minitem)
                 self.boundary_table.setItem(l, 2, maxitem)
-            
-        
-           
+
         self.Setbutton = QtWidgets.QPushButton(self)
         self.Setbutton.setGeometry(QtCore.QRect(10, 400, 80, 22))
         self.Setbutton.setObjectName("Setbutton")
@@ -4527,11 +4593,11 @@ class BoundaryWindow(QtWidgets.QMainWindow):
 
     def Set(self, e):
         try:
-            min_l=[]
-            max_l=[]
+            min_l = []
+            max_l = []
             for idx in range(self.boundary_table.rowCount()):
-                min_l.append(float(self.boundary_table.item(idx,1).text()))
-                max_l.append(float(self.boundary_table.item(idx,2).text()))
+                min_l.append(float(self.boundary_table.item(idx, 1).text()))
+                max_l.append(float(self.boundary_table.item(idx, 2).text()))
             self.option_handler.boundaries[0] = min_l
             self.option_handler.boundaries[1] = max_l
             for i in range(len(self.option_handler.boundaries[0])):
@@ -4545,55 +4611,56 @@ class BoundaryWindow(QtWidgets.QMainWindow):
             print('Error Occured')
         self.close()
 
-    def Save(self,e): 
+    def Save(self, e):
         save_bound = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')
         if save_bound[0]:
-            with open(str(save_bound[0]),'w+') as f:
+            with open(str(save_bound[0]), 'w+') as f:
                 for idx in range(self.boundary_table.rowCount()):
-                    f.write(str(self.boundary_table.item(idx,1).text()))
+                    f.write(str(self.boundary_table.item(idx, 1).text()))
                     f.write("\t")
-                    f.write(str(self.boundary_table.item(idx,2).text()))
+                    f.write(str(self.boundary_table.item(idx, 2).text()))
                     f.write("\n")
-            
 
-    def Load(self,e):
+    def Load(self, e):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Text Files (*.txt);;All Files (*);;", options=options)
+        fileName, _ = QFileDialog.getOpenFileName(
+            None, "QFileDialog.getOpenFileName()", "", "Text Files (*.txt);;All Files (*);;", options=options)
         if fileName:
             with open(fileName, "r") as f:
-                for idx,l in enumerate(f):
-                    bounds=l.split()
-                    self.boundary_table.setItem(idx, 1, QTableWidgetItem(str(bounds[0])))
-                    self.boundary_table.setItem(idx, 2, QTableWidgetItem(str(bounds[1])))
-
-                
+                for idx, l in enumerate(f):
+                    bounds = l.split()
+                    self.boundary_table.setItem(
+                        idx, 1, QTableWidgetItem(str(bounds[0])))
+                    self.boundary_table.setItem(
+                        idx, 2, QTableWidgetItem(str(bounds[1])))
 
 
 class Startingpoints(QtWidgets.QMainWindow):
-    def __init__(self,parent,*args,**kwargs):
-        super(Startingpoints,self).__init__()
+    def __init__(self, parent, *args, **kwargs):
+        super(Startingpoints, self).__init__()
         _translate = QtCore.QCoreApplication.translate
-        n_o_params=args[0]
-        self.parent=parent
-        self.container=[]
+        n_o_params = args[0]
+        self.parent = parent
+        self.container = []
         hstep = 130
         vstep = 35
         hoffset = 10
         voffset = 15
         for n in range(n_o_params):
-            param=parent.core.option_handler.GetObjTOOpt()[n].split()
-            if len(param)==4:
-                p_name=param[0] + " " + param[1] + " " + param[3]
+            param = parent.core.option_handler.GetObjTOOpt()[n].split()
+            if len(param) == 4:
+                p_name = param[0] + " " + param[1] + " " + param[3]
             else:
-                if param[0]!=param[-1]:
-                    p_name=param[0] + " " + param[-1]
+                if param[0] != param[-1]:
+                    p_name = param[0] + " " + param[-1]
                 else:
-                    p_name=param[-1]
-            
-            #p_name=self.parent.core.option_handler.GetObjTOOpt()[n].split()[-1]
+                    p_name = param[-1]
+
+            # p_name=self.parent.core.option_handler.GetObjTOOpt()[n].split()[-1]
             lbl = QtWidgets.QLabel(self)
-            lbl.setGeometry(QtCore.QRect(hoffset, voffset + n * vstep, 121, 16))
+            lbl.setGeometry(QtCore.QRect(
+                hoffset, voffset + n * vstep, 121, 16))
             font = QtGui.QFont()
             font.setFamily("Ubuntu")
             font.setPointSize(10)
@@ -4601,7 +4668,8 @@ class Startingpoints(QtWidgets.QMainWindow):
             font.setWeight(50)
             lbl.setFont(font)
             lbl.setObjectName("ctrl")
-            lbl.setText(QtCore.QCoreApplication.translate("Neuroptimus", p_name))
+            lbl.setText(QtCore.QCoreApplication.translate(
+                "Neuroptimus", p_name))
 
             ctrl = QtWidgets.QLineEdit(self)
             ctrl.setGeometry(QtCore.QRect(hstep, voffset + n * vstep, 61, 22))
@@ -4633,37 +4701,35 @@ class Startingpoints(QtWidgets.QMainWindow):
         Loadbutton.setText(_translate("Neuroptimus", "Load Point"))
         Loadbutton.clicked.connect(self.OnLoad)
 
-        
-
-    def OnOk(self,e):
-        self.parent.seed=[]      
+    def OnOk(self, e):
+        self.parent.seed = []
         for n in self.container:
             self.parent.seed.append(float(n.text()))
         self.close()
-            
 
     def OnLoad(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Text Files (*.txt);;All Files (*);;", options=options)
+        fileName, _ = QFileDialog.getOpenFileName(
+            None, "QFileDialog.getOpenFileName()", "", "Text Files (*.txt);;All Files (*);;", options=options)
         if fileName:
             with open(fileName, "r") as f:
                 for idx, l in enumerate(f):
                     self.container[idx].setText(str(l))
-           
-    
-    def OnLoadPop(self,e):
+
+    def OnLoadPop(self, e):
         self.size_of_pop = 0
         file_path = ""
         popup("This function is only supported by the algorithms from inspyred!")
-        
-        text, ok = QInputDialog.getText(self, 'TLoad Population', 'Enter size of population:')
+
+        text, ok = QInputDialog.getText(
+            self, 'TLoad Population', 'Enter size of population:')
         if ok:
             self.size_of_pop = int(text)
             options = QtWidgets.QFileDialog.Options()
             options |= QtWidgets.QFileDialog.DontUseNativeDialog
-            file_path, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Text Files (*.txt);;All Files (*);;", options=options)
-               
+            file_path, _ = QFileDialog.getOpenFileName(
+                None, "QFileDialog.getOpenFileName()", "", "Text Files (*.txt);;All Files (*);;", options=options)
 
         def lastlines(hugefile, n, bsize=2048):
             import errno
@@ -4690,7 +4756,7 @@ class Startingpoints(QtWidgets.QMainWindow):
                     pos = hfile.tell()
 
                 for line in hfile:
-                # We've located n lines *or more*, so skip if needed
+                    # We've located n lines *or more*, so skip if needed
                     if linecount > n:
                         linecount -= 1
                         continue
@@ -4698,50 +4764,49 @@ class Startingpoints(QtWidgets.QMainWindow):
                     yield line
 
                 for l in lastlines(file_path, self.size_of_pop, 1):
-                    s=l.strip()
-                    params = [float(x.lstrip("[").rstrip("]")) for x in s.split(", ")][3:-1]
+                    s = l.strip()
+                    params = [float(x.lstrip("[").rstrip("]"))
+                              for x in s.split(", ")][3:-1]
                     params = params[0:len(params) / 2 + 1]
                     self.parent.seed.append(params)
         self.close()
 
+
 class EvaluateSingle(QtWidgets.QMainWindow):
-    def __init__(self,parent,*args,**kwargs):
-        super(EvaluateSingle,self).__init__()
+    def __init__(self, parent, *args, **kwargs):
+        super(EvaluateSingle, self).__init__()
         _translate = QtCore.QCoreApplication.translate
-        n_o_params=args[0]
-        self.parent=parent
-        self.container=[]
+        n_o_params = args[0]
+        self.parent = parent
+        self.container = []
         hstep = 130
         vstep = 35
         hoffset = 10
         voffset = 15
-        self.option_handler=parent.core.option_handler
+        self.option_handler = parent.core.option_handler
         self.evaluate_table = QtWidgets.QTableWidget(self)
         self.evaluate_table.setGeometry(QtCore.QRect(10, 10, 302, 361))
         self.evaluate_table.setObjectName("evaluate_table")
         self.evaluate_table.setColumnCount(2)
-        self.evaluate_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-        self.evaluate_table.setHorizontalHeaderLabels(("Parameters;Value").split(";"))
+        self.evaluate_table.setSizeAdjustPolicy(
+            QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.evaluate_table.setHorizontalHeaderLabels(
+            ("Parameters;Value").split(";"))
         self.evaluate_table.setRowCount(len(self.option_handler.GetObjTOOpt()))
-        
 
         for l in range(len(self.option_handler.GetObjTOOpt())):
-            param=self.option_handler.GetObjTOOpt()[l].split()
-            if len(param)==4:
-                label=param[0] + " " + param[1] + " " + param[3]
+            param = self.option_handler.GetObjTOOpt()[l].split()
+            if len(param) == 4:
+                label = param[0] + " " + param[1] + " " + param[3]
             else:
-                if param[0]!=param[-1]:
-                    label=param[0] + " " + param[-1]
+                if param[0] != param[-1]:
+                    label = param[0] + " " + param[-1]
                 else:
-                    label=param[-1]
-           
-            
+                    label = param[-1]
+
             item = QTableWidgetItem(label)
-            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
+            item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.evaluate_table.setItem(l, 0, item)
-            
-        
-           
 
         Evaluatebutton = QtWidgets.QPushButton(self)
         Evaluatebutton.setGeometry(QtCore.QRect(10, 400, 80, 22))
@@ -4758,34 +4823,34 @@ class EvaluateSingle(QtWidgets.QMainWindow):
         Closebutton.setObjectName("Closebutton")
         Closebutton.setText(_translate("Neuroptimus", "Cancel"))
         Closebutton.clicked.connect(self.close)
-        
 
-    def OnEvaluate(self,e):
+    def OnEvaluate(self, e):
         self.parent.core.optimal_params = []
-        self.parent.core.option_handler.boundaries = [[],[]]
+        self.parent.core.option_handler.boundaries = [[], []]
         for idx in range(self.evaluate_table.rowCount()):
-            param_value=float(self.evaluate_table.item(idx,1).text())
+            param_value = float(self.evaluate_table.item(idx, 1).text())
             self.parent.core.optimal_params.append(param_value)
-            self.parent.core.option_handler.boundaries[0].append(param_value*0.99)
-            self.parent.core.option_handler.boundaries[1].append(param_value*1.01)
+            self.parent.core.option_handler.boundaries[0].append(
+                param_value*0.99)
+            self.parent.core.option_handler.boundaries[1].append(
+                param_value*1.01)
         self.parent.runsim(singlerun=True)
         self.close()
 
     def OnLoad(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Text Files (*.txt);;All Files (*);;", options=options)
+        fileName, _ = QFileDialog.getOpenFileName(
+            None, "QFileDialog.getOpenFileName()", "", "Text Files (*.txt);;All Files (*);;", options=options)
         if fileName:
             f = open(fileName, "r")
-            for idx,l in enumerate(f):
+            for idx, l in enumerate(f):
                 self.evaluate_table.setItem(idx, 1, QTableWidgetItem(str(l)))
-                
-    
-   
+
 
 class gridwindow(QtWidgets.QMainWindow):
-    def __init__(self,parent,*args):
-        super(gridwindow,self).__init__()
+    def __init__(self, parent, *args):
+        super(gridwindow, self).__init__()
         _translate = QtCore.QCoreApplication.translate
         hstep = 200
         vstep = 35
@@ -4798,22 +4863,25 @@ class gridwindow(QtWidgets.QMainWindow):
         font.setPointSize(10)
         font.setBold(False)
         font.setWeight(50)
-        self.option_handler=parent.core.option_handler
+        self.option_handler = parent.core.option_handler
 
         for l in range(len(self.option_handler.GetObjTOOpt())):
             lbl = QtWidgets.QLabel(self)
-            lbl.setGeometry(QtCore.QRect(hoffset, voffset + l * vstep, 121, 16))
-            
+            lbl.setGeometry(QtCore.QRect(
+                hoffset, voffset + l * vstep, 121, 16))
+
             lbl.setFont(font)
             lbl.setObjectName("ctrl")
-            lbl.setText(QtCore.QCoreApplication.translate("Neuroptimus", self.option_handler.GetObjTOOpt()[l].split()[-1]))
+            lbl.setText(QtCore.QCoreApplication.translate(
+                "Neuroptimus", self.option_handler.GetObjTOOpt()[l].split()[-1]))
 
-            
             tmp_min = QtWidgets.QLineEdit(self)
-            tmp_min.setGeometry(QtCore.QRect(hstep, voffset + l * vstep, 75, 30))
+            tmp_min.setGeometry(QtCore.QRect(
+                hstep, voffset + l * vstep, 75, 30))
             tmp_min.setObjectName("tmp_min")
             tmp_max = QtWidgets.QLineEdit(self)
-            tmp_max.setGeometry(QtCore.QRect(hstep + hstep/2, voffset + l * vstep, 75, 30))
+            tmp_max.setGeometry(QtCore.QRect(
+                hstep + hstep/2, voffset + l * vstep, 75, 30))
             tmp_max.setObjectName("tmp_min")
             lbl.show()
             tmp_min.show()
@@ -4824,7 +4892,7 @@ class gridwindow(QtWidgets.QMainWindow):
                 tmp_max.setText(str(self.option_handler.boundaries[1][l]))
 
         self.resolution_ctrl = QtWidgets.QLineEdit(self)
-        self.resolution_ctrl.setGeometry(QtCore.QRect(hstep,600, 75, 30))
+        self.resolution_ctrl.setGeometry(QtCore.QRect(hstep, 600, 75, 30))
         self.resolution_ctrl.setObjectName("ctrl")
         self.resolution_ctrl.setText(str(parent.resolution))
 
@@ -4833,58 +4901,67 @@ class gridwindow(QtWidgets.QMainWindow):
         Setbutton.setObjectName("Okbutton")
         Setbutton.setText(_translate("Neuroptimus", "Ok"))
         Setbutton.clicked.connect(self.Set)
-        
-
 
     def Set(self, e):
         try:
-            self.option_handler.boundaries[0] = [float(n.GetValue()) for n in self.min]
-            self.option_handler.boundaries[1] = [float(n.GetValue()) for n in self.max]
-            self.resolution=int(self.resolution_ctrl.text())
+            self.option_handler.boundaries[0] = [
+                float(n.GetValue()) for n in self.min]
+            self.option_handler.boundaries[1] = [
+                float(n.GetValue()) for n in self.max]
+            self.resolution = int(self.resolution_ctrl.text())
             self.close()
         except ValueError as ve:
-           popup("Invalid Value")
-        
+            popup("Invalid Value")
 
 
 class ErrorDialog(QtWidgets.QMainWindow):
-    def __init__(self,parent):
-        super(ErrorDialog,self).__init__()
+    def __init__(self, parent):
+        super(ErrorDialog, self).__init__()
         self.error_comp_table = QtWidgets.QTableWidget(self)
         self.error_comp_table.setGeometry(QtCore.QRect(10, 200, 441, 261))
         self.error_comp_table.setObjectName("error_comp_table")
         self.error_comp_table.setColumnCount(4)
-        self.error_comp_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-        self.error_comp_table.setHorizontalHeaderLabels(("Error Function;Value;Weight;Weighted Value").split(";"))
-        self.error_comp_table.setRowCount(parent.recursive_len(parent.core.error_comps))
-        tmp_w_sum=0
-        c_idx=0
+        self.error_comp_table.setSizeAdjustPolicy(
+            QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.error_comp_table.setHorizontalHeaderLabels(
+            ("Error Function;Value;Weight;Weighted Value").split(";"))
+        self.error_comp_table.setRowCount(
+            parent.recursive_len(parent.core.error_comps))
+        tmp_w_sum = 0
+        c_idx = 0
         for t in parent.core.error_comps:
             for c in t:
-                #tmp_str.append( "*".join([str(c[0]),c[1].__name__]))
+                # tmp_str.append( "*".join([str(c[0]),c[1].__name__]))
                 if parent.core.option_handler.type[-1].lower() in ["voltage", "current"]:
-                    self.error_comp_table.setItem(c_idx,0,QTableWidgetItem(parent.core.ffun_mapper[c[1].__name__]))
-                else: #TODO: check If Hippounit working like features or not
-                    self.error_comp_table.setItem(c_idx,0,QTableWidgetItem(c[1]))
-                self.error_comp_table.setItem(c_idx,1,QTableWidgetItem(str("{:.4f}".format(c[2]))))
-                self.error_comp_table.setItem(c_idx,2,QTableWidgetItem(str("{:.4f}".format(c[0]))))
-                self.error_comp_table.setItem(c_idx,3,QTableWidgetItem(str("{:.4f}".format(c[0]*c[2]))))
-                c_idx+=1
-                tmp_w_sum +=c[0]*c[2]
-            c_idx+=1
-            self.error_comp_table.setItem(c_idx,0,QTableWidgetItem("Weighted Sum"))
-            self.error_comp_table.setItem(c_idx,1,QTableWidgetItem("-"))
-            self.error_comp_table.setItem(c_idx,2,QTableWidgetItem("-"))
-            self.error_comp_table.setItem(c_idx,3,QTableWidgetItem(str(tmp_w_sum)))
-            
-            tmp_w_sum=0
+                    self.error_comp_table.setItem(c_idx, 0, QTableWidgetItem(
+                        parent.core.ffun_mapper[c[1].__name__]))
+                else:  # TODO: check If Hippounit working like features or not
+                    self.error_comp_table.setItem(
+                        c_idx, 0, QTableWidgetItem(c[1]))
+                self.error_comp_table.setItem(
+                    c_idx, 1, QTableWidgetItem(str("{:.4f}".format(c[2]))))
+                self.error_comp_table.setItem(
+                    c_idx, 2, QTableWidgetItem(str("{:.4f}".format(c[0]))))
+                self.error_comp_table.setItem(
+                    c_idx, 3, QTableWidgetItem(str("{:.4f}".format(c[0]*c[2]))))
+                c_idx += 1
+                tmp_w_sum += c[0]*c[2]
+            c_idx += 1
+            self.error_comp_table.setItem(
+                c_idx, 0, QTableWidgetItem("Weighted Sum"))
+            self.error_comp_table.setItem(c_idx, 1, QTableWidgetItem("-"))
+            self.error_comp_table.setItem(c_idx, 2, QTableWidgetItem("-"))
+            self.error_comp_table.setItem(
+                c_idx, 3, QTableWidgetItem(str(tmp_w_sum)))
+
+            tmp_w_sum = 0
             self.error_comp_table.setRowCount(c_idx)
 
 
 def main(param=None):
-    if param!=None:
-        core=Core.coreModul()
-        core.option_handler.output_level=param.lstrip("-v_level=")
+    if param != None:
+        core = Core.coreModul()
+        core.option_handler.output_level = param.lstrip("-v_level=")
     app = QtWidgets.QApplication(sys.argv)
     Neuroptimus = QtWidgets.QMainWindow()
     ui = Ui_Neuroptimus()
@@ -4892,6 +4969,6 @@ def main(param=None):
     Neuroptimus.show()
     sys.exit(app.exec_())
 
-if __name__ == "__main__":
-    main()    
 
+if __name__ == "__main__":
+    main()
