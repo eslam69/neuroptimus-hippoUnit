@@ -48,7 +48,7 @@ class FileWatcherThread(threading.Thread):
 def update_progress_bar(progress):
     """
 
-    :param progress: 
+    :param progress:
 
     """
     global cli_progress_bar

@@ -45,8 +45,8 @@ DEBUG = False
 def verbose(*args, **kwargs):
     """
 
-    :param *args: 
-    :param **kwargs: 
+    :param *args:
+    :param **kwargs:
 
     """
     if DEBUG:
@@ -62,7 +62,7 @@ def is_hippounit_installed():
 def add_trailing_slash(path):
     """Adds a trailing slash to a path if it doesn't already have one.
 
-    :param path: 
+    :param path:
 
     """
     if path and path[-1] != "/":
@@ -146,7 +146,7 @@ class fitlistTableItem(QWidget):
     def setText(self, text):
         """
 
-        :param text: 
+        :param text:
 
         """
         self.lineEdit.setText(text)
@@ -158,7 +158,7 @@ class fitlistTableItem(QWidget):
     def setToolTip(self, text):
         """
 
-        :param text: 
+        :param text:
 
         """
         self.button.setToolTip(text)
@@ -166,7 +166,7 @@ class fitlistTableItem(QWidget):
     def setFlags(self, flags):
         """
 
-        :param flags: 
+        :param flags:
 
         """
         # return
@@ -192,7 +192,7 @@ class fitlistTableItem(QWidget):
     def setBackground(self, color):
         """
 
-        :param color: 
+        :param color:
 
         """
         return
@@ -207,7 +207,7 @@ class fitlistTableItem(QWidget):
     def setForeground(self, color):
         """
 
-        :param color: 
+        :param color:
 
         """
         return
@@ -226,9 +226,9 @@ class CustomTableWidget(QTableWidget):
     def setItem(self, row, column, item):
         """
 
-        :param row: 
-        :param column: 
-        :param item: 
+        :param row:
+        :param column:
+        :param item:
 
         """
         if isinstance(item, fitlistTableItem):
@@ -239,8 +239,8 @@ class CustomTableWidget(QTableWidget):
     def item(self, row, column):
         """
 
-        :param row: 
-        :param column: 
+        :param row:
+        :param column:
 
         """
         # agnostically return the item in the cell
@@ -312,7 +312,7 @@ class TableSelections:
     def set_table_widget(self, table):
         """
 
-        :param table: 
+        :param table:
 
         """
         self.table = table
@@ -324,7 +324,7 @@ class TableSelections:
     def set_selected_rows_indices(self, indices):
         """
 
-        :param indices: 
+        :param indices:
 
         """
         self.selected_rows_indices = indices
@@ -332,7 +332,7 @@ class TableSelections:
     def add_selected_rows_index(self, rows):
         """
 
-        :param rows: 
+        :param rows:
 
         """
         for row in rows:
@@ -342,7 +342,7 @@ class TableSelections:
     def remove_selected_rows_indices(self, row_to_remove):
         """
 
-        :param row_to_remove: 
+        :param row_to_remove:
 
         """
         for row in row_to_remove:
@@ -365,15 +365,15 @@ class TableSelections:
 def save_state_decorator(func):
     """
 
-    :param func: 
+    :param func:
 
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
         """
 
-        :param *args: 
-        :param **kwargs: 
+        :param *args:
+        :param **kwargs:
 
         """
         # Call the slot method
@@ -401,7 +401,7 @@ class Ui_Neuroptimus(QMainWindow):
     def setupUi(self, Neuroptimus):
         """Implements the widgets from the PyQT package.
 
-        :param Neuroptimus: 
+        :param Neuroptimus:
 
         """
 
@@ -1661,8 +1661,8 @@ class Ui_Neuroptimus(QMainWindow):
     def modify_gui_state_dict(self, key, value_dict):
         """
 
-        :param key: 
-        :param value_dict: 
+        :param key:
+        :param value_dict:
 
         """
         if key in self.gui_elements_state:
@@ -1683,8 +1683,8 @@ class Ui_Neuroptimus(QMainWindow):
     def get_deep_attribute(self, obj, attr_path):
         """
 
-        :param obj: 
-        :param attr_path: 
+        :param obj:
+        :param attr_path:
 
         """
         try:
@@ -1698,7 +1698,7 @@ class Ui_Neuroptimus(QMainWindow):
     def serialize_gui_state(self, file_name):
         """Serialize the state of the GUI to a file.
 
-        :param file_name: 
+        :param file_name:
 
         """
 
@@ -1938,8 +1938,8 @@ class Ui_Neuroptimus(QMainWindow):
     def agnostic_component_setter(self, component, metadata: dict):
         """Set the value of a component regardless of its type.
 
-        :param component: 
-        :param metadata: dict: 
+        :param component:
+        :param metadata: dict:
 
         """
         value = metadata["value"]
@@ -1986,7 +1986,7 @@ class Ui_Neuroptimus(QMainWindow):
     def agnostic_component_getter(self, component: QtWidgets.QWidget):
         """Get the value of a component regardless of its type.
 
-        :param component: QtWidgets.QWidget: 
+        :param component: QtWidgets.QWidget:
 
         """
         if isinstance(component, QtWidgets.QComboBox):
@@ -2017,7 +2017,7 @@ class Ui_Neuroptimus(QMainWindow):
     def retranslateUi(self, Neuroptimus):
         """Set PyQT widgets behaviors and implements functions.
 
-        :param Neuroptimus: 
+        :param Neuroptimus:
 
         """
         _translate = QtCore.QCoreApplication.translate
@@ -2516,11 +2516,11 @@ class Ui_Neuroptimus(QMainWindow):
 
     def toggleTabLock(self):
         """Unlock or lock the tabs in the tab widget based on the state of the 'actionunlock' checkbox.
-        
+
         If the 'actionunlock' checkbox is checked, all tabs in the tab widget will be enabled.
         If the 'actionunlock' checkbox is unchecked, tabs after the currently selected tab will be disabled.
 
-        :param None: 
+        :param None:
         :returns: None
 
         """
@@ -2571,8 +2571,8 @@ class Ui_Neuroptimus(QMainWindow):
     def set_widgets_in_list(self, widget_list, enabled):
         """
 
-        :param widget_list: 
-        :param enabled: 
+        :param widget_list:
+        :param enabled:
 
         """
         for widget in widget_list:
@@ -2946,8 +2946,8 @@ class Ui_Neuroptimus(QMainWindow):
     def _disable_column_editing(self, table_widget, column_index):
         """Disables editing of a column in a table widget
 
-        :param table_widget: 
-        :param column_index: 
+        :param table_widget:
+        :param column_index:
 
         """
         for row in range(table_widget.rowCount()):
@@ -3061,11 +3061,11 @@ class Ui_Neuroptimus(QMainWindow):
     @save_state_decorator
     def Load(self, *args):
         """Loads the model after the 'Load Trace' clicked
-        
+
         First creates a dictionary with the paths and options and call the First step, giving these as argument
         Plots the trace in matplotlib on the file tab.
 
-        :param *args: 
+        :param *args:
 
         """
         # self.gui_elements_state["pushButton_3"] = {"type": "QPushButton", "value": True}
@@ -3304,10 +3304,10 @@ class Ui_Neuroptimus(QMainWindow):
     @save_state_decorator
     def Set(self, e):
         """Set the selected parameters to optimize on the model.
-        
+
         Loop through every selected line.
 
-        :param e: 
+        :param e:
 
         """
         items = self.modellist.selectionModel().selectedRows()
@@ -3347,7 +3347,7 @@ class Ui_Neuroptimus(QMainWindow):
         """Remove the selected parameters to optimize on the model.
         Loop through every selected line.
 
-        :param e: 
+        :param e:
 
         """
         items = self.modellist.selectionModel().selectedRows()
@@ -3461,7 +3461,7 @@ class Ui_Neuroptimus(QMainWindow):
     def Loadpython(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         options = QtWidgets.QFileDialog.Options()
@@ -3480,7 +3480,7 @@ class Ui_Neuroptimus(QMainWindow):
     def Load2(self, e):
         """Load the selected Neuron model and displays the sections in a tablewidget
 
-        :param e: 
+        :param e:
 
         """
         self.model_file = self.lineEdit_file2.text()
@@ -3595,7 +3595,7 @@ class Ui_Neuroptimus(QMainWindow):
     def _write_on_status_bar(self, message, color="green", timeout=5000):
         """
 
-        :param message: 
+        :param message:
         :param color:  (Default value = "green")
         :param timeout:  (Default value = 5000)
 
@@ -3607,7 +3607,7 @@ class Ui_Neuroptimus(QMainWindow):
     def recursive_len(self, item):
         """
 
-        :param item: 
+        :param item:
 
         """
         if type(item) == list:
@@ -3627,7 +3627,7 @@ class Ui_Neuroptimus(QMainWindow):
     def amplitudes_fun(self, *args):
         """Calls the amplitude window for the Options tab.
 
-        :param *args: 
+        :param *args:
 
         """
 
@@ -3657,7 +3657,7 @@ class Ui_Neuroptimus(QMainWindow):
     def _check_fitlist_weight(self, selected_row):
         """
 
-        :param selected_row: 
+        :param selected_row:
 
         """
         if (
@@ -3833,7 +3833,7 @@ class Ui_Neuroptimus(QMainWindow):
         """Normalize the weigths of only the selected fitness functions.
         Iterates through all fitness functions and scans the ones contained in the fitness set (selected ones) with an 'if' statement.
 
-        :param e: 
+        :param e:
 
         """
         try:
@@ -3867,7 +3867,7 @@ class Ui_Neuroptimus(QMainWindow):
         Iterates through the selected algorithms options list and writes the names of it to the first column and sets the cell immutable,
         and the values to the second row.
 
-        :param pack_name: 
+        :param pack_name:
 
         """
 
@@ -4335,7 +4335,7 @@ class Ui_Neuroptimus(QMainWindow):
     def updateProgressBar(self, value):
         """
 
-        :param value: 
+        :param value:
 
         """
         # painter = QtGui.QPainter(self.progressBar)
@@ -4718,7 +4718,7 @@ class Ui_Neuroptimus(QMainWindow):
     def SaveParam(self, e):
         """Saves the found values in a file.
 
-        :param e: 
+        :param e:
 
         """
         try:
@@ -4809,7 +4809,7 @@ class Ui_Neuroptimus(QMainWindow):
     def PlotGen(self, e):
         """Creates the Generation plot from the statistics file.
 
-        :param e: 
+        :param e:
 
         """
         plt.close("all")
@@ -4859,7 +4859,7 @@ class Ui_Neuroptimus(QMainWindow):
     def PlotGrid(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         self.prev_bounds = copy(self.core.option_handler.boundaries)
@@ -4871,7 +4871,7 @@ class Ui_Neuroptimus(QMainWindow):
     def ShowErrorDialog(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         self.extra_error_dialog = ErrorDialog(self)
@@ -4996,7 +4996,7 @@ class SecondWindow(QtWidgets.QMainWindow):
     def OnOk(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         # self.parent.modify_gui_state_dict("SW.pushButton_46", {"type":"QPushButton", "value":True,'enabled': True} )
@@ -5149,7 +5149,7 @@ class StimuliWindow(QtWidgets.QMainWindow):
     def Set(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         try:
@@ -5163,7 +5163,7 @@ class StimuliWindow(QtWidgets.QMainWindow):
     def Accept(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         self.parent.container = []
@@ -5242,7 +5242,7 @@ class BoundaryWindow(QtWidgets.QMainWindow):
     def Set(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         try:
@@ -5272,7 +5272,7 @@ class BoundaryWindow(QtWidgets.QMainWindow):
     def Save(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         save_bound = QtWidgets.QFileDialog.getSaveFileName(self, "Save File")
@@ -5287,7 +5287,7 @@ class BoundaryWindow(QtWidgets.QMainWindow):
     def Load(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         options = QtWidgets.QFileDialog.Options()
@@ -5378,7 +5378,7 @@ class Startingpoints(QtWidgets.QMainWindow):
     def OnOk(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         self.parent.seed = []
@@ -5405,7 +5405,7 @@ class Startingpoints(QtWidgets.QMainWindow):
     def OnLoadPop(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         self.size_of_pop = 0
@@ -5430,8 +5430,8 @@ class Startingpoints(QtWidgets.QMainWindow):
         def lastlines(hugefile, n, bsize=2048):
             """
 
-            :param hugefile: 
-            :param n: 
+            :param hugefile:
+            :param n:
             :param bsize:  (Default value = 2048)
 
             """
@@ -5534,7 +5534,7 @@ class EvaluateSingle(QtWidgets.QMainWindow):
     def OnEvaluate(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         self.parent.core.optimal_params = []
@@ -5626,7 +5626,7 @@ class gridwindow(QtWidgets.QMainWindow):
     def Set(self, e):
         """
 
-        :param e: 
+        :param e:
 
         """
         try:
