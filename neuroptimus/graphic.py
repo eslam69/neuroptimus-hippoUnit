@@ -19,7 +19,7 @@ import re
 import threading
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox,QTableWidget, QHBoxLayout, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox,QTableWidget, QHBoxLayout, QPushButton, QProgressBar
 from PyQt5.QtGui import *
 from PyQt5.QtCore import QThread, pyqtSignal
 import json
@@ -52,6 +52,47 @@ GRAY = QtGui.QColor(192, 192, 192)
 GRAY = QtGui.QColor(220, 220, 220)
 WHITE = QtGui.QColor(255, 255, 255)
 BLACK = QtGui.QColor(0, 0, 0)
+
+
+from PyQt5.QtCore import QThread, pyqtSignal
+
+import os
+from PyQt5.QtCore import QThread, pyqtSignal
+
+class FileWatcherQTThread(QThread):
+    progress = pyqtSignal(int)  # This signal emits the current progress as an integer
+
+    def __init__(self):
+        super().__init__()
+        self._is_running = True
+
+    def run(self):
+        # Delete eval.txt if it exists
+        try:
+            os.remove('eval.txt')
+        except FileNotFoundError:
+            pass
+
+        # Track file eval.txt if size changes emit progress with number of lines
+        while self._is_running:
+            try:
+                with open('eval.txt', 'r') as f:
+                    lines = f.readlines()
+                    progress = len(lines)
+                    self.progress.emit(progress)
+                    self.msleep(100)
+            except FileNotFoundError:
+                pass
+
+    def stop(self):
+        self._is_running = False
+        self.wait()  # Wait for the thread to finish
+        self.progress.emit(-1)
+    def start(self):
+        self._is_running = True
+        super().start()
+
+   
 
 class fitlistTableItem(QWidget):
     def __init__(self,text="" ):
@@ -170,8 +211,9 @@ class FittingThread(QThread):
     def run(self):
         try:
             # Call the runsim method
-            self.parent().runsim()
-
+            started = self.parent().runsim()
+            if  not started:
+                return
             # Emit the finished signal
             self.finished.emit()
         except Exception as e:
@@ -249,9 +291,13 @@ class Ui_Neuroptimus(QMainWindow):
         Implements the widgets from the PyQT package.
         """
         
+        self.progress_thread = FileWatcherQTThread()
+        self.progress_thread.progress.connect(self.updateProgressBar)
 
-       
+        self.is_optimization_active = False
         
+       
+        self.total_evaluations_required = None
 
         Neuroptimus.setObjectName("Neuroptimus")
         Neuroptimus.resize(800, 589)
@@ -1084,6 +1130,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.pushButton_normalize.setToolTip("<p>Rescale the active fitness weights sum to 1</p>")
         self.fitlist.setToolTip("<p>Fitness functions with 0 weights considered inactive</p>")
         self.core=Core.coreModul()
+      
         self.fit_tab_grid = QtWidgets.QGridLayout(self.fittab)
 
         self.fit_tab_grid.addWidget(self.pushButton_normalize, 0, 2, 1, 1)
@@ -1318,7 +1365,18 @@ class Ui_Neuroptimus(QMainWindow):
 
 
 
-        
+        # Creating and configuring the progress bar
+        self.progressBar = QProgressBar(self.runtab)
+        self.progressBar.setGeometry(QtCore.QRect(10, 500, 441, 23))  
+        self.progressBar.setMinimum(0)  # Set the minimum value of the progress bar
+        self.progressBar.setMaximum(100)  # Set the maximum value of the progress bar
+        self.progressBar.setValue(0)  # Set the initial value of the progress bar
+
+        # show the percentage:
+        self.progressBar.setFormat('%p%')  # Display the percentage completed
+        self.progressBar.setAlignment(QtCore.Qt.AlignCenter)  # Center the text
+        self.progressBar.setStyleSheet("QProgressBar {border: 1px solid grey; border-radius: 5px; text-align: center;} QProgressBar::chunk {background-color: #05B8CC; width: 20px;}")
+                
 
         #making the buttons layout very tight
         button_layout.setSpacing(0)
@@ -1338,6 +1396,7 @@ class Ui_Neuroptimus(QMainWindow):
         grid.addWidget(self.pushButton_32, 3, 0, 1, 1) #Boundaries
         grid.addWidget(self.pushButton_33, 3, 2, 1, 1) #Evaluate
         grid.addWidget(self.pushButton_30, 3, 3, 1, 1) #Run
+        grid.addWidget(self.progressBar, 4, 0, 1, 6) #Progress bar
 
         self.pushButton_32.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self.pushButton_33.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -1971,8 +2030,8 @@ class Ui_Neuroptimus(QMainWindow):
         #runtab 5
         self.tabwidget.setTabText(self.tabwidget.indexOf(self.fittab), _translate("Neuroptimus", "Fitness"))
         self.pushButton_30.setText(_translate("Neuroptimus", "Run"))
-        # self.pushButton_30.clicked.connect(self.startFittingThread)
-        self.pushButton_30.clicked.connect(self.runsim)    
+        self.pushButton_30.clicked.connect(self.startFittingThread)
+        # self.pushButton_30.clicked.connect(self.runsim)    
         # self.pushButton_31.setText(_translate("Neuroptimus", "Starting points"))
         # self.pushButton_31.clicked.connect(self.startingpoints)
         # self.pushButton_31.setEnabled(False)
@@ -3745,10 +3804,42 @@ class Ui_Neuroptimus(QMainWindow):
         return neuroptimus_settings_path
         
         
+    
+
+
+    def updateProgressBar(self, value):
+        # painter = QtGui.QPainter(self.progressBar)
+        # painter.begin(self.progressBar)
+        if self.total_evaluations_required == 1 and value !=-1:
+            QtWidgets.QApplication.processEvents()
+            self.progressBar.setMaximum(0)
+            self.progressBar.setMinimum(0)
+            self.progressBar.setValue(0)
+            self.progressBar.repaint()
+            QtWidgets.QApplication.processEvents()
+        elif value == -1:
+            #means that special call for 100% fill
+            #stop the progress bar
+            self.progressBar.setMinimum(0)
+            self.progressBar.setMaximum(100)
+            self.progressBar.setValue(100)
+            self.progressBar.repaint()
+            # QtWidgets.QApplication.processEvents()
+
+        else:
+            percenatge = value * 100/  self.total_evaluations_required
+            # self.progressBar.setMinimum(0)
+            # self.progressBar.setMaximum(100)
+            self.progressBar.setValue(percenatge)
+            self.progressBar.update()
+            self.progressBar.repaint()
+            QtWidgets.QApplication.processEvents()
+
+    
+
+
         
-
-
-    def runsim(self,singlerun=False): 
+    def runsim(self,singlerun=False)->bool: 
         """
         Check all the tabs and sends the options to the Core.
         Check the fitness values and if they are normalized.
@@ -3757,6 +3848,15 @@ class Ui_Neuroptimus(QMainWindow):
         If an error happens, stores the number of tab in a list and it's error string in an other list.
         Switch to the tab, where the error happened and popup the erro.
         """
+        if self.is_optimization_active:
+            popup("Optimization is already running")
+            return False
+        
+        self.is_optimization_active = True
+
+
+        
+    
         if self.core.option_handler.type[-1].lower() == "hippounit":
             json_filename =  self.hippounit_gui_to_json()
             if json_filename is None:
@@ -3870,6 +3970,11 @@ class Ui_Neuroptimus(QMainWindow):
                 "starting_points" : self.seed
                 })
             self.kwargs.update({"algo_options":tmp})
+            number_of_generations = tmp.get("number_of_generations", 1)
+            size_of_population = tmp.get("size_of_population", 1)
+            self.total_evaluations_required = number_of_generations * size_of_population
+            verbose(f"Total evaluations required: {self.total_evaluations_required}")
+
         except Exception as e:
             err.append(4)
             print(e)
@@ -3881,12 +3986,27 @@ class Ui_Neuroptimus(QMainWindow):
         else:
             try:
                 self.seed = None
+                self.progressBar.setMinimum(0)
+                self.progressBar.setMaximum(100)
+                self.progressBar.setValue(0)
+                self.progress_thread.start()
+                # try:
+                #     self.progress_thread.start()
+                # except Exception as e:
+                #     print(f"Error starting progress thread: {e}")
                 #set None input to third step if the type is  hippounit
                 if self.core.option_handler.type[-1].lower() == "hippounit":
-                    empty_args = None
-                    self.core.ThirdStep(empty_args)
+                    empty_args = None    
+                    self.core.ThirdStep(empty_args, )
                 else:
-                    self.core.ThirdStep(self.kwargs)
+                    self.core.ThirdStep(self.kwargs, )
+                #fill the progress bar after finishing the third step
+                self.progress_thread.stop()
+                # self.fill_progrees()
+                #wait for the thread to finish then stop the progress bar
+                # self.updateProgressBar(-1)
+            
+                
             except Exception as e:
                     print("Run step error")
                     print("#"*20)
@@ -3916,6 +4036,11 @@ class Ui_Neuroptimus(QMainWindow):
                     traceback.print_exc()
                     print("#"*20)
                     popup(message)
+        self.is_optimization_active = False
+        return True
+        
+        #stop the thread at the end of optimization
+        
 
 
 

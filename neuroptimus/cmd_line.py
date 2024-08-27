@@ -1,3 +1,5 @@
+import threading
+import time
 import matplotlib
 matplotlib.use('Agg')
 import sys
@@ -7,6 +9,51 @@ import json
 matplotlib.interactive(False)
 from pylab import *
 ioff()
+
+
+
+
+
+
+import os
+from tqdm import tqdm
+
+class FileWatcherThread(threading.Thread):
+    def __init__(self, update_callback):
+        super().__init__()
+        self._is_running = True
+        self.update_callback = update_callback
+
+    def run(self):
+        # Delete eval.txt if it exists
+        try:
+            os.remove('eval.txt')
+        except FileNotFoundError:
+            pass
+
+        # Track file eval.txt if size changes emit progress with number of lines
+        while self._is_running:
+            try:
+                with open('eval.txt', 'r') as f:
+                    lines = f.readlines()
+                    progress = len(lines)
+                    self.update_callback(progress)
+                    time.sleep(0.02)
+            except FileNotFoundError:
+                pass
+
+    def stop(self):
+        self._is_running = False
+
+def update_progress_bar(progress):
+    global cli_progress_bar
+    if progress == -1:
+        cli_progress_bar.total = 100
+        cli_progress_bar.n = 100
+        cli_progress_bar.refresh()
+    else:
+        cli_progress_bar.update(progress - cli_progress_bar.n)
+
 
 
 
@@ -31,23 +78,33 @@ def main(fname, param=None):
     if param != None:
         core.option_handler.output_level = param.lstrip("-v_level=")
     core.option_handler.ReadJson(json_data['attributes'])
-    print("json data attributes: ", json_data.keys())
+    # print("json data attributes: ", json_data.keys())
     # core.Print()
     kwargs = {"file" : core.option_handler.GetFileOption(),
             "input": core.option_handler.GetInputOptions()}
-    print("kwargs1: ", kwargs)
+    # print("kwargs1: ", kwargs)
     core.FirstStep(kwargs)
     kwargs = {"simulator": core.option_handler.GetSimParam()[0],
             "model" : core.option_handler.GetModelOptions(),
             "sim_command":core.option_handler.GetSimParam()[1]}
-    print("kwargs2: ", kwargs)
+    # print("kwargs2: ", kwargs)
     core.LoadModel(kwargs)
 
     kwargs = {"stim" : core.option_handler.GetModelStim(), "stimparam" : core.option_handler.GetModelStimParam()}
-    print("kwargs3: ", kwargs)
+    # print("kwargs3: ", kwargs)
     core.SecondStep(kwargs)
+    total_number_of_evaluations= core.option_handler.GetOptimizerOptions()["algorithm_parameters"].get("number_of_generations",1) * core.option_handler.GetOptimizerOptions()["algorithm_parameters"].get("size_of_population",1)
     kwargs = None
+    global cli_progress_bar
+    cli_progress_bar = tqdm(total=total_number_of_evaluations, desc="Progress", unit=" evaluations")
+
+    file_watcher_thread = FileWatcherThread(update_progress_bar)
+    file_watcher_thread.start()
     core.ThirdStep(kwargs)
+    # Stop the file watcher thread
+    file_watcher_thread.stop()
+    file_watcher_thread.join()
+    cli_progress_bar.close()
 
     core.FourthStep()
     print("resulting parameters: ", core.optimal_params)
