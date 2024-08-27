@@ -219,74 +219,23 @@
         "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/CA1pyramidal_package/input/somatic_features_hippounit_stim.json",
         "250"
       ],
-      [
-        "PSP Attenuation Test",
-        "0",
-        "",
-        "",
-        ""
-      ],
-      [
-        "Backpropagating AP Test",
-        "0",
-        "",
-        "",
-        ""
-      ],
-      [
-        "Pathway Interaction Test",
-        "0",
-        "",
-        "",
-        ""
-      ],
-      [
-        "Depolarization Block Test",
-        "0",
-        "",
-        "",
-        ""
-      ],
-      [
-        "Oblique Integration Test",
-        "0",
-        "",
-        "",
-        ""
-      ]
+      ["PSP Attenuation Test", "0", "", "", ""],
+      ["Backpropagating AP Test", "0", "", "", ""],
+      ["Pathway Interaction Test", "0", "", "", ""],
+      ["Depolarization Block Test", "0", "", "", ""],
+      ["Oblique Integration Test", "0", "", "", ""]
     ]
   },
   "test_specific_settings_table": {
     "type": "QTableWidget",
     "value": [
-      [
-        "Spike detection threshold (mV) ",
-        "-20"
-      ],
-      [
-        "Spike Window (ms)",
-        "1.0"
-      ],
-      [
-        "SomaSecList_name  (leave empty if no template is used)",
-        ""
-      ],
-      [
-        "TrunkSecList_name",
-        ""
-      ],
-      [
-        "ObliqueSecList_name",
-        ""
-      ],
-      [
-        "TuftSecList_name",
-        ""
-      ],
-      [
-        "num_of_dend_locations",
-        "15"
-      ]
+      ["Spike detection threshold (mV) ", "-20"],
+      ["Spike Window (ms)", "1.0"],
+      ["SomaSecList_name  (leave empty if no template is used)", ""],
+      ["TrunkSecList_name", ""],
+      ["ObliqueSecList_name", ""],
+      ["TuftSecList_name", ""],
+      ["num_of_dend_locations", "15"]
     ],
     "enabled": true
   },
@@ -307,83 +256,26 @@
   "algorithm_parameter_list": {
     "type": "QTabelWidget",
     "value": [
-      [
-        "Seed",
-        "1234"
-      ],
-      [
-        "size_of_population",
-        "10"
-      ],
-      [
-        "number_of_cpu",
-        "1"
-      ]
+      ["Seed", "1234"],
+      ["size_of_population", "10"],
+      ["number_of_cpu", "1"]
     ]
   },
   "BW.boundary_table": {
     "type": "QTableWidget",
     "value": [
-      [
-        "Na_BG_act_inact_shift 0",
-        "5.0",
-        "15.0"
-      ],
-      [
-        "gmax_K_DRS4_params_voltage_dep_dend 1",
-        "0.01",
-        "0.2"
-      ],
-      [
-        "gmax_Na_BG_soma 2",
-        "0.002",
-        "0.1"
-      ],
-      [
-        "gmax_K_DRS4_params_voltage_dep_soma 3",
-        "0.01",
-        "0.5"
-      ],
-      [
-        "gmax_K_DRS4_params_voltage_dep_axon 4",
-        "0.01",
-        "10.0"
-      ],
-      [
-        "gmax_Leak_pyr 5",
-        "1e-05",
-        "0.0001"
-      ],
-      [
-        "H_ratio 6",
-        "0.1",
-        "15.0"
-      ],
-      [
-        "e_Leak_pyr 7",
-        "-70.0",
-        "-40.0"
-      ],
-      [
-        "gbar_km_soma_dend 8",
-        "5e-05",
-        "0.01"
-      ],
-      [
-        "gbar_km_axon 9",
-        "0.0001",
-        "5.0"
-      ],
-      [
-        "KA_ratio 10",
-        "0.3",
-        "3.0"
-      ],
-      [
-        "gbar_kd 11",
-        "1e-05",
-        "0.01"
-      ]
+      ["Na_BG_act_inact_shift 0", "5.0", "15.0"],
+      ["gmax_K_DRS4_params_voltage_dep_dend 1", "0.01", "0.2"],
+      ["gmax_Na_BG_soma 2", "0.002", "0.1"],
+      ["gmax_K_DRS4_params_voltage_dep_soma 3", "0.01", "0.5"],
+      ["gmax_K_DRS4_params_voltage_dep_axon 4", "0.01", "10.0"],
+      ["gmax_Leak_pyr 5", "1e-05", "0.0001"],
+      ["H_ratio 6", "0.1", "15.0"],
+      ["e_Leak_pyr 7", "-70.0", "-40.0"],
+      ["gbar_km_soma_dend 8", "5e-05", "0.01"],
+      ["gbar_km_axon 9", "0.0001", "5.0"],
+      ["KA_ratio 10", "0.3", "3.0"],
+      ["gbar_kd 11", "1e-05", "0.01"]
     ],
     "enabled": true
   }
