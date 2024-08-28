@@ -148,7 +148,8 @@ dependencies:
       - future==0.18.3
       - gitdb==4.0.10
       - gitpython==3.1.32
-      - hippounit==1.4.1
+      # - hippounit==1.4.1  #uncomment this line to install the latest version of hippounit
+      - git+https://github.com/eslam69/hippounit.git # for using gsoc23 version of hippounit
       - importlib-metadata==3.10.1
       - importlib-resources==5.12.0
       - inspyred==1.0.1
