@@ -1,6 +1,10 @@
 # Use a base image with Conda installed
 FROM continuumio/miniconda3
 
+# Set a build argument for platform-specific logic
+ARG PLATFORM=linux
+ENV PLATFORM=$PLATFORM
+
 # Set the working directory
 WORKDIR /app
 
@@ -10,17 +14,15 @@ COPY environment_integration.yml .
 # Create the Conda environment
 RUN conda env create -f environment_integration.yml
 
-# Activate the environment
-SHELL ["conda", "run", "-n", "neuroptimus", "/bin/bash", "-c"]
+# Use bash as the default shell
+SHELL ["/bin/bash", "-c"]
 
-# Install PyQt5
-RUN conda install -n neuroptimus pyqt=5.15.7
+# Activate the Conda environment and install PyQt5
+RUN conda run -n neuroptimus conda install pyqt=5.15.7
 
-# Install xvfb
-# RUN apt-get update && apt-get install -y xvfb && apt-get clean
-
-# Install xvfb and additional dependencies for Qt
-RUN apt-get update && apt-get install -y \
+# Install xvfb and additional dependencies for Qt (Linux only)
+RUN if [ "$PLATFORM" = "linux" ]; then \
+    apt-get update && apt-get install -y \
     xvfb \
     libxkbcommon-x11-0 \
     libxcb-xinerama0 \
@@ -43,31 +45,8 @@ RUN apt-get update && apt-get install -y \
     libxss1 \
     libxext6 \
     libx11-xcb1 \
-    && apt-get clean
-
-
-
-
-# # Install necessary dependencies
-# RUN apt-get update && apt-get install -y \
-#     libxss1 \
-#     libxext6 \
-#     libx11-xcb1 \
-#     libxcb1 \
-#     libxcb-xinerama0 \
-#     libxcb-xinput0 \
-#     libxcb-xkb1 \
-#     libxkbcommon-x11-0 \
-#     libxrender1 \
-#     libxi6 \
-#     libgl1-mesa-glx \
-#     libegl1-mesa \
-#     libfontconfig1 \
-#     && apt-get clean
-
-
-# RUN conda install git+https://github.com/eslam69/hippounit.git
-
+    && apt-get clean; \
+fi
 
 # Copy the application code
 COPY . .
@@ -76,8 +55,27 @@ COPY . .
 ENV DISPLAY=:99
 ENV QT_QPA_PLATFORM=xcb
 
-# Set the entry point
-ENTRYPOINT ["sh", "-c", "Xvfb :99 -screen 0 1024x768x16 & exec conda run --no-capture-output -n neuroptimus python neuroptimus/neuroptimus.py \"$@\"", "--"]
+
+
+# Entry point based on the platform
+ENTRYPOINT ["sh", "-c", "if [ \"$PLATFORM\" = \"linux\" ]; then \
+    Xvfb :99 -screen 0 1024x768x16 & exec conda run --no-capture-output -n neuroptimus python neuroptimus/neuroptimus.py \"$@\"; \
+else \
+    exec conda run --no-capture-output -n neuroptimus python neuroptimus/neuroptimus.py \"$@\"; \
+fi", "--"]
+# for linux
+#docker build --build-arg PLATFORM=linux -t neuroptimus .
+# sudo docker run -it -v $(pwd):/home/eslam/gsoc/neuroptimus-hippoUnit -c <path to the json file>
+
+
+
+# for windows
+#docker build --build-arg PLATFORM=windows -t neuroptimus .
+# docker run -it -v C:/path/to/your/project:/app neuroptimus -c <path to the json file>
+
+
+
+
 #e.g.
 # ENTRYPOINT ["sh", "-c", "Xvfb :99 -screen 0 1024x768x16 & exec conda run --no-capture-output -n neuroptimus python neuroptimus/neuroptimus.py -c neuroptimus/Data/CA1pyramidal_package/neuroptimus_settings.json "]
 
@@ -88,6 +86,7 @@ ENTRYPOINT ["sh", "-c", "Xvfb :99 -screen 0 1024x768x16 & exec conda run --no-ca
 # run command in my local machine
 # sudo docker run -it -v /home/eslam/gsoc/neuroptimus-hippoUnit:/home/eslam/gsoc/neuroptimus-hippoUnit neuroptimus -c <path to the json file>
 # sudo docker run -it -v /home/eslam/gsoc/neuroptimus-hippoUnit:/home/eslam/gsoc/neuroptimus-hippoUnit neuroptimus -c /home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/new_test_files/VClamp_surrogate/VClamp_surrogate_settings.json
+# sudo docker run -it -v $(pwd):/home/eslam/gsoc/neuroptimus-hippoUnit neuroptimus -c /home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/new_test_files/VClamp_surrogate/VClamp_surrogate_settings.json
 
 
 
