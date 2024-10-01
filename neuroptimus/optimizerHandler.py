@@ -5,13 +5,16 @@ import os
 import random
 import sys
 import time
-from itertools import combinations, product
+from itertools import combinations
+from itertools import product
 from math import sqrt
 from multiprocessing import Pool
 from types import MethodType
 
 import numpy as np
-from fitnessFunctions import fF, fF_Factory, frange
+from fitnessFunctions import fF
+from fitnessFunctions import fF_Factory
+from fitnessFunctions import frange
 from optionHandler import optionHandler
 
 try:
