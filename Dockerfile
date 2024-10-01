@@ -87,11 +87,3 @@ fi", "--"]
 # sudo docker run -it -v /home/eslam/gsoc/neuroptimus-hippoUnit:/home/eslam/gsoc/neuroptimus-hippoUnit neuroptimus -c <path to the json file>
 # sudo docker run -it -v /home/eslam/gsoc/neuroptimus-hippoUnit:/home/eslam/gsoc/neuroptimus-hippoUnit neuroptimus -c /home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/new_test_files/VClamp_surrogate/VClamp_surrogate_settings.json
 # sudo docker run -it -v $(pwd):/home/eslam/gsoc/neuroptimus-hippoUnit neuroptimus -c /home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/new_test_files/VClamp_surrogate/VClamp_surrogate_settings.json
-
-
-
-
-
-
-
-

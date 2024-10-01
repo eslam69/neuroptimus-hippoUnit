@@ -33,29 +33,29 @@ class my_candidate:
 class coreModul:
     """This class is responsible to carry out the main steps of the optimization process by
     interacting with the other modules. The main attributes are the following:
-    
+
     :attr: data_handler:
-    
+
             performs input operations and handles input data
-    
+
     :attr: option_handler:
-    
+
             stores the settings
-    
+
     :attr: model_handler:
-    
+
             handles the model and runs the simulations and carries out other model related tasks
-    
+
     :attr: optimizer:
-    
+
             carries out the optimization process
-    
+
     :attr: optimal_params:
-    
+
             contains the resulting parameters
-    
+
     :attr: ffun_calc_list:
-    
+
             contains the list of available fitness functions in a dictionary
 
 
@@ -110,7 +110,7 @@ class coreModul:
     def htmlStrBold(self, inp):
         """
 
-        :param inp: 
+        :param inp:
 
         """
         return "<b>" + str(inp) + "</b>"
@@ -118,7 +118,7 @@ class coreModul:
     def htmlStr(self, inp):
         """
 
-        :param inp: 
+        :param inp:
 
         """
         return "<p>" + str(inp) + "</p>"
@@ -130,7 +130,7 @@ class coreModul:
     def htmlResize(self, size):
         """
 
-        :param size: 
+        :param size:
 
         """
         return "font-size:" + str(int(size)) + "%"
@@ -138,7 +138,7 @@ class coreModul:
     def htmlAlign(self, align_to):
         """
 
-        :param align_to: 
+        :param align_to:
 
         """
         if align_to not in ["left", "right", "center"]:
@@ -148,8 +148,8 @@ class coreModul:
     def htmlStyle(self, inp, *args):
         """
 
-        :param inp: 
-        :param *args: 
+        :param inp:
+        :param *args:
 
         """
         tmp_str = '<span style="'
@@ -161,8 +161,8 @@ class coreModul:
     def htmlTable(self, header_list, data):
         """
 
-        :param header_list: 
-        :param data: 
+        :param header_list:
+        :param data:
 
         """
         tmp_str = '<table border="1" align="center">'
@@ -181,7 +181,7 @@ class coreModul:
     def htmlPciture(self, inp):
         """
 
-        :param inp: 
+        :param inp:
 
         """
         return '<p align="center"><img style="border:none;" src="' + inp + '" ></p>'
@@ -189,7 +189,7 @@ class coreModul:
     def htmlPdf(self, inp):
         """
 
-        :param inp: 
+        :param inp:
 
         """
         # return "<p align=\"center\"><embed src = \""+inp+"#toolbar=0&navpanes=0&scrollbar=0\" width = \"800px\" height = \"630px\" /></p>"
@@ -322,7 +322,7 @@ class coreModul:
 
         :param channel: the name of the channel mechanism
         :returns: the channel parameters in the given channel including "None" in a ``string`` ``list``.
-        
+
         .. note::
                 This function returns everything from the channel object not only the parameters.
 
@@ -343,7 +343,7 @@ class coreModul:
     def SetModel(self, args):
         """
 
-        :param args: 
+        :param args:
 
         """
 
@@ -365,14 +365,14 @@ class coreModul:
         For future use it offers a way to store initial value (not in use at the moment).
 
         :param args: must be a string-string dictionary containing the following keys:
-        
+
                         * section
                         * channel
                         * params
                         * value
-        
+
                 or:
-        
+
                         * section
                         * morph
                         * values
@@ -399,7 +399,7 @@ class coreModul:
         """Stores the stimulation settings in the option object.
 
         :param args: must be a dictionary with the following keys:
-        
+
                 * stim
                         must hold a ``list`` as value, which contains:
                            * stimulus type as ``string``, must be either "IClamp" or "VClamp"
@@ -424,7 +424,7 @@ class coreModul:
         The raw results are stored in the ``solutions`` variable in the ``optimizer`` object.
 
         :param args: a dictionary containing the following keys:
-        
+
                 * runparam
                         must be a list containing the following values:
                                 * length of simulation as real value
@@ -439,7 +439,7 @@ class coreModul:
                         must be a list of real values
                 * algo_options
                         must be a dictionary containing options related to the optimization algorithm
-        
+
                         mandatory parameters:
                                 * seed
                                 * current_algorithm
@@ -991,7 +991,7 @@ class coreModul:
         """Calculates fitness values on a defined grid (see optimizerHandler module for more).
         This tool is purely for analyzing results, and we do not recommend to use it to obtain parameter values.
 
-        :param resolution: 
+        :param resolution:
 
         """
         import copy

@@ -33,7 +33,7 @@ except ImportError:
 def _pickle_method(method):
     """
 
-    :param method: 
+    :param method:
 
     """
     func_name = method.__func__.__name__
@@ -45,8 +45,8 @@ def _pickle_method(method):
 def _unpickle_method(func_name, obj, cls):
     """
 
-    :param func_name: 
-    :param obj: 
+    :param func_name:
+    :param obj:
 
     """
     for cls in cls.mro():
@@ -68,9 +68,9 @@ except:
 def callback(c, x, y):
     """
 
-    :param c: 
-    :param x: 
-    :param y: 
+    :param c:
+    :param x:
+    :param y:
 
     """
     print(c)
@@ -380,7 +380,7 @@ class Problem:
     def fitness(self, x):
         """
 
-        :param x: 
+        :param x:
 
         """
         fitness = self.fitnes_fun(x)
@@ -391,7 +391,7 @@ class Problem:
     def batch_fitness(self, x):
         """
 
-        :param x: 
+        :param x:
 
         """
         n = int(len(x) / self.size_of_population)
@@ -531,7 +531,7 @@ class BluepyoptAlgorithmBasis(baseOptimizer):
         def evaluate_with_lists(self, param_list):
             """
 
-            :param param_list: 
+            :param param_list:
 
             """
             err = self.fun([param_list])
@@ -577,7 +577,7 @@ class SingleProblem:
     def fitness(self, x):
         """
 
-        :param x: 
+        :param x:
 
         """
         return self.fitnes_fun([normalize(x, self)])
@@ -894,9 +894,9 @@ class BH_SCIPY(ScipyAlgorithmBasis):
 
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
-    
+
     .. seealso::
-    
+
             Documentation of the Simulated Annealing from 'scipy':
                     http://docs.scipy.org/doc/scipy-dev/reference/generated/scipy.optimize.basinhopping.html
 
@@ -1077,7 +1077,7 @@ class grid(baseOptimizer):
     def Optimize(self, optimals):
         """Performs the optimization.
 
-        :param optimals: 
+        :param optimals:
 
         """
         _o = copy.copy(optimals)
@@ -1244,7 +1244,7 @@ class PAES_INSPYRED(InspyredAlgorithmBasis):
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
     .. seealso::
-    
+
             Documentation of the options from 'inspyred':
                     http://inspyred.github.io/reference.html#module-inspyred.ec
 
