@@ -141,7 +141,9 @@ class SINGLERUN:
 
         if option_obj.type[-1] != "features":
             try:
-                option_obj.feats = [self.fit_obj.calc_dict[x] for x in option_obj.feats]
+                option_obj.feats = [
+                    self.fit_obj.calc_dict[x] for x in option_obj.feats
+                ]
             except KeyError:
                 print(
                     "error with fitness function: ",
@@ -187,9 +189,12 @@ class baseOptimizer:
         except KeyError:
             sys.exit("Unknown fitness function!")
 
-        if option_obj.type[-1] != "features" and option_obj.type[-1] != "hippounit":
+        if option_obj.type[-1] != "features" and option_obj.type[
+                -1] != "hippounit":
             try:
-                option_obj.feats = [self.fit_obj.calc_dict[x] for x in option_obj.feats]
+                option_obj.feats = [
+                    self.fit_obj.calc_dict[x] for x in option_obj.feats
+                ]
             except KeyError:
                 print(
                     "error with fitness function: ",
@@ -201,6 +206,7 @@ class baseOptimizer:
 
 class InspyredAlgorithmBasis(baseOptimizer):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         baseOptimizer.__init__(self, reader_obj, option_obj)
         import inspyred
@@ -208,10 +214,11 @@ class InspyredAlgorithmBasis(baseOptimizer):
         self.inspyred = inspyred
         self.option_obj = option_obj
         self.bounder = self.inspyred.ec.Bounder(
-            [0] * len(option_obj.boundaries[0]), [1] * len(option_obj.boundaries[1])
-        )
+            [0] * len(option_obj.boundaries[0]),
+            [1] * len(option_obj.boundaries[1]))
         self.size_of_population = self.algo_params.pop("size_of_population")
-        self.number_of_generations = self.algo_params.pop("number_of_generations") - 1
+        self.number_of_generations = self.algo_params.pop(
+            "number_of_generations") - 1
         self.stat_file = open(self.directory + "/stat_file_inspyred.txt", "w+")
         self.ind_file = open(self.directory + "/ind_file_inspyred.txt", "w+")
         self.number_of_cpu = int(self.algo_params.pop("number_of_cpu", 1))
@@ -238,11 +245,11 @@ class InspyredAlgorithmBasis(baseOptimizer):
 
         logger = logging.getLogger("inspyred.ec")
         logger.setLevel(logging.DEBUG)
-        file_handler = logging.FileHandler(self.directory + "/inspyred.log", mode="w")
+        file_handler = logging.FileHandler(self.directory + "/inspyred.log",
+                                           mode="w")
         file_handler.setLevel(logging.DEBUG)
         formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
         self.evo_strat.terminator = self.inspyred.ec.terminators.generation_termination
@@ -252,15 +259,18 @@ class InspyredAlgorithmBasis(baseOptimizer):
                 self.inspyred.ec.observers.file_observer,
             ]
         else:
-            self.evo_strat.observer = [self.inspyred.ec.observers.file_observer]
+            self.evo_strat.observer = [
+                self.inspyred.ec.observers.file_observer
+            ]
         # maximize equals none can't use if v
         self.kwargs = {
-            k: v for k, v in self.kwargs.items() if v != "None" and v != None
+            k: v
+            for k, v in self.kwargs.items() if v != "None" and v != None
         }
 
-        solution = self.evo_strat.evolve(
-            maximize=False, **self.kwargs, **self.algo_params
-        )
+        solution = self.evo_strat.evolve(maximize=False,
+                                         **self.kwargs,
+                                         **self.algo_params)
         if hasattr(self.evo_strat, "archive"):
             self.final_archive = self.evo_strat.archive
 
@@ -281,9 +291,10 @@ class ScipyAlgorithmBasis(baseOptimizer):
 			else:
 				self.starting_points = [normalize(option_obj.starting_points, self)]
 		except TypeError:"""
-        self.starting_points = uniform(
-            self.rand, {"num_params": self.num_params, "self": self}
-        )
+        self.starting_points = uniform(self.rand, {
+            "num_params": self.num_params,
+            "self": self
+        })
         if option_obj.output_level == "1":
             print("starting points: ", self.starting_points)
 
@@ -297,9 +308,9 @@ class PygmoAlgorithmBasis(baseOptimizer):
 
         self.pg = pg
         self.number_of_generations = (
-            int(self.algo_params.pop("number_of_generations")) - 1
-        )
-        self.size_of_population = int(self.algo_params.pop("size_of_population", 100))
+            int(self.algo_params.pop("number_of_generations")) - 1)
+        self.size_of_population = int(
+            self.algo_params.pop("size_of_population", 100))
         self.multiobjective = False
         self.multiprocessing = False
         self.option_obj = option_obj
@@ -315,7 +326,8 @@ class PygmoAlgorithmBasis(baseOptimizer):
             self.number_of_traces = reader_obj.number_of_traces()
         else:
             self.number_of_traces = len(reader_obj.features_data["stim_amp"])
-        self.n_obj = len(option_obj.GetFitnessParam()[-1]) * int(self.number_of_traces)
+        self.n_obj = len(option_obj.GetFitnessParam()[-1]) * int(
+            self.number_of_traces)
         self.number_of_cpu = int(self.algo_params.pop("number_of_cpu", 1))
         self.num_islands = int(self.algo_params.pop("number_of_islands", 1))
 
@@ -334,8 +346,7 @@ class PygmoAlgorithmBasis(baseOptimizer):
                 self.n_obj,
                 self.size_of_population,
                 self.number_of_cpu,
-            )
-        )
+            ))
 
         if self.multiprocessing:
             self.mpbfe = self.pg.mp_bfe()
@@ -343,9 +354,9 @@ class PygmoAlgorithmBasis(baseOptimizer):
             self.algorithm.set_bfe(self.pg.bfe())
             self.pgalgo = self.pg.algorithm(self.algorithm)
             self.pgalgo.set_verbosity(1)
-            self.population = self.pg.population(
-                prob=self.prob, size=self.size_of_population, b=self.mpbfe
-            )
+            self.population = self.pg.population(prob=self.prob,
+                                                 size=self.size_of_population,
+                                                 b=self.mpbfe)
             self.archi = self.pgalgo.evolve(self.population)
             self.mpbfe.shutdown_pool()
         else:
@@ -370,7 +381,9 @@ class PygmoAlgorithmBasis(baseOptimizer):
 
 class Problem:
     """ """
-    def __init__(self, fitnes_fun, bounds, n_obj, size_of_population, number_of_cpu):
+
+    def __init__(self, fitnes_fun, bounds, n_obj, size_of_population,
+                 number_of_cpu):
         self.bounds = bounds
         self.fitnes_fun = fitnes_fun
         self.n_obj = n_obj
@@ -395,7 +408,7 @@ class Problem:
 
         """
         n = int(len(x) / self.size_of_population)
-        x_chunks = [x[i : i + n] for i in range(0, len(x), n)]
+        x_chunks = [x[i:i + n] for i in range(0, len(x), n)]
         with Pool(self.number_of_cpu) as pool:
             fitness = pool.map(self.fitnes_fun, x_chunks)
         if self.n_obj > 1:
@@ -445,6 +458,7 @@ class SinglePygmoAlgorithmBasis(baseOptimizer):
 
 class BluepyoptAlgorithmBasis(baseOptimizer):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         baseOptimizer.__init__(self, reader_obj, option_obj)
         import bluepyopt as bpop
@@ -455,11 +469,13 @@ class BluepyoptAlgorithmBasis(baseOptimizer):
         self.selector_name = "IBEA"
         self.directory = str(option_obj.base_dir)
         self.size_of_population = self.algo_params.pop("size_of_population")
-        self.number_of_generations = self.algo_params.pop("number_of_generations")
+        self.number_of_generations = self.algo_params.pop(
+            "number_of_generations")
         self.number_of_cpu = int(self.algo_params.pop("number_of_cpu", 1))
         self.param_names = self.option_obj.GetObjTOOpt()
         self.number_of_traces = reader_obj.number_of_traces()
-        feats = list(zip(self.option_obj.feat_str.split(", "), self.option_obj.weights))
+        feats = list(
+            zip(self.option_obj.feat_str.split(", "), self.option_obj.weights))
         self.params = [
             self.bpop.parameters.Parameter(p_name, bounds=(0, 1))
             for p_name in self.param_names
@@ -476,53 +492,46 @@ class BluepyoptAlgorithmBasis(baseOptimizer):
             from ipyparallel import Client
             from ipyparallel.controller.heartmonitor import HeartMonitor
 
-            print(
-                "******************PARALLEL RUN : "
-                + self.selector_name
-                + " *******************"
-            )
+            print("******************PARALLEL RUN : " + self.selector_name +
+                  " *******************")
             # os.system("ipcluster start -n "+str(int(self.number_of_cpu))+"  &")
             c = Client(timeout=1000, profile=os.getenv("IPYTHON_PROFILE"))
             HeartMonitor.period = 60000
             view = c.load_balanced_view()
             view.map_sync(
                 os.chdir,
-                [str(os.path.dirname(os.path.realpath(__file__)))]
-                * int(self.number_of_cpu),
+                [str(os.path.dirname(os.path.realpath(__file__)))] *
+                int(self.number_of_cpu),
             )
             map_function = view.map_sync
             print("Using ipyparallel with " + str(len(c)) + " engines")
             optimisation = self.bpop.optimisations.DEAPOptimisation(
-                evaluator=self.Evaluator(self.objectives, self.params, self.mfun),
+                evaluator=self.Evaluator(self.objectives, self.params,
+                                         self.mfun),
                 map_function=map_function,
                 selector_name=self.selector_name,
                 offspring_size=self.size_of_population,
                 seed=self.seed,
-                **self.algo_params
-            )
+                **self.algo_params)
             self.solution, self.hall_of_fame, self.logs, self.hist = optimisation.run(
-                int(self.number_of_generations)
-            )
+                int(self.number_of_generations))
             # os.system("ipcluster stop")
         else:
-            print(
-                "*****************Single Run : "
-                + self.selector_name
-                + " *******************"
-            )
+            print("*****************Single Run : " + self.selector_name +
+                  " *******************")
             optimisation = self.bpop.optimisations.DEAPOptimisation(
-                evaluator=self.Evaluator(self.objectives, self.params, self.mfun),
+                evaluator=self.Evaluator(self.objectives, self.params,
+                                         self.mfun),
                 selector_name=self.selector_name,
                 offspring_size=self.size_of_population,
                 seed=self.seed,
-                **self.algo_params
-            )
+                **self.algo_params)
             self.solution, self.hall_of_fame, self.logs, self.hist = optimisation.run(
-                int(self.number_of_generations)
-            )
+                int(self.number_of_generations))
 
     class Evaluator:
         """ """
+
         def __init__(self, objectives, params, fun):
             self.fun = fun
             self.objectives = objectives
@@ -538,8 +547,7 @@ class BluepyoptAlgorithmBasis(baseOptimizer):
             return err[0]
 
         def set_neuron_variables_and_evaluate_with_lists(
-            self, param_list=None, target="scores"
-        ):
+                self, param_list=None, target="scores"):
             """
 
             :param param_list:  (Default value = None)
@@ -560,6 +568,7 @@ class BluepyoptAlgorithmBasis(baseOptimizer):
 
 class SingleProblem:
     """ """
+
     def __init__(self, fitnes_fun, bounds):
         self.bounds = bounds
         self.boundaries = bounds
@@ -603,13 +612,16 @@ class RANDOM_SEARCH(baseOptimizer):
 
     def Optimize(self):
         """Performs the optimization."""
-        with Pool(processes=int(self.number_of_cpu), maxtasksperchild=1) as pool:
+        with Pool(processes=int(self.number_of_cpu),
+                  maxtasksperchild=1) as pool:
             candidate = []
             fitness = []
             for j in range(int(self.size_of_population)):
                 candidate.append(
-                    uniform(self.rand, {"self": self, "num_params": self.num_params})
-                )
+                    uniform(self.rand, {
+                        "self": self,
+                        "num_params": self.num_params
+                    }))
             try:
                 fitness = pool.map(self.ffun, candidate)
             except (OSError, RuntimeError) as e:
@@ -618,37 +630,40 @@ class RANDOM_SEARCH(baseOptimizer):
 
 class ABC_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
-        self.algorithm = self.pg.bee_colony(
-            gen=self.number_of_generations, **self.algo_params
-        )
+        self.algorithm = self.pg.bee_colony(gen=self.number_of_generations,
+                                            **self.algo_params)
 
 
 class BH_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.algorithm = self.pg.mbh(
             self.pg.algorithm(
-                self.pg.scipy_optimize(method="L-BFGS-B", options=self.algo_params)
-            ),
+                self.pg.scipy_optimize(method="L-BFGS-B",
+                                       options=self.algo_params)),
             stop=2,
         )
 
 
 class DE_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.variant = int(self.algo_params.pop("variant"))
-        self.algorithm = self.pg.de(
-            gen=self.number_of_generations, variant=self.variant, **self.algo_params
-        )
+        self.algorithm = self.pg.de(gen=self.number_of_generations,
+                                    variant=self.variant,
+                                    **self.algo_params)
 
 
 class DE1220_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         if int(self.size_of_population) < 7:
@@ -657,13 +672,13 @@ class DE1220_PYGMO(PygmoAlgorithmBasis):
             print("*****************************************************")
             self.size_of_population = 7
 
-        self.algorithm = self.pg.de1220(
-            gen=self.number_of_generations, **self.algo_params
-        )
+        self.algorithm = self.pg.de1220(gen=self.number_of_generations,
+                                        **self.algo_params)
 
 
 class CMAES_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         if int(self.size_of_population) < 5:
@@ -671,68 +686,67 @@ class CMAES_PYGMO(PygmoAlgorithmBasis):
             print("CMA-ES NEEDS A POPULATION WITH AT LEAST 5 INDIVIDUALS")
             print("***************************************************")
             self.size_of_population = 5
-        self.algorithm = self.pg.cmaes(
-            gen=self.number_of_generations, **self.algo_params
-        )
+        self.algorithm = self.pg.cmaes(gen=self.number_of_generations,
+                                       **self.algo_params)
 
 
 class GACO_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.multiprocessing = True
         self.n_gen_mark = int(self.algo_params.pop("n_gen_mark"))
-        self.algorithm = self.pg.gaco(
-            gen=self.number_of_generations,
-            n_gen_mark=self.n_gen_mark,
-            **self.algo_params
-        )
+        self.algorithm = self.pg.gaco(gen=self.number_of_generations,
+                                      n_gen_mark=self.n_gen_mark,
+                                      **self.algo_params)
 
 
 class MACO_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.multiobjective = True
         self.multiprocessing = True
-        self.algorithm = self.pg.maco(
-            gen=self.number_of_generations, **self.algo_params
-        )
+        self.algorithm = self.pg.maco(gen=self.number_of_generations,
+                                      **self.algo_params)
 
 
 class NM_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
-        self.algorithm = self.pg.scipy_optimize(
-            method="Nelder-Mead", options=self.algo_params
-        )
+        self.algorithm = self.pg.scipy_optimize(method="Nelder-Mead",
+                                                options=self.algo_params)
 
 
 class NSGA2_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.multiobjective = True
         self.multiprocessing = True
-        self.algorithm = self.pg.nsga2(
-            gen=self.number_of_generations, **self.algo_params
-        )
+        self.algorithm = self.pg.nsga2(gen=self.number_of_generations,
+                                       **self.algo_params)
 
 
 class NSPSO_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.multiobjective = True
         self.multiprocessing = True
-        self.algorithm = self.pg.nspso(
-            gen=self.number_of_generations, **self.algo_params
-        )
+        self.algorithm = self.pg.nspso(gen=self.number_of_generations,
+                                       **self.algo_params)
 
 
 class PRAXIS_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.algorithm = self.pg.nlopt(solver="praxis", **self.algo_params)
@@ -741,39 +755,45 @@ class PRAXIS_PYGMO(PygmoAlgorithmBasis):
 
 class SDE_PYGMO(SinglePygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         SinglePygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.algo_type = self.pg.de
-        self.algorithm = self.pg.de(gen=self.number_of_generations, **self.algo_params)
+        self.algorithm = self.pg.de(gen=self.number_of_generations,
+                                    **self.algo_params)
 
 
 class SGA_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
 
-        self.algorithm = self.pg.sga(gen=self.number_of_generations, **self.algo_params)
+        self.algorithm = self.pg.sga(gen=self.number_of_generations,
+                                     **self.algo_params)
 
 
 class PSO_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.variant = int(self.algo_params.pop("variant"))
-        self.algorithm = self.pg.pso(
-            gen=self.number_of_generations, variant=self.variant, **self.algo_params
-        )
+        self.algorithm = self.pg.pso(gen=self.number_of_generations,
+                                     variant=self.variant,
+                                     **self.algo_params)
 
 
 class PSOG_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.multiprocessing = True
         self.variant = int(self.algo_params.pop("variant"))
-        self.algorithm = self.pg.pso_gen(
-            gen=self.number_of_generations, variant=self.variant, **self.algo_params
-        )
+        self.algorithm = self.pg.pso_gen(gen=self.number_of_generations,
+                                         variant=self.variant,
+                                         **self.algo_params)
 
 
 class SADE_PYGMO(PygmoAlgorithmBasis):
@@ -787,18 +807,18 @@ class SADE_PYGMO(PygmoAlgorithmBasis):
             print("***************************************************")
             self.size_of_population = 7
         self.variant = int(self.algo_params.pop("variant"))
-        self.algorithm = self.pg.sade(
-            gen=self.number_of_generations, variant=self.variant, **self.algo_params
-        )
+        self.algorithm = self.pg.sade(gen=self.number_of_generations,
+                                      variant=self.variant,
+                                      **self.algo_params)
 
 
 class XNES_PYGMO(PygmoAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
-        self.algorithm = self.pg.xnes(
-            gen=self.number_of_generations, **self.algo_params
-        )
+        self.algorithm = self.pg.xnes(gen=self.number_of_generations,
+                                      **self.algo_params)
 
 
 class FULLGRID_PYGMO(InspyredAlgorithmBasis):
@@ -824,13 +844,12 @@ class FULLGRID_PYGMO(InspyredAlgorithmBasis):
                 "Not enough values for every parameter. Will expand resolution with threes."
             )
             self.resolution = self.resolution + [1] * (
-                self.kwargs["num_params"] - len(self.resolution)
-            )
+                self.kwargs["num_params"] - len(self.resolution))
             print("New resolution is: ", self.resolution)
 
         elif len(self.resolution) > self.kwargs["num_params"]:
             print("Too many values. Excess resolution will be ignored.")
-            self.resolution = self.resolution[0 : self.kwargs["num_params"]]
+            self.resolution = self.resolution[0:self.kwargs["num_params"]]
             print("New resolution is: ", self.resolution)
 
         self.grid = []
@@ -854,8 +873,8 @@ class FULLGRID_PYGMO(InspyredAlgorithmBasis):
 
             # ugly way to ensure same resolution before and after point included
             upper_bound = option_obj.boundaries[1][j] - float(
-                (float(option_obj.boundaries[1][j])) / float(self.resolution[j] - 1) / 2
-            )
+                (float(option_obj.boundaries[1][j])) /
+                float(self.resolution[j] - 1) / 2)
 
             div = float((upper_bound) / (self.resolution[j] - 1))
             lower_bound = (self.point[j] / div % 1) * div
@@ -863,10 +882,11 @@ class FULLGRID_PYGMO(InspyredAlgorithmBasis):
             upper_bound = upper_bound + lower_bound
 
             self.alldims.append(
-                list(np.linspace(lower_bound, upper_bound, self.resolution[j]))
-            )
+                list(np.linspace(lower_bound, upper_bound,
+                                 self.resolution[j])))
 
-        for i, t in enumerate(combinations(self.alldims, r=self.num_params - 1)):
+        for i, t in enumerate(combinations(self.alldims,
+                                           r=self.num_params - 1)):
             plane_dimensions = list(t)
             optimum_point = [self.point[self.num_params - 1 - i]]
             plane_dimensions.insert(self.num_params - 1 - i, optimum_point)
@@ -906,7 +926,8 @@ class BH_SCIPY(ScipyAlgorithmBasis):
         ScipyAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.maxcor = self.algo_params.pop("maxcor")
         self.eps = self.algo_params.pop("eps")
-        self.number_of_generations = self.algo_params.pop("number_of_generations")
+        self.number_of_generations = self.algo_params.pop(
+            "number_of_generations")
         self.size_of_population = self.algo_params.pop("size_of_population")
 
     def Optimize(self):
@@ -914,7 +935,7 @@ class BH_SCIPY(ScipyAlgorithmBasis):
         self.scipy_optimize.basinhopping(
             self.ffun,
             x0=self.scipy_ndarray(
-                (self.num_params,),
+                (self.num_params, ),
                 buffer=self.scipy_array(self.starting_points),
                 offset=0,
                 dtype=float,
@@ -947,54 +968,53 @@ class NM_SCIPY(ScipyAlgorithmBasis):
 
     def __init__(self, reader_obj, option_obj):
         ScipyAlgorithmBasis.__init__(self, reader_obj, option_obj)
-        self.number_of_generations = self.algo_params.pop("number_of_generations")
+        self.number_of_generations = self.algo_params.pop(
+            "number_of_generations")
         self.size_of_population = self.algo_params.pop("size_of_population")
         self.number_of_cpu = self.algo_params.pop("number_of_cpu")
 
     def Optimize(self):
         """Performs the optimization."""
         with Pool(self.number_of_cpu) as pool:
-            print(
-                "*************************number of cpu used: " + str(pool._processes)
-            )
+            print("*************************number of cpu used: " +
+                  str(pool._processes))
             pool.starmap(
                 self.scipy_optimize.minimize,
-                [
-                    (
-                        self.ffun,
-                        self.scipy_ndarray(
-                            (self.num_params,),
-                            buffer=self.scipy_array(
-                                uniform(
-                                    self.rand,
-                                    {"num_params": self.num_params, "self": self},
-                                )
-                            ),
-                            offset=0,
-                            dtype=float,
-                        ),
-                        ((),),
-                        "Nelder-Mead",
-                        None,
-                        None,
-                        None,
-                        [(0, 1)] * len(self.boundaries[0]),
-                        None,
-                        0,
-                        None,
-                        {
-                            "maxiter": self.number_of_generations,
-                            "maxfev": self.number_of_generations,
-                            "xatol": 0,
-                            "fatol": 0,
-                            "return_all": True,
-                            **self.algo_params,
-                            "xatol": 0,
-                            "fatol": 0,
-                        },
-                    )
-                    for i in range(self.size_of_population)
-                ],
+                [(
+                    self.ffun,
+                    self.scipy_ndarray(
+                        (self.num_params, ),
+                        buffer=self.scipy_array(
+                            uniform(
+                                self.rand,
+                                {
+                                    "num_params": self.num_params,
+                                    "self": self
+                                },
+                            )),
+                        offset=0,
+                        dtype=float,
+                    ),
+                    ((), ),
+                    "Nelder-Mead",
+                    None,
+                    None,
+                    None,
+                    [(0, 1)] * len(self.boundaries[0]),
+                    None,
+                    0,
+                    None,
+                    {
+                        "maxiter": self.number_of_generations,
+                        "maxfev": self.number_of_generations,
+                        "xatol": 0,
+                        "fatol": 0,
+                        "return_all": True,
+                        **self.algo_params,
+                        "xatol": 0,
+                        "fatol": 0,
+                    },
+                ) for i in range(self.size_of_population)],
             )
 
 
@@ -1011,7 +1031,8 @@ class L_BFGS_B_SCIPY(ScipyAlgorithmBasis):
 
     def __init__(self, reader_obj, option_obj):
         ScipyAlgorithmBasis.__init__(self, reader_obj, option_obj)
-        self.number_of_generations = self.algo_params.pop("number_of_generations")
+        self.number_of_generations = self.algo_params.pop(
+            "number_of_generations")
         self.size_of_population = self.algo_params.pop("size_of_population")
         self.number_of_cpu = self.algo_params.pop("number_of_cpu")
 
@@ -1020,38 +1041,37 @@ class L_BFGS_B_SCIPY(ScipyAlgorithmBasis):
         with Pool(self.number_of_cpu) as pool:
             pool.starmap(
                 self.scipy_optimize.minimize,
-                [
-                    (
-                        self.ffun,
-                        self.scipy_ndarray(
-                            (self.num_params,),
-                            buffer=self.scipy_array(
-                                uniform(
-                                    self.rand,
-                                    {"num_params": self.num_params, "self": self},
-                                )
-                            ),
-                            offset=0,
-                            dtype=float,
-                        ),
-                        ((),),
-                        "L-BFGS-B",
-                        False,
-                        None,
-                        None,
-                        [(0, 1)] * len(self.boundaries[0]),
-                        None,
-                        0,
-                        None,
-                        {
-                            "maxfun": self.number_of_generations,
-                            "gtol": 0,
-                            "ftol": 0,
-                            **self.algo_params,
-                        },
-                    )
-                    for x in range(self.size_of_population)
-                ],
+                [(
+                    self.ffun,
+                    self.scipy_ndarray(
+                        (self.num_params, ),
+                        buffer=self.scipy_array(
+                            uniform(
+                                self.rand,
+                                {
+                                    "num_params": self.num_params,
+                                    "self": self
+                                },
+                            )),
+                        offset=0,
+                        dtype=float,
+                    ),
+                    ((), ),
+                    "L-BFGS-B",
+                    False,
+                    None,
+                    None,
+                    [(0, 1)] * len(self.boundaries[0]),
+                    None,
+                    0,
+                    None,
+                    {
+                        "maxfun": self.number_of_generations,
+                        "gtol": 0,
+                        "ftol": 0,
+                        **self.algo_params,
+                    },
+                ) for x in range(self.size_of_population)],
             )
 
 
@@ -1121,9 +1141,8 @@ class CES_INSPYRED(InspyredAlgorithmBasis):
             self.kwargs["pop_size"] = self.size_of_population
             print("***************************************************")
             print("CES NEEDS EVEN NUMBER OF INDIVIDUALS")
-            print(
-                "POPULATION SIZE HAVE BEEN MODIFIED TO " + str(self.size_of_population)
-            )
+            print("POPULATION SIZE HAVE BEEN MODIFIED TO " +
+                  str(self.size_of_population))
             print("***************************************************")
 
         self.evo_strat = self.inspyred.ec.ES(self.rand)
@@ -1253,7 +1272,7 @@ class PAES_INSPYRED(InspyredAlgorithmBasis):
     def __init__(self, reader_obj, option_obj):
         InspyredAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.kwargs["mp_evaluator"] = self.mfun
-        self.kwargs["max_archive_size"] = (100,)
+        self.kwargs["max_archive_size"] = (100, )
         self.kwargs["num_grid_divisions"] = 4
         self.evo_strat = self.inspyred.ec.emo.PAES(self.rand)
 
@@ -1276,6 +1295,7 @@ class SA_INSPYRED(InspyredAlgorithmBasis):
 
 class IBEA_BLUEPYOPT(BluepyoptAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         BluepyoptAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.selector_name = "IBEA"
@@ -1283,6 +1303,7 @@ class IBEA_BLUEPYOPT(BluepyoptAlgorithmBasis):
 
 class NSGA2_BLUEPYOPT(BluepyoptAlgorithmBasis):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         BluepyoptAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.selector_name = "NSGA2"
@@ -1290,24 +1311,27 @@ class NSGA2_BLUEPYOPT(BluepyoptAlgorithmBasis):
 
 class CMAES_CMAES(baseOptimizer):
     """ """
+
     def __init__(self, reader_obj, option_obj):
         baseOptimizer.__init__(self, reader_obj, option_obj)
         self.size_of_population = self.algo_params.pop("size_of_population")
-        self.number_of_generations = self.algo_params.pop("number_of_generations")
+        self.number_of_generations = self.algo_params.pop(
+            "number_of_generations")
         self.number_of_cpu = int(self.algo_params.pop("number_of_cpu", 1))
         if option_obj.starting_points:
-            self.starting_points = [normalize(option_obj.starting_points, self)]
+            self.starting_points = [
+                normalize(option_obj.starting_points, self)
+            ]
         else:
             self.starting_points = np.ones(len(self.boundaries[0])) * 0.5
         from cmaes import CMA
 
-        self.cmaoptimizer = CMA(
-            mean=(self.starting_points),
-            **self.algo_params,
-            seed=self.seed,
-            population_size=int(self.size_of_population),
-            bounds=np.array([[0, 1]] * len(self.boundaries[0]))
-        )
+        self.cmaoptimizer = CMA(mean=(self.starting_points),
+                                **self.algo_params,
+                                seed=self.seed,
+                                population_size=int(self.size_of_population),
+                                bounds=np.array([[0, 1]] *
+                                                len(self.boundaries[0])))
 
     def Optimize(self):
         """Performs the optimization."""
@@ -1320,5 +1344,6 @@ class CMAES_CMAES(baseOptimizer):
                     for _ in range(self.cmaoptimizer.population_size)
                 ]
                 fitness = pool.map(self.ffun, candidate)
-                solutions = [(pop, fit[0]) for pop, fit in zip(candidate, fitness)]
+                solutions = [(pop, fit[0])
+                             for pop, fit in zip(candidate, fitness)]
                 self.cmaoptimizer.tell(solutions)

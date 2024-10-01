@@ -57,5 +57,7 @@ if __name__ == "__main__":
     try:
         opts, args = getopt.getopt(sys.argv[1:], "c:gh", ["help"])
     except getopt.GetoptError as err:
-        sys.exit("Invalid argument! Please run the program with -h argument for help!")
+        sys.exit(
+            "Invalid argument! Please run the program with -h argument for help!"
+        )
     main(opts)
