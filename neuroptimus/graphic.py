@@ -46,18 +46,27 @@ DEBUG = False
 
 
 def verbose(*args, **kwargs):
+    """
+
+    :param *args: 
+    :param **kwargs: 
+
+    """
     if DEBUG:
         print(*args, **kwargs)
 
 
 def is_hippounit_installed():
+    """ """
     hippounit_spec = importlib.util.find_spec("hippounit")
     return hippounit_spec is not None
 
 
 def add_trailing_slash(path):
-    """
-    Adds a trailing slash to a path if it doesn't already have one.
+    """Adds a trailing slash to a path if it doesn't already have one.
+
+    :param path: 
+
     """
     if path and path[-1] != "/":
         return path + "/"
@@ -71,6 +80,7 @@ BLACK = QtGui.QColor(0, 0, 0)
 
 
 class MplCanvas(FigureCanvas):
+    """ """
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig, self.ax = plt.subplots(figsize=(width, height), dpi=dpi)
@@ -78,6 +88,7 @@ class MplCanvas(FigureCanvas):
 
 
 class PlotWindow(QMainWindow):
+    """ """
 
     def __init__(self):
         super().__init__()
@@ -94,6 +105,7 @@ class PlotWindow(QMainWindow):
 
 
 class FileWatcherQTThread(QThread):
+    """ """
     # This signal emits the current progress as an integer
     progress = pyqtSignal(int)
 
@@ -102,6 +114,7 @@ class FileWatcherQTThread(QThread):
         self._is_running = True
 
     def run(self):
+        """ """
         # Delete eval.txt if it exists
         try:
             os.remove("eval.txt")
@@ -120,16 +133,19 @@ class FileWatcherQTThread(QThread):
                 pass
 
     def stop(self):
+        """ """
         self._is_running = False
         self.wait()  # Wait for the thread to finish
         self.progress.emit(-1)
 
     def start(self):
+        """ """
         self._is_running = True
         super().start()
 
 
 class fitlistTableItem(QWidget):
+    """ """
     def __init__(self, text=""):
         super().__init__()
         self.layout = QHBoxLayout(self)
@@ -150,20 +166,37 @@ class fitlistTableItem(QWidget):
         self._flags = QtCore.Qt.ItemFlags(QtCore.Qt.NoItemFlags)  # Default flags
 
     def openFileDialog(self):
+        """ """
         filePath, _ = QFileDialog.getOpenFileName(self, "Select File")
         if filePath:
             self.lineEdit.setText(filePath)
 
     def setText(self, text):
+        """
+
+        :param text: 
+
+        """
         self.lineEdit.setText(text)
 
     def text(self):
+        """ """
         return self.lineEdit.text()
 
     def setToolTip(self, text):
+        """
+
+        :param text: 
+
+        """
         self.button.setToolTip(text)
 
     def setFlags(self, flags):
+        """
+
+        :param flags: 
+
+        """
         # return
         # if flags == 0:
         #     self.button.setEnabled(False)
@@ -181,9 +214,15 @@ class fitlistTableItem(QWidget):
             self.button.setEnabled(False)
 
     def flags(self):
+        """ """
         return self._flags
 
     def setBackground(self, color):
+        """
+
+        :param color: 
+
+        """
         return
         # return
         # convert color to hex
@@ -194,6 +233,11 @@ class fitlistTableItem(QWidget):
         self.button.setStyleSheet(f"background-color: {color}")
 
     def setForeground(self, color):
+        """
+
+        :param color: 
+
+        """
         return
         color = color.name()
         print("setForeground", color)
@@ -208,12 +252,25 @@ class CustomTableWidget(QTableWidget):
         super().__init__(*args, **kwargs)
 
     def setItem(self, row, column, item):
+        """
+
+        :param row: 
+        :param column: 
+        :param item: 
+
+        """
         if isinstance(item, fitlistTableItem):
             self.setCellWidget(row, column, item)
         else:
             super().setItem(row, column, item)
 
     def item(self, row, column):
+        """
+
+        :param row: 
+        :param column: 
+
+        """
         # agnostically return the item in the cell
         try:
             item = self.cellWidget(row, column)
@@ -228,6 +285,7 @@ class CustomTableWidget(QTableWidget):
 
 
 class QHLine(QtWidgets.QFrame):
+    """ """
     def __init__(self):
         super(QHLine, self).__init__()
         self.setFrameShape(QtWidgets.QFrame.HLine)
@@ -237,6 +295,7 @@ class QHLine(QtWidgets.QFrame):
 
 
 class FittingThread(QThread):
+    """ """
     finished = pyqtSignal()
     error = pyqtSignal(str)
 
@@ -244,6 +303,7 @@ class FittingThread(QThread):
         super().__init__(parent)
 
     def run(self):
+        """ """
         try:
             # Call the runsim method
             started = self.parent().runsim()
@@ -257,10 +317,10 @@ class FittingThread(QThread):
 
 
 def popup(message):
-    """
-    Implements modal message dialog from the PyQT package.
+    """Implements modal message dialog from the PyQT package.
 
     :param message: the string displayed in the window
+
     """
     msg = QtWidgets.QMessageBox()
     msg.setIcon(QtWidgets.QMessageBox.Warning)
@@ -271,43 +331,79 @@ def popup(message):
 
 
 class TableSelections:
+    """ """
     def __init__(self, table: str):
         self.table = table
         self.selected_rows_indices = []
         self.enabled = True
 
     def set_table_widget(self, table):
+        """
+
+        :param table: 
+
+        """
         self.table = table
 
     def get_table_widget(self):
+        """ """
         return self.table
 
     def set_selected_rows_indices(self, indices):
+        """
+
+        :param indices: 
+
+        """
         self.selected_rows_indices = indices
 
     def add_selected_rows_index(self, rows):
+        """
+
+        :param rows: 
+
+        """
         for row in rows:
             if row not in self.selected_rows_indices:
                 self.selected_rows_indices.append(row)
 
     def remove_selected_rows_indices(self, row_to_remove):
+        """
+
+        :param row_to_remove: 
+
+        """
         for row in row_to_remove:
             if row in self.selected_rows_indices:
                 self.selected_rows_indices.remove(row)
 
     def get_selected_rows_indices(self):
+        """ """
         return self.selected_rows_indices
 
     def is_empty(self):
+        """ """
         return len(self.selected_rows_indices) == 0
 
     def isEnabled(self):
+        """ """
         return self.enabled
 
 
 def save_state_decorator(func):
+    """
+
+    :param func: 
+
+    """
     @wraps(func)
     def wrapper(*args, **kwargs):
+        """
+
+        :param *args: 
+        :param **kwargs: 
+
+        """
         # Call the slot method
         result = func(*args, **kwargs)
 
@@ -326,12 +422,15 @@ def save_state_decorator(func):
 
 
 class Ui_Neuroptimus(QMainWindow):
+    """ """
     def __init__(self, *args):
         super().__init__(*args)
 
     def setupUi(self, Neuroptimus):
-        """
-        Implements the widgets from the PyQT package.
+        """Implements the widgets from the PyQT package.
+
+        :param Neuroptimus: 
+
         """
 
         self.progress_thread = FileWatcherQTThread()
@@ -1588,15 +1687,19 @@ class Ui_Neuroptimus(QMainWindow):
         self.tabwidget.setCurrentIndex(0)
 
     def modify_gui_state_dict(self, key, value_dict):
+        """
+
+        :param key: 
+        :param value_dict: 
+
+        """
         if key in self.gui_elements_state:
             self.gui_elements_state[key].update(value_dict)
         else:
             self.gui_elements_state[key] = value_dict
 
     def save_gui_state(self):
-        """
-        Save the current state of the GUI to a file.
-        """
+        """Save the current state of the GUI to a file."""
         # get the file name from the user
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(
             self.centralwidget, "Save File", "", "JSON files (*.json)"
@@ -1606,6 +1709,12 @@ class Ui_Neuroptimus(QMainWindow):
             self.serialize_gui_state(file_name)
 
     def get_deep_attribute(self, obj, attr_path):
+        """
+
+        :param obj: 
+        :param attr_path: 
+
+        """
         try:
             attrs = attr_path.split(".")
             for attr in attrs:
@@ -1615,8 +1724,10 @@ class Ui_Neuroptimus(QMainWindow):
             return None
 
     def serialize_gui_state(self, file_name):
-        """
-        Serialize the state of the GUI to a file.
+        """Serialize the state of the GUI to a file.
+
+        :param file_name: 
+
         """
 
         for component_name in self.gui_elements_state:
@@ -1734,9 +1845,7 @@ class Ui_Neuroptimus(QMainWindow):
             json.dump(self.gui_elements_state, file, indent=4)
 
     def load_gui_state(self):
-        """
-        Load the state of the GUI from a file.
-        """
+        """Load the state of the GUI from a file."""
         # open file dialog to get the file name
         file_name, _ = QtWidgets.QFileDialog.getOpenFileName(
             self.centralwidget, "Open File", "", ""
@@ -1855,8 +1964,11 @@ class Ui_Neuroptimus(QMainWindow):
                     )
 
     def agnostic_component_setter(self, component, metadata: dict):
-        """
-        Set the value of a component regardless of its type.
+        """Set the value of a component regardless of its type.
+
+        :param component: 
+        :param metadata: dict: 
+
         """
         value = metadata["value"]
         if isinstance(component, QtWidgets.QComboBox):
@@ -1900,8 +2012,10 @@ class Ui_Neuroptimus(QMainWindow):
                 table_widget_to_set.setSelectionMode(QTableWidget.ContiguousSelection)
 
     def agnostic_component_getter(self, component: QtWidgets.QWidget):
-        """
-        Get the value of a component regardless of its type.
+        """Get the value of a component regardless of its type.
+
+        :param component: QtWidgets.QWidget: 
+
         """
         if isinstance(component, QtWidgets.QComboBox):
             return component.currentText()
@@ -1929,8 +2043,10 @@ class Ui_Neuroptimus(QMainWindow):
             return component.get_selected_rows_indices()
 
     def retranslateUi(self, Neuroptimus):
-        """
-        Set PyQT widgets behaviors and implements functions.
+        """Set PyQT widgets behaviors and implements functions.
+
+        :param Neuroptimus: 
+
         """
         _translate = QtCore.QCoreApplication.translate
         Neuroptimus.setWindowTitle(_translate("Neuroptimus", "Neuroptimus"))
@@ -2407,6 +2523,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.dd_type.setEnabled(True)
 
     def startFittingThread(self):
+        """ """
         # Create a new thread for optimization
         self.fitting_thread = FittingThread(self)
         # self.fitting_thread.finished.connect(self.on_fitting_finished)
@@ -2416,6 +2533,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.fitting_thread.start()
 
     def help_popup_fit(self):
+        """ """
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Question)
         msg.setText(
@@ -2425,16 +2543,14 @@ class Ui_Neuroptimus(QMainWindow):
         msg.exec()
 
     def toggleTabLock(self):
-        """
-        Unlock or lock the tabs in the tab widget based on the state of the 'actionunlock' checkbox.
-
+        """Unlock or lock the tabs in the tab widget based on the state of the 'actionunlock' checkbox.
+        
         If the 'actionunlock' checkbox is checked, all tabs in the tab widget will be enabled.
         If the 'actionunlock' checkbox is unchecked, tabs after the currently selected tab will be disabled.
 
-        Parameters:
-            None
-        Returns:
-            None
+        :param None: 
+        :returns: None
+
         """
         if self.actionunlock.isChecked():
             for i in range(self.tabwidget.count()):
@@ -2444,9 +2560,7 @@ class Ui_Neuroptimus(QMainWindow):
                 self.tabwidget.setTabEnabled(i, False)
 
     def openFileNameDialog(self):
-        """
-        File dialog for the file tab to open file.
-        """
+        """File dialog for the file tab to open file."""
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         self.datfileName, _ = QFileDialog.getOpenFileName(
@@ -2466,6 +2580,7 @@ class Ui_Neuroptimus(QMainWindow):
                 self.time_calc()
 
     def time_calc(self):
+        """ """
         try:
             with open(str(self.lineEdit_file.text())) as data:
                 all_line = data.read().splitlines()
@@ -2482,13 +2597,17 @@ class Ui_Neuroptimus(QMainWindow):
             print("No data file selected")
 
     def set_widgets_in_list(self, widget_list, enabled):
+        """
+
+        :param widget_list: 
+        :param enabled: 
+
+        """
         for widget in widget_list:
             widget.setEnabled(enabled)
 
     def openFolderNameDialog2(self):
-        """
-        File dialog for the model tab to open folder.
-        """
+        """File dialog for the model tab to open folder."""
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         folderName = QFileDialog.getExistingDirectory(None, options=options)
@@ -2496,9 +2615,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.lineEdit_folder2.setText(folderName)
 
     def openFileNameDialog2(self):
-        """
-        File dialog for the model tab to open file.
-        """
+        """File dialog for the model tab to open file."""
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(
@@ -2514,9 +2631,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.pushButton_3.setEnabled(True)
 
     def openFolderNameDialog(self):
-        """
-        File dialog for the file tab to open folder.
-        """
+        """File dialog for the file tab to open folder."""
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         folderName = QFileDialog.getExistingDirectory(None, options=options)
@@ -2526,6 +2641,7 @@ class Ui_Neuroptimus(QMainWindow):
                 self.pushButton_3.setEnabled(True)
 
     def set_hippounit_output_dir(self):
+        """ """
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         folderName = QFileDialog.getExistingDirectory(
@@ -2542,9 +2658,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.output_dir_input.setText(folderName)
 
     def prepare_fitnessFunctions_table(self):
-        """
-        Prepares the table for HippoUnit fitness functions settings to be displayed in the GUI
-        """
+        """Prepares the table for HippoUnit fitness functions settings to be displayed in the GUI"""
 
         # if type is hippounit:
         if self.type_selector.currentText() == "HippoUnit":
@@ -2858,17 +2972,18 @@ class Ui_Neuroptimus(QMainWindow):
         # self.fitlist.horizontalHeader().setStretchLastSection(True)
 
     def _disable_column_editing(self, table_widget, column_index):
-        """
-        Disables editing of a column in a table widget
+        """Disables editing of a column in a table widget
+
+        :param table_widget: 
+        :param column_index: 
+
         """
         for row in range(table_widget.rowCount()):
             table_widget.item(row, column_index).setFlags(QtCore.Qt.NoItemFlags)
             table_widget.item(row, column_index).setForeground(BLACK)
 
     def disable_mod_path(self):
-        """
-        Disables mod files path if checked for usage
-        """
+        """Disables mod files path if checked for usage"""
         if self.load_mods_checkbox.isChecked():
             self.lineEdit_folder2.setEnabled(True)
             self.pushButton_14.setEnabled(True)
@@ -2877,9 +2992,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.pushButton_14.setEnabled(False)
 
     def type_change(self):
-        """
-        Sets units for drop down widget selecting simulation type.
-        """
+        """Sets units for drop down widget selecting simulation type."""
         self.dropdown.clear()
         # if not is_hippounit_installed():
         #     self.type_selector[2] = None
@@ -2920,6 +3033,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.settings_tab_mode_change()
 
     def settings_tab_mode_change(self):
+        """ """
         if self.type_selector.currentText() == "HippoUnit":
             # hide all group boxes in self.neuroptimus_settings_widgets list
             for widget in self.neuroptimus_settings_widgets:
@@ -2935,10 +3049,10 @@ class Ui_Neuroptimus(QMainWindow):
             self.hippounit_group.hide()
 
     def add_data_dict(self, data_dict):
-        """
-        Creates Input tree *not implemented yet*
-        :param data_dict:
-        :param root:
+        """Creates Input tree *not implemented yet*
+
+        :param data_dict: param root:
+
         """
 
         stack = data_dict
@@ -2974,11 +3088,12 @@ class Ui_Neuroptimus(QMainWindow):
 
     @save_state_decorator
     def Load(self, *args):
-        """
-        Loads the model after the 'Load Trace' clicked
-
+        """Loads the model after the 'Load Trace' clicked
+        
         First creates a dictionary with the paths and options and call the First step, giving these as argument
         Plots the trace in matplotlib on the file tab.
+
+        :param *args: 
 
         """
         # self.gui_elements_state["pushButton_3"] = {"type": "QPushButton", "value": True}
@@ -3216,10 +3331,12 @@ class Ui_Neuroptimus(QMainWindow):
 
     @save_state_decorator
     def Set(self, e):
-        """
-        Set the selected parameters to optimize on the model.
-
+        """Set the selected parameters to optimize on the model.
+        
         Loop through every selected line.
+
+        :param e: 
+
         """
         items = self.modellist.selectionModel().selectedRows()
         # save the selected items rows to self.gui_elements_state
@@ -3255,9 +3372,11 @@ class Ui_Neuroptimus(QMainWindow):
             self.core.SetModel2(kwargs)
 
     def Remove(self, e):
-        """
-        Remove the selected parameters to optimize on the model.
+        """Remove the selected parameters to optimize on the model.
         Loop through every selected line.
+
+        :param e: 
+
         """
         items = self.modellist.selectionModel().selectedRows()
         self.modellist_selected_rows.remove_selected_rows_indices(
@@ -3305,9 +3424,7 @@ class Ui_Neuroptimus(QMainWindow):
                 self.modellist.item(selected_row, j).setBackground(WHITE)
 
     def sim_plat(self):
-        """
-        Called when simulation platform changed, locks unnecessary widgets and swap Label of Load button.
-        """
+        """Called when simulation platform changed, locks unnecessary widgets and swap Label of Load button."""
         if self.dd_type.currentIndex() == 1:
             self.sim_path.show()
             self.sim_param.show()
@@ -3370,6 +3487,11 @@ class Ui_Neuroptimus(QMainWindow):
             self.load_mods_checkbox.show()
 
     def Loadpython(self, e):
+        """
+
+        :param e: 
+
+        """
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(
@@ -3384,8 +3506,10 @@ class Ui_Neuroptimus(QMainWindow):
 
     @save_state_decorator
     def Load2(self, e):
-        """
-        Load the selected Neuron model and displays the sections in a tablewidget
+        """Load the selected Neuron model and displays the sections in a tablewidget
+
+        :param e: 
+
         """
         self.model_file = self.lineEdit_file2.text()
         if not os.path.isfile(self.model_file):
@@ -3465,6 +3589,7 @@ class Ui_Neuroptimus(QMainWindow):
                 popup("Section error")
 
     def typeChange(self):
+        """ """
         _translate = QtCore.QCoreApplication.translate
         if self.stimulus_type.currentIndex() == 0:  # step prot
             self.lineEdit_delay.setDisabled(False)
@@ -3482,9 +3607,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.base_dir_controll9.clicked.connect(self.openFileNameDialogWaveform)
 
     def openFileNameDialogWaveform(self):
-        """
-        File dialog for the file tab to open file.
-        """
+        """File dialog for the file tab to open file."""
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(
@@ -3498,20 +3621,30 @@ class Ui_Neuroptimus(QMainWindow):
             self.container = [fileName]
 
     def _write_on_status_bar(self, message, color="green", timeout=5000):
+        """
+
+        :param message: 
+        :param color:  (Default value = "green")
+        :param timeout:  (Default value = 5000)
+
+        """
 
         self.statusbar.setStyleSheet("color: " + color)
         self.statusbar.showMessage(message, timeout)
 
     def recursive_len(self, item):
+        """
+
+        :param item: 
+
+        """
         if type(item) == list:
             return sum(self.recursive_len(subitem) for subitem in item)
         else:
             return 1
 
     def UF(self):
-        """
-        Calls the user function window for the Model tab.
-        """
+        """Calls the user function window for the Model tab."""
 
         # self.SW = SecondWindow(self)
         # self.SW.setObjectName("Neuroptimus")
@@ -3520,8 +3653,10 @@ class Ui_Neuroptimus(QMainWindow):
 
     @save_state_decorator
     def amplitudes_fun(self, *args):
-        """
-        Calls the amplitude window for the Options tab.
+        """Calls the amplitude window for the Options tab.
+
+        :param *args: 
+
         """
 
         # self.SiW = StimuliWindow(self)
@@ -3548,6 +3683,11 @@ class Ui_Neuroptimus(QMainWindow):
     #                 self.fitset.add(current_item)
 
     def _check_fitlist_weight(self, selected_row):
+        """
+
+        :param selected_row: 
+
+        """
         if (
             self.fitlist.item(selected_row, 1) != None
             and self.fitlist.item(selected_row, 1).text() != ""
@@ -3556,9 +3696,7 @@ class Ui_Neuroptimus(QMainWindow):
             return True
 
     def fitchanged(self):
-        """
-        Calls when the weights changed for the fitness functions. Checks which Hippounit test is selected and enables the corresponding row in the settings table.
-        """
+        """Calls when the weights changed for the fitness functions. Checks which Hippounit test is selected and enables the corresponding row in the settings table."""
 
         # first check if hippounit test is selected
         if self.type_selector.currentText().lower() == "hippounit":
@@ -3696,9 +3834,7 @@ class Ui_Neuroptimus(QMainWindow):
                 pass
 
     def browse_file_for_hippounit_data_paths(self):
-        """
-        File dialog for the file tab to open file.
-        """
+        """File dialog for the file tab to open file."""
         row = self.fitlist.currentRow()  # get the selected row
         column = self.fitlist.currentColumn()  # get the selected column
         if column in [0, 1, 4]:  # if the selected cell is the first column
@@ -3722,9 +3858,11 @@ class Ui_Neuroptimus(QMainWindow):
             )
 
     def Fit_normalize(self, e):
-        """
-        Normalize the weigths of only the selected fitness functions.
+        """Normalize the weigths of only the selected fitness functions.
         Iterates through all fitness functions and scans the ones contained in the fitness set (selected ones) with an 'if' statement.
+
+        :param e: 
+
         """
         try:
             # self.fitselect()
@@ -3753,10 +3891,12 @@ class Ui_Neuroptimus(QMainWindow):
             popup("Wrong values given. " + str(e))
 
     def packageselect(self, pack_name):
-        """
-        Writes the given aspects to algorithm in an other table, where the user can change the option (generation, population size, etc.).
+        """Writes the given aspects to algorithm in an other table, where the user can change the option (generation, population size, etc.).
         Iterates through the selected algorithms options list and writes the names of it to the first column and sets the cell immutable,
         and the values to the second row.
+
+        :param pack_name: 
+
         """
 
         selected_package = self.algos.get(pack_name)
@@ -3767,10 +3907,11 @@ class Ui_Neuroptimus(QMainWindow):
         self.algolist.item(0, 0)
 
     def algoselect(self):
-        """
-        Writes the given aspects to algorithm in an other table, where the user can change the option (generation, population size, etc.).
+        """Writes the given aspects to algorithm in an other table, where the user can change the option (generation, population size, etc.).
         Iterates through the selected algorithms options list and writes the names of it to the first column and sets the cell immutable,
         and the values to the second row.
+
+
         """
         try:
             selected_algo = self.algolist.selectionModel().selectedRows()[0].row()
@@ -3815,10 +3956,11 @@ class Ui_Neuroptimus(QMainWindow):
             print(e)
 
     def aspect_changed(self):
-        """
-        Stores the options value separately for each algorithm.
+        """Stores the options value separately for each algorithm.
         Clears selection, because if other algorithm clicked after change, it's counts as a change again.
         So the same value is going to be stored for the next algorirhm selection.
+
+
         """
         # get current cell focused in self.algorithm_parameter_list
         current_row = self.algorithm_parameter_list.currentRow()
@@ -3846,6 +3988,7 @@ class Ui_Neuroptimus(QMainWindow):
             self.algorithm_parameter_list.clearSelection()
 
     def hippounit_gui_to_json(self):
+        """ """
         self.hippounit_config = {"model": {}, "tests": {}}
 
         # collect the following information from the GUI, the info found in this json config file
@@ -4218,6 +4361,11 @@ class Ui_Neuroptimus(QMainWindow):
         return neuroptimus_settings_path
 
     def updateProgressBar(self, value):
+        """
+
+        :param value: 
+
+        """
         # painter = QtGui.QPainter(self.progressBar)
         # painter.begin(self.progressBar)
         if self.total_evaluations_required == 1 and value != -1:
@@ -4246,13 +4394,15 @@ class Ui_Neuroptimus(QMainWindow):
             QtWidgets.QApplication.processEvents()
 
     def runsim(self, singlerun=False) -> bool:
-        """
-        Check all the tabs and sends the options to the Core.
+        """Check all the tabs and sends the options to the Core.
         Check the fitness values and if they are normalized.
         Check the selected algorithm and the options for it then launch the optimization.
         Calls the last step if the optimization ended.
         If an error happens, stores the number of tab in a list and it's error string in an other list.
         Switch to the tab, where the error happened and popup the erro.
+
+        :param singlerun:  (Default value = False)
+
         """
         if self.is_optimization_active:
             popup("Optimization is already running")
@@ -4501,6 +4651,7 @@ class Ui_Neuroptimus(QMainWindow):
         # stop the thread at the end of optimization
 
     def results_tab_plot(self):
+        """ """
         text = "Results:"
         if self.core.cands:
             for n, k in zip(
@@ -4593,8 +4744,10 @@ class Ui_Neuroptimus(QMainWindow):
             # TODO: ADD hippoUnit plots
 
     def SaveParam(self, e):
-        """
-        Saves the found values in a file.
+        """Saves the found values in a file.
+
+        :param e: 
+
         """
         try:
             options = QtWidgets.QFileDialog.Options()
@@ -4613,9 +4766,7 @@ class Ui_Neuroptimus(QMainWindow):
             popup("Couldn't save the parameters." + str(e))
 
     def stat_tab_fun(self):
-        """
-        Writes out the same fitnesses for parameters as in the previous tab.
-        """
+        """Writes out the same fitnesses for parameters as in the previous tab."""
         try:
             fits = self.core.fits
             stats = {
@@ -4684,8 +4835,10 @@ class Ui_Neuroptimus(QMainWindow):
         self.errorlist.setRowCount(idx)
 
     def PlotGen(self, e):
-        """
-        Creates the Generation plot from the statistics file.
+        """Creates the Generation plot from the statistics file.
+
+        :param e: 
+
         """
         print("PlotGen")
         matplotlib.use("Qt5Agg")
@@ -4759,6 +4912,11 @@ class Ui_Neuroptimus(QMainWindow):
         print("PlotGen end")
 
     def PlotGrid(self, e):
+        """
+
+        :param e: 
+
+        """
         self.prev_bounds = copy(self.core.option_handler.boundaries)
         self.PG = gridwindow(self)
         self.PG.setObjectName("Neuroptimus")
@@ -4766,17 +4924,24 @@ class Ui_Neuroptimus(QMainWindow):
         self.PG.show()
 
     def ShowErrorDialog(self, e):
+        """
+
+        :param e: 
+
+        """
         self.extra_error_dialog = ErrorDialog(self)
         self.extra_error_dialog.setObjectName("Neuroptimus")
         self.extra_error_dialog.resize(400, 500)
         self.extra_error_dialog.show()
 
     def boundarywindow(self):
+        """ """
         self.BW = BoundaryWindow(self)
 
         self.BW.show()
 
     def startingpoints(self):
+        """ """
         num_o_params = len(self.core.option_handler.GetObjTOOpt())
         self.SPW = Startingpoints(self, num_o_params)
         self.SPW.setObjectName("Neuroptimus")
@@ -4784,6 +4949,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.SPW.show()
 
     def evaluatewindow(self):
+        """ """
         num_o_params = len(self.core.option_handler.GetObjTOOpt())
         self.EW = EvaluateSingle(self, num_o_params)
         self.EW.setObjectName("Neuroptimus")
@@ -4792,6 +4958,7 @@ class Ui_Neuroptimus(QMainWindow):
 
 
 class SecondWindow(QtWidgets.QMainWindow):
+    """ """
     def __init__(self, parent):
         super(SecondWindow, self).__init__()
         _translate = QtCore.QCoreApplication.translate
@@ -4850,6 +5017,7 @@ class SecondWindow(QtWidgets.QMainWindow):
         self.setGeometry(100, 100, 500, 500)
 
     def loaduserfun(self):
+        """ """
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(
@@ -4873,6 +5041,7 @@ class SecondWindow(QtWidgets.QMainWindow):
             self.plaintext.setPlainText(str(fun))
 
     def text_changed(self):
+        """ """
         self.parent.modify_gui_state_dict(
             "SW.plaintext",
             {"type": "QPlainTextEdit", "value": self.plaintext.toPlainText()},
@@ -4880,6 +5049,11 @@ class SecondWindow(QtWidgets.QMainWindow):
 
     @save_state_decorator
     def OnOk(self, e):
+        """
+
+        :param e: 
+
+        """
         # self.parent.modify_gui_state_dict("SW.pushButton_46", {"type":"QPushButton", "value":True,'enabled': True} )
         try:
             self.option_handler.u_fun_string = str(self.plaintext.toPlainText())
@@ -4930,6 +5104,7 @@ class SecondWindow(QtWidgets.QMainWindow):
 
 
 class StimuliWindow(QtWidgets.QMainWindow):
+    """ """
     def __init__(self, parent):
         super(StimuliWindow, self).__init__()
         _translate = QtCore.QCoreApplication.translate
@@ -5009,6 +5184,7 @@ class StimuliWindow(QtWidgets.QMainWindow):
         #     print("No input file found")
 
     def initialize(self):
+        """ """
         if self.parent.container:
             self.amplit_edit.setText(str(len(self.parent.container)))
             self.stim_table.setRowCount(len(self.parent.container))
@@ -5026,6 +5202,11 @@ class StimuliWindow(QtWidgets.QMainWindow):
 
     # @save_state_decorator
     def Set(self, e):
+        """
+
+        :param e: 
+
+        """
         try:
             self.stim_table.setRowCount(int(self.amplit_edit.text()))
             self.pushButton_accept.setEnabled(True)
@@ -5035,6 +5216,11 @@ class StimuliWindow(QtWidgets.QMainWindow):
             self.close()
 
     def Accept(self, e):
+        """
+
+        :param e: 
+
+        """
         self.parent.container = []
         try:
             for n in range(self.stim_table.rowCount()):
@@ -5047,6 +5233,7 @@ class StimuliWindow(QtWidgets.QMainWindow):
 
 
 class BoundaryWindow(QtWidgets.QMainWindow):
+    """ """
     def __init__(self, parent):
         super(BoundaryWindow, self).__init__()
         _translate = QtCore.QCoreApplication.translate
@@ -5108,6 +5295,11 @@ class BoundaryWindow(QtWidgets.QMainWindow):
         self.Loadbutton.clicked.connect(self.Load)
 
     def Set(self, e):
+        """
+
+        :param e: 
+
+        """
         try:
             min_l = []
             max_l = []
@@ -5133,6 +5325,11 @@ class BoundaryWindow(QtWidgets.QMainWindow):
         self.close()
 
     def Save(self, e):
+        """
+
+        :param e: 
+
+        """
         save_bound = QtWidgets.QFileDialog.getSaveFileName(self, "Save File")
         if save_bound[0]:
             with open(str(save_bound[0]), "w+") as f:
@@ -5143,6 +5340,11 @@ class BoundaryWindow(QtWidgets.QMainWindow):
                     f.write("\n")
 
     def Load(self, e):
+        """
+
+        :param e: 
+
+        """
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(
@@ -5165,6 +5367,7 @@ class BoundaryWindow(QtWidgets.QMainWindow):
 
 
 class Startingpoints(QtWidgets.QMainWindow):
+    """ """
     def __init__(self, parent, *args, **kwargs):
         super(Startingpoints, self).__init__()
         _translate = QtCore.QCoreApplication.translate
@@ -5228,12 +5431,18 @@ class Startingpoints(QtWidgets.QMainWindow):
         Loadbutton.clicked.connect(self.OnLoad)
 
     def OnOk(self, e):
+        """
+
+        :param e: 
+
+        """
         self.parent.seed = []
         for n in self.container:
             self.parent.seed.append(float(n.text()))
         self.close()
 
     def OnLoad(self):
+        """ """
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(
@@ -5249,6 +5458,11 @@ class Startingpoints(QtWidgets.QMainWindow):
                     self.container[idx].setText(str(l))
 
     def OnLoadPop(self, e):
+        """
+
+        :param e: 
+
+        """
         self.size_of_pop = 0
         file_path = ""
         popup("This function is only supported by the algorithms from inspyred!")
@@ -5269,6 +5483,13 @@ class Startingpoints(QtWidgets.QMainWindow):
             )
 
         def lastlines(hugefile, n, bsize=2048):
+            """
+
+            :param hugefile: 
+            :param n: 
+            :param bsize:  (Default value = 2048)
+
+            """
             import errno
 
             with open(hugefile, "rb") as hfile:
@@ -5313,6 +5534,7 @@ class Startingpoints(QtWidgets.QMainWindow):
 
 
 class EvaluateSingle(QtWidgets.QMainWindow):
+    """ """
     def __init__(self, parent, *args, **kwargs):
         super(EvaluateSingle, self).__init__()
         _translate = QtCore.QCoreApplication.translate
@@ -5365,6 +5587,11 @@ class EvaluateSingle(QtWidgets.QMainWindow):
         Closebutton.clicked.connect(self.close)
 
     def OnEvaluate(self, e):
+        """
+
+        :param e: 
+
+        """
         self.parent.core.optimal_params = []
         self.parent.core.option_handler.boundaries = [[], []]
         for idx in range(self.evaluate_table.rowCount()):
@@ -5376,6 +5603,7 @@ class EvaluateSingle(QtWidgets.QMainWindow):
         self.close()
 
     def OnLoad(self):
+        """ """
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(
@@ -5392,6 +5620,7 @@ class EvaluateSingle(QtWidgets.QMainWindow):
 
 
 class gridwindow(QtWidgets.QMainWindow):
+    """ """
     def __init__(self, parent, *args):
         super(gridwindow, self).__init__()
         _translate = QtCore.QCoreApplication.translate
@@ -5450,6 +5679,11 @@ class gridwindow(QtWidgets.QMainWindow):
         Setbutton.clicked.connect(self.Set)
 
     def Set(self, e):
+        """
+
+        :param e: 
+
+        """
         try:
             self.option_handler.boundaries[0] = [float(n.GetValue()) for n in self.min]
             self.option_handler.boundaries[1] = [float(n.GetValue()) for n in self.max]
@@ -5460,6 +5694,7 @@ class gridwindow(QtWidgets.QMainWindow):
 
 
 class ErrorDialog(QtWidgets.QMainWindow):
+    """ """
     def __init__(self, parent):
         super(ErrorDialog, self).__init__()
         self.error_comp_table = QtWidgets.QTableWidget(self)
@@ -5511,6 +5746,11 @@ class ErrorDialog(QtWidgets.QMainWindow):
 
 
 def main(param=None):
+    """
+
+    :param param:  (Default value = None)
+
+    """
     if param != None:
         core = Core.coreModul()
         core.option_handler.output_level = param.lstrip("-v_level=")

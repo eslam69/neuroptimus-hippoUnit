@@ -28,6 +28,11 @@ except ImportError:
 
 
 def _pickle_method(method):
+    """
+
+    :param method: 
+
+    """
     func_name = method.__func__.__name__
     obj = method.__self__
     cls = method.__self__.__class__
@@ -35,6 +40,12 @@ def _pickle_method(method):
 
 
 def _unpickle_method(func_name, obj, cls):
+    """
+
+    :param func_name: 
+    :param obj: 
+
+    """
     for cls in cls.mro():
         try:
             func = cls.__dict__[func_name]
@@ -52,17 +63,22 @@ except:
 
 
 def callback(c, x, y):
+    """
+
+    :param c: 
+    :param x: 
+    :param y: 
+
+    """
     print(c)
 
 
 def uniform(random, args):
-    """
-    Creates random values from a uniform distribution. Used to create initial population.
+    """Creates random values from a uniform distribution. Used to create initial population.
 
     :param random: random number generator object
-    :param args: ``dictionary``, must contain key "num_params" and either "_ec" or "self"
-
-    :return: the created random values in a ``list``
+    :param args: dictionary``, must contain key "num_params" and either "_ec" or "self"
+    :returns: the created random values in a ``list``
 
     """
     size = args.get("num_params")
@@ -74,10 +90,11 @@ def uniform(random, args):
 
 
 class bounderObject(object):  # ?!
-    """
-    Creates a callable to perform the bounding of the parameters.
+    """Creates a callable to perform the bounding of the parameters.
+
     :param xmax: list of maxima
     :param xmin: list of minima
+
     """
 
     def __init__(self, xmax, xmin):
@@ -98,9 +115,7 @@ class bounderObject(object):  # ?!
 
 
 class SINGLERUN:
-    """
-    An abstract base class to implement a single evaluation process.
-    """
+    """An abstract base class to implement a single evaluation process."""
 
     def __init__(self, reader_obj, option_obj):
         self.fit_obj = fF_Factory.create(reader_obj, option_obj)
@@ -110,9 +125,10 @@ class SINGLERUN:
         self.boundaries = option_obj.boundaries
 
     def SetFFun(self, option_obj):
-        """
-        Sets the combination function and converts the name of the fitness functions into function instances.
+        """Sets the combination function and converts the name of the fitness functions into function instances.
+
         :param option_obj: an ``optionHandler`` instance
+
         """
 
         try:
@@ -133,9 +149,7 @@ class SINGLERUN:
 
 
 class baseOptimizer:
-    """
-    An abstract base class to implement the base of an optimization process.
-    """
+    """An abstract base class to implement the base of an optimization process."""
 
     def __init__(self, reader_obj, option_obj):
         self.fit_obj = fF_Factory.create(reader_obj, option_obj)
@@ -157,9 +171,10 @@ class baseOptimizer:
         open("eval.txt", "w")
 
     def SetFFun(self, option_obj):
-        """
-        Sets the combination function and converts the name of the fitness functions into function instances.
+        """Sets the combination function and converts the name of the fitness functions into function instances.
+
         :param option_obj: an ``optionHandler`` instance
+
         """
 
         try:
@@ -182,6 +197,7 @@ class baseOptimizer:
 
 
 class InspyredAlgorithmBasis(baseOptimizer):
+    """ """
     def __init__(self, reader_obj, option_obj):
         baseOptimizer.__init__(self, reader_obj, option_obj)
         import inspyred
@@ -215,9 +231,7 @@ class InspyredAlgorithmBasis(baseOptimizer):
         )
 
     def Optimize(self):
-        """
-        Performs the optimization.
-        """
+        """Performs the optimization."""
 
         logger = logging.getLogger("inspyred.ec")
         logger.setLevel(logging.DEBUG)
@@ -249,6 +263,7 @@ class InspyredAlgorithmBasis(baseOptimizer):
 
 
 class ScipyAlgorithmBasis(baseOptimizer):
+    """ """
 
     def __init__(self, reader_obj, option_obj):
         baseOptimizer.__init__(self, reader_obj, option_obj)
@@ -271,6 +286,7 @@ class ScipyAlgorithmBasis(baseOptimizer):
 
 
 class PygmoAlgorithmBasis(baseOptimizer):
+    """ """
 
     def __init__(self, reader_obj, option_obj):
         baseOptimizer.__init__(self, reader_obj, option_obj)
@@ -301,6 +317,7 @@ class PygmoAlgorithmBasis(baseOptimizer):
         self.num_islands = int(self.algo_params.pop("number_of_islands", 1))
 
     def Optimize(self):
+        """ """
 
         if self.multiobjective:
             fitfun = self.mfun
@@ -349,6 +366,7 @@ class PygmoAlgorithmBasis(baseOptimizer):
 
 
 class Problem:
+    """ """
     def __init__(self, fitnes_fun, bounds, n_obj, size_of_population, number_of_cpu):
         self.bounds = bounds
         self.fitnes_fun = fitnes_fun
@@ -357,12 +375,22 @@ class Problem:
         self.number_of_cpu = number_of_cpu
 
     def fitness(self, x):
+        """
+
+        :param x: 
+
+        """
         fitness = self.fitnes_fun(x)
         if self.n_obj > 1:
             fitness = fitness[0]
         return fitness
 
     def batch_fitness(self, x):
+        """
+
+        :param x: 
+
+        """
         n = int(len(x) / self.size_of_population)
         x_chunks = [x[i : i + n] for i in range(0, len(x), n)]
         with Pool(self.number_of_cpu) as pool:
@@ -373,16 +401,20 @@ class Problem:
         return fitness
 
     def has_batch_fitness(self):
+        """ """
         return True
 
     def get_nobj(self):
+        """ """
         return self.n_obj
 
     def get_bounds(self):
+        """ """
         return (self.bounds[0], self.bounds[1])
 
 
 class SinglePygmoAlgorithmBasis(baseOptimizer):
+    """ """
 
     def __init__(self, reader_obj, option_obj):
         baseOptimizer.__init__(self, reader_obj, option_obj)
@@ -394,6 +426,7 @@ class SinglePygmoAlgorithmBasis(baseOptimizer):
         self.directory = option_obj.base_dir
 
     def Optimize(self):
+        """ """
         self.population = self.pg.population(self.prob, **self.algo_params)
 
         self.algorithm.set_verbosity(1)
@@ -408,6 +441,7 @@ class SinglePygmoAlgorithmBasis(baseOptimizer):
 
 
 class BluepyoptAlgorithmBasis(baseOptimizer):
+    """ """
     def __init__(self, reader_obj, option_obj):
         baseOptimizer.__init__(self, reader_obj, option_obj)
         import bluepyopt as bpop
@@ -434,6 +468,7 @@ class BluepyoptAlgorithmBasis(baseOptimizer):
         ]
 
     def Optimize(self):
+        """ """
         if self.number_of_cpu > 1:
             from ipyparallel import Client
             from ipyparallel.controller.heartmonitor import HeartMonitor
@@ -484,25 +519,44 @@ class BluepyoptAlgorithmBasis(baseOptimizer):
             )
 
     class Evaluator:
+        """ """
         def __init__(self, objectives, params, fun):
             self.fun = fun
             self.objectives = objectives
             self.params = params
 
         def evaluate_with_lists(self, param_list):
+            """
+
+            :param param_list: 
+
+            """
             err = self.fun([param_list])
             return err[0]
 
         def set_neuron_variables_and_evaluate_with_lists(
             self, param_list=None, target="scores"
         ):
+            """
+
+            :param param_list:  (Default value = None)
+            :param target:  (Default value = "scores")
+
+            """
             return self.evaluate_with_lists(param_list=param_list)
 
         def evaluate(self, param_list=None, target="scores"):
+            """
+
+            :param param_list:  (Default value = None)
+            :param target:  (Default value = "scores")
+
+            """
             return self.evaluate_with_lists(param_list, target=target)
 
 
 class SingleProblem:
+    """ """
     def __init__(self, fitnes_fun, bounds):
         self.bounds = bounds
         self.boundaries = bounds
@@ -518,17 +572,24 @@ class SingleProblem:
         self.bounds, self.boundaries, self.fitnes_fun = state
 
     def fitness(self, x):
+        """
+
+        :param x: 
+
+        """
         return self.fitnes_fun([normalize(x, self)])
 
     def get_bounds(self):
+        """ """
         return (self.bounds[0], self.bounds[1])
 
 
 class RANDOM_SEARCH(baseOptimizer):
-    """
-    Basic implementation of random search optimization
+    """Basic implementation of random search optimization
+
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
+
     """
 
     def __init__(self, reader_obj, option_obj):
@@ -538,9 +599,7 @@ class RANDOM_SEARCH(baseOptimizer):
         self.size_of_population = self.algo_params.pop("size_of_population")
 
     def Optimize(self):
-        """
-        Performs the optimization.
-        """
+        """Performs the optimization."""
         with Pool(processes=int(self.number_of_cpu), maxtasksperchild=1) as pool:
             candidate = []
             fitness = []
@@ -555,6 +614,7 @@ class RANDOM_SEARCH(baseOptimizer):
 
 
 class ABC_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.algorithm = self.pg.bee_colony(
@@ -563,6 +623,7 @@ class ABC_PYGMO(PygmoAlgorithmBasis):
 
 
 class BH_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.algorithm = self.pg.mbh(
@@ -574,6 +635,7 @@ class BH_PYGMO(PygmoAlgorithmBasis):
 
 
 class DE_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.variant = int(self.algo_params.pop("variant"))
@@ -583,6 +645,7 @@ class DE_PYGMO(PygmoAlgorithmBasis):
 
 
 class DE1220_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         if int(self.size_of_population) < 7:
@@ -597,6 +660,7 @@ class DE1220_PYGMO(PygmoAlgorithmBasis):
 
 
 class CMAES_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         if int(self.size_of_population) < 5:
@@ -610,6 +674,7 @@ class CMAES_PYGMO(PygmoAlgorithmBasis):
 
 
 class GACO_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.multiprocessing = True
@@ -622,6 +687,7 @@ class GACO_PYGMO(PygmoAlgorithmBasis):
 
 
 class MACO_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.multiobjective = True
@@ -632,6 +698,7 @@ class MACO_PYGMO(PygmoAlgorithmBasis):
 
 
 class NM_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.algorithm = self.pg.scipy_optimize(
@@ -640,6 +707,7 @@ class NM_PYGMO(PygmoAlgorithmBasis):
 
 
 class NSGA2_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.multiobjective = True
@@ -650,6 +718,7 @@ class NSGA2_PYGMO(PygmoAlgorithmBasis):
 
 
 class NSPSO_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.multiobjective = True
@@ -660,6 +729,7 @@ class NSPSO_PYGMO(PygmoAlgorithmBasis):
 
 
 class PRAXIS_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.algorithm = self.pg.nlopt(solver="praxis", **self.algo_params)
@@ -667,6 +737,7 @@ class PRAXIS_PYGMO(PygmoAlgorithmBasis):
 
 
 class SDE_PYGMO(SinglePygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         SinglePygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.algo_type = self.pg.de
@@ -674,6 +745,7 @@ class SDE_PYGMO(SinglePygmoAlgorithmBasis):
 
 
 class SGA_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
 
@@ -681,6 +753,7 @@ class SGA_PYGMO(PygmoAlgorithmBasis):
 
 
 class PSO_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.variant = int(self.algo_params.pop("variant"))
@@ -690,6 +763,7 @@ class PSO_PYGMO(PygmoAlgorithmBasis):
 
 
 class PSOG_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.multiprocessing = True
@@ -700,6 +774,7 @@ class PSOG_PYGMO(PygmoAlgorithmBasis):
 
 
 class SADE_PYGMO(PygmoAlgorithmBasis):
+    """ """
 
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
@@ -715,6 +790,7 @@ class SADE_PYGMO(PygmoAlgorithmBasis):
 
 
 class XNES_PYGMO(PygmoAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         PygmoAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.algorithm = self.pg.xnes(
@@ -723,6 +799,7 @@ class XNES_PYGMO(PygmoAlgorithmBasis):
 
 
 class FULLGRID_PYGMO(InspyredAlgorithmBasis):
+    """ """
 
     def __init__(self, reader_obj, option_obj):
         InspyredAlgorithmBasis.__init__(self, reader_obj, option_obj)
@@ -810,15 +887,13 @@ class FULLGRID_PYGMO(InspyredAlgorithmBasis):
 
 
 class BH_SCIPY(ScipyAlgorithmBasis):
-    """
-    Implements the ``Basinhopping`` algorithm for minimization from the ``scipy`` package.
+    """Implements the ``Basinhopping`` algorithm for minimization from the ``scipy`` package.
 
     :param reader_obj: an instance of ``DATA`` object
-
     :param option_obj: an instance of ``optionHandler`` object
-
+    
     .. seealso::
-
+    
             Documentation of the Simulated Annealing from 'scipy':
                     http://docs.scipy.org/doc/scipy-dev/reference/generated/scipy.optimize.basinhopping.html
 
@@ -832,9 +907,7 @@ class BH_SCIPY(ScipyAlgorithmBasis):
         self.size_of_population = self.algo_params.pop("size_of_population")
 
     def Optimize(self):
-        """
-        Performs the optimization.
-        """
+        """Performs the optimization."""
         self.scipy_optimize.basinhopping(
             self.ffun,
             x0=self.scipy_ndarray(
@@ -859,8 +932,8 @@ class BH_SCIPY(ScipyAlgorithmBasis):
 
 
 class NM_SCIPY(ScipyAlgorithmBasis):
-    """
-    Implements a Nelder-Mead downhill simplex algorithm for minimization from the ``scipy`` package.
+    """Implements a Nelder-Mead downhill simplex algorithm for minimization from the ``scipy`` package.
+
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
     .. seealso::
@@ -876,9 +949,7 @@ class NM_SCIPY(ScipyAlgorithmBasis):
         self.number_of_cpu = self.algo_params.pop("number_of_cpu")
 
     def Optimize(self):
-        """
-        Performs the optimization.
-        """
+        """Performs the optimization."""
         with Pool(self.number_of_cpu) as pool:
             print(
                 "*************************number of cpu used: " + str(pool._processes)
@@ -925,8 +996,8 @@ class NM_SCIPY(ScipyAlgorithmBasis):
 
 
 class L_BFGS_B_SCIPY(ScipyAlgorithmBasis):
-    """
-    Implements L-BFGS-B algorithm for minimization from the ``scipy`` package.
+    """Implements L-BFGS-B algorithm for minimization from the ``scipy`` package.
+
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
     .. seealso::
@@ -942,9 +1013,7 @@ class L_BFGS_B_SCIPY(ScipyAlgorithmBasis):
         self.number_of_cpu = self.algo_params.pop("number_of_cpu")
 
     def Optimize(self):
-        """
-        Performs the optimization.
-        """
+        """Performs the optimization."""
         with Pool(self.number_of_cpu) as pool:
             pool.starmap(
                 self.scipy_optimize.minimize,
@@ -984,11 +1053,11 @@ class L_BFGS_B_SCIPY(ScipyAlgorithmBasis):
 
 
 class grid(baseOptimizer):
-    """
-    Implements a brute force algorithm for minimization by calculating the function's value
+    """Implements a brute force algorithm for minimization by calculating the function's value
     over the specified grid.
     .. note::
             This algorithm is highly inefficient and should not be used for complete optimization.
+
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
     :param resolution: number of sample points along each dimensions (default: 10)
@@ -1003,8 +1072,10 @@ class grid(baseOptimizer):
         self.boundaries = option_obj.boundaries
 
     def Optimize(self, optimals):
-        """
-        Performs the optimization.
+        """Performs the optimization.
+
+        :param optimals: 
+
         """
         _o = copy.copy(optimals)
         _o = normalize(_o, self)
@@ -1026,8 +1097,8 @@ class grid(baseOptimizer):
 
 
 class CES_INSPYRED(InspyredAlgorithmBasis):
-    """
-    Implements a custom version of ``Evolution Strategy`` algorithm for minimization from the ``inspyred`` package.
+    """Implements a custom version of ``Evolution Strategy`` algorithm for minimization from the ``inspyred`` package.
+
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
     .. note::
@@ -1037,6 +1108,7 @@ class CES_INSPYRED(InspyredAlgorithmBasis):
     .. seealso::
             Documentation of the options from 'inspyred':
                     http://inspyred.github.io/reference.html#module-inspyred.ec
+
     """
 
     def __init__(self, reader_obj, option_obj):
@@ -1055,8 +1127,8 @@ class CES_INSPYRED(InspyredAlgorithmBasis):
 
 
 class CEO_INSPYRED(InspyredAlgorithmBasis):
-    """
-    Implements a custom version of ``Evolution Strategy`` algorithm for minimization from the ``inspyred`` package.
+    """Implements a custom version of ``Evolution Strategy`` algorithm for minimization from the ``inspyred`` package.
+
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
     .. note::
@@ -1066,6 +1138,7 @@ class CEO_INSPYRED(InspyredAlgorithmBasis):
     .. seealso::
             Documentation of the options from 'inspyred':
                     http://inspyred.github.io/reference.html#module-inspyred.ec
+
     """
 
     def __init__(self, reader_obj, option_obj):
@@ -1084,13 +1157,14 @@ class CEO_INSPYRED(InspyredAlgorithmBasis):
 
 
 class DE_INSPYRED(InspyredAlgorithmBasis):
-    """
-    Implements the ``Differential Evolution Algorithm`` algorithm for minimization from the ``inspyred`` package.
+    """Implements the ``Differential Evolution Algorithm`` algorithm for minimization from the ``inspyred`` package.
+
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
     .. seealso::
             Documentation of the options from 'inspyred':
                     http://inspyred.github.io/reference.html#module-inspyred.ec
+
     """
 
     def __init__(self, reader_obj, option_obj):
@@ -1101,13 +1175,14 @@ class DE_INSPYRED(InspyredAlgorithmBasis):
 
 
 class EDA_INSPYRED(InspyredAlgorithmBasis):
-    """
-    Implements the ``Estimation of Distribution Algorithm`` algorithm for minimization from the ``inspyred`` package.
+    """Implements the ``Estimation of Distribution Algorithm`` algorithm for minimization from the ``inspyred`` package.
+
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
     .. seealso::
             Documentation of the options from 'inspyred':
                     http://inspyred.github.io/reference.html#module-inspyred.ec
+
     """
 
     def __init__(self, reader_obj, option_obj):
@@ -1116,13 +1191,14 @@ class EDA_INSPYRED(InspyredAlgorithmBasis):
 
 
 class PSO_INSPYRED(InspyredAlgorithmBasis):
-    """
-    Implements the ``Particle Swarm`` algorithm for minimization from the ``inspyred`` package.
+    """Implements the ``Particle Swarm`` algorithm for minimization from the ``inspyred`` package.
+
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
     .. seealso::
             Documentation of the Particle Swarm from 'inspyred':
                     http://pythonhosted.org/inspyred/reference.html
+
     """
 
     def __init__(self, reader_obj, option_obj):
@@ -1132,8 +1208,8 @@ class PSO_INSPYRED(InspyredAlgorithmBasis):
 
 
 class NSGA2_INSPYRED(InspyredAlgorithmBasis):
-    """
-    Implements the ``Non-Dominated Genetic Algorithm`` algorithm for minimization from the ``inspyred`` package.
+    """Implements the ``Non-Dominated Genetic Algorithm`` algorithm for minimization from the ``inspyred`` package.
+
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
     .. note::
@@ -1143,6 +1219,7 @@ class NSGA2_INSPYRED(InspyredAlgorithmBasis):
     .. seealso::
             Documentation of the options from 'inspyred':
                     http://inspyred.github.io/reference.html#module-inspyred.ec
+
     """
 
     def __init__(self, reader_obj, option_obj):
@@ -1159,12 +1236,12 @@ class NSGA2_INSPYRED(InspyredAlgorithmBasis):
 
 
 class PAES_INSPYRED(InspyredAlgorithmBasis):
-    """
-    Implements a custom version of ``Pareto Archived Evolution Strategies`` algorithm for minimization from the ``inspyred`` package.
+    """Implements a custom version of ``Pareto Archived Evolution Strategies`` algorithm for minimization from the ``inspyred`` package.
+
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
     .. seealso::
-
+    
             Documentation of the options from 'inspyred':
                     http://inspyred.github.io/reference.html#module-inspyred.ec
 
@@ -1179,14 +1256,13 @@ class PAES_INSPYRED(InspyredAlgorithmBasis):
 
 
 class SA_INSPYRED(InspyredAlgorithmBasis):
-    """
-    Implements the ``Simulated Annealing`` algorithm for minimization from the ``inspyred`` package.
+    """Implements the ``Simulated Annealing`` algorithm for minimization from the ``inspyred`` package.
+
     :param reader_obj: an instance of ``DATA`` object
     :param option_obj: an instance of ``optionHandler`` object
     .. seealso::
             Documentation of the Simulated Annealing from 'inspyred':
                     http://inspyred.github.io/reference.html#replacers-survivor-replacement-methods
-
 
     """
 
@@ -1196,18 +1272,21 @@ class SA_INSPYRED(InspyredAlgorithmBasis):
 
 
 class IBEA_BLUEPYOPT(BluepyoptAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         BluepyoptAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.selector_name = "IBEA"
 
 
 class NSGA2_BLUEPYOPT(BluepyoptAlgorithmBasis):
+    """ """
     def __init__(self, reader_obj, option_obj):
         BluepyoptAlgorithmBasis.__init__(self, reader_obj, option_obj)
         self.selector_name = "NSGA2"
 
 
 class CMAES_CMAES(baseOptimizer):
+    """ """
     def __init__(self, reader_obj, option_obj):
         baseOptimizer.__init__(self, reader_obj, option_obj)
         self.size_of_population = self.algo_params.pop("size_of_population")
@@ -1228,9 +1307,7 @@ class CMAES_CMAES(baseOptimizer):
         )
 
     def Optimize(self):
-        """
-        Performs the optimization.
-        """
+        """Performs the optimization."""
         with Pool(int(self.number_of_cpu)) as pool:
             for generation in range(int(self.number_of_generations)):
                 # print("Generation: {0}".format(generation))

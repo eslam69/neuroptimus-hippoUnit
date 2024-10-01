@@ -15,12 +15,14 @@ ioff()
 
 
 class FileWatcherThread(threading.Thread):
+    """ """
     def __init__(self, update_callback):
         super().__init__()
         self._is_running = True
         self.update_callback = update_callback
 
     def run(self):
+        """ """
         # Delete eval.txt if it exists
         try:
             os.remove("eval.txt")
@@ -39,10 +41,16 @@ class FileWatcherThread(threading.Thread):
                 pass
 
     def stop(self):
+        """ """
         self._is_running = False
 
 
 def update_progress_bar(progress):
+    """
+
+    :param progress: 
+
+    """
     global cli_progress_bar
     if progress == -1:
         cli_progress_bar.total = 100
@@ -53,8 +61,7 @@ def update_progress_bar(progress):
 
 
 def main(fname, param=None):
-    """
-    The main function of the command line version.
+    """The main function of the command line version.
     Reads the content of the .json file into the option object,
     and creates the core object which runs the optimization process based on the .json file.
 

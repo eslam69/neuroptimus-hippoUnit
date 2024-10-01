@@ -17,8 +17,7 @@ matplotlib.interactive(False)
 
 
 class my_candidate:
-    """
-    Mimics the behavior of ``candidate`` from the ``inspyred`` package to allow the uniform
+    """Mimics the behavior of ``candidate`` from the ``inspyred`` package to allow the uniform
     handling of the results produced by the different algorithms.
 
     :param vals: the result of the optimization
@@ -32,33 +31,33 @@ class my_candidate:
 
 
 class coreModul:
-    """
-    This class is responsible to carry out the main steps of the optimization process by
+    """This class is responsible to carry out the main steps of the optimization process by
     interacting with the other modules. The main attributes are the following:
-
+    
     :attr: data_handler:
-
+    
             performs input operations and handles input data
-
+    
     :attr: option_handler:
-
+    
             stores the settings
-
+    
     :attr: model_handler:
-
+    
             handles the model and runs the simulations and carries out other model related tasks
-
+    
     :attr: optimizer:
-
+    
             carries out the optimization process
-
+    
     :attr: optimal_params:
-
+    
             contains the resulting parameters
-
+    
     :attr: ffun_calc_list:
-
+    
             contains the list of available fitness functions in a dictionary
+
 
     """
 
@@ -109,23 +108,50 @@ class coreModul:
         self.grid_result = None
 
     def htmlStrBold(self, inp):
+        """
+
+        :param inp: 
+
+        """
         return "<b>" + str(inp) + "</b>"
 
     def htmlStr(self, inp):
+        """
+
+        :param inp: 
+
+        """
         return "<p>" + str(inp) + "</p>"
 
     def htmlUnderline(self):
+        """ """
         return "text-decoration:underline"
 
     def htmlResize(self, size):
+        """
+
+        :param size: 
+
+        """
         return "font-size:" + str(int(size)) + "%"
 
     def htmlAlign(self, align_to):
+        """
+
+        :param align_to: 
+
+        """
         if align_to not in ["left", "right", "center"]:
             raise ValueError
         return "text-align:" + align_to
 
     def htmlStyle(self, inp, *args):
+        """
+
+        :param inp: 
+        :param *args: 
+
+        """
         tmp_str = '<span style="'
         for n in args:
             tmp_str += n + ";"
@@ -133,6 +159,12 @@ class coreModul:
         return tmp_str
 
     def htmlTable(self, header_list, data):
+        """
+
+        :param header_list: 
+        :param data: 
+
+        """
         tmp_str = '<table border="1" align="center">'
         for h in header_list:
             tmp_str += "\n<th>" + str(h) + "</th>"
@@ -147,9 +179,19 @@ class coreModul:
         return tmp_str
 
     def htmlPciture(self, inp):
+        """
+
+        :param inp: 
+
+        """
         return '<p align="center"><img style="border:none;" src="' + inp + '" ></p>'
 
     def htmlPdf(self, inp):
+        """
+
+        :param inp: 
+
+        """
         # return "<p align=\"center\"><embed src = \""+inp+"#toolbar=0&navpanes=0&scrollbar=0\" width = \"800px\" height = \"630px\" /></p>"
         return (
             '<p align="center"><embed src = " '
@@ -158,6 +200,7 @@ class coreModul:
         )
 
     def Print(self):
+        """ """
         print(
             [
                 self.option_handler.GetFileOption(),
@@ -174,8 +217,7 @@ class coreModul:
         print("\n")
 
     def FirstStep(self, args):
-        """
-        Stores the location of the input, and the base directory in the ``option_handler`` object
+        """Stores the location of the input, and the base directory in the ``option_handler`` object
         and reads the data from the file into the ``data_handler`` object.
 
         :param args: dictionary with keys "file" and "input"
@@ -204,8 +246,7 @@ class coreModul:
                 )
 
     def LoadModel(self, args):
-        """
-        Stores the type of the simulator as well as the optional parameters passed to it.
+        """Stores the type of the simulator as well as the optional parameters passed to it.
         Creates the ``model_handler`` objects which can be either ``modelHandlerNeuron`` or ``externalHandler``.
         If the ``externalHandler`` is selected then the number of parameters subject to optimization is also set.
 
@@ -238,11 +279,7 @@ class coreModul:
             self.option_handler.SetModelStimParam([[0] * k_range, 0, 0])
 
     def ReturnSections(self):
-        """
-
-        :return: the sections found in the model including "None" in a ``string`` ``list``.
-
-        """
+        """:return: the sections found in the model including "None" in a ``string`` ``list``."""
         temp = self.model_handler.GetParameters()
         sections = []
         for n in temp:
@@ -252,11 +289,7 @@ class coreModul:
         return sections
 
     def ReturnMorphology(self):
-        """
-
-        :return: the morphological parameters found in the model including "None" in a ``string`` ``list``.
-
-        """
+        """:return: the morphological parameters found in the model including "None" in a ``string`` ``list``."""
         temp = self.model_handler.GetParameters()
         morphs = str.split(temp[0][1], ", ")
         morphs = list(set(morphs))
@@ -264,12 +297,10 @@ class coreModul:
         return morphs
 
     def ReturnChannels(self, section):
-        """
-        Collects the channels from the given section.
+        """Collects the channels from the given section.
 
         :param section: the name of the section
-
-        :return: the channels in the given section including "None" in a ``string`` ``list``.
+        :returns: the channels in the given section including "None" in a ``string`` ``list``.
 
         """
         temp = self.model_handler.GetParameters()
@@ -287,12 +318,11 @@ class coreModul:
         return channels
 
     def ReturnChParams(self, channel):
-        """
-        Collects channel parameters from the given channel
+        """Collects channel parameters from the given channel
 
         :param channel: the name of the channel mechanism
-        :return: the channel parameters in the given channel including "None" in a ``string`` ``list``.
-
+        :returns: the channel parameters in the given channel including "None" in a ``string`` ``list``.
+        
         .. note::
                 This function returns everything from the channel object not only the parameters.
 
@@ -311,6 +341,11 @@ class coreModul:
 
     # not in use
     def SetModel(self, args):
+        """
+
+        :param args: 
+
+        """
 
         if args.get("channel") != "None":
             self.model_handler.SetChannelParameters(
@@ -326,19 +361,18 @@ class coreModul:
             )
 
     def SetModel2(self, args):
-        """
-        Stores the selected parameter as subject to optimization in the ``option_handler`` object.
+        """Stores the selected parameter as subject to optimization in the ``option_handler`` object.
         For future use it offers a way to store initial value (not in use at the moment).
 
         :param args: must be a string-string dictionary containing the following keys:
-
+        
                         * section
                         * channel
                         * params
                         * value
-
+        
                 or:
-
+        
                         * section
                         * morph
                         * values
@@ -362,11 +396,10 @@ class coreModul:
             self.option_handler.SetOptParam(args.get("values"))
 
     def SecondStep(self, args):
-        """
-        Stores the stimulation settings in the option object.
+        """Stores the stimulation settings in the option object.
 
         :param args: must be a dictionary with the following keys:
-
+        
                 * stim
                         must hold a ``list`` as value, which contains:
                            * stimulus type as ``string``, must be either "IClamp" or "VClamp"
@@ -383,8 +416,7 @@ class coreModul:
         self.option_handler.SetModelStimParam(args.get("stimparam"))
 
     def ThirdStep(self, args):
-        """
-        Stores the parameters in the ``option_handler`` object regarding the optimization process.
+        """Stores the parameters in the ``option_handler`` object regarding the optimization process.
         If the sampling rate of the simulation is higher than the sampling rate of the input trace,
         then it re-samples the input using linear interpolation to create more points.
         Currently running a simulation with lower sampling rate than the input trace is not supported!
@@ -392,7 +424,7 @@ class coreModul:
         The raw results are stored in the ``solutions`` variable in the ``optimizer`` object.
 
         :param args: a dictionary containing the following keys:
-
+        
                 * runparam
                         must be a list containing the following values:
                                 * length of simulation as real value
@@ -407,7 +439,7 @@ class coreModul:
                         must be a list of real values
                 * algo_options
                         must be a dictionary containing options related to the optimization algorithm
-
+        
                         mandatory parameters:
                                 * seed
                                 * current_algorithm
@@ -416,6 +448,7 @@ class coreModul:
                                 * boundaries
                         optional parameter shared by every algorithm
                                 * starting_points
+
         """
         self.grid_result = None
         # print("args inside third step: ")
@@ -591,13 +624,14 @@ class coreModul:
             self.optimal_params = self.optimizer.fit_obj.ReNormalize(self.best_cand)
 
     def FourthStep(self, args={}):
-        """
-        Renormalizes the output of the ``optimizer`` (see optimizerHandler module for more), and runs
+        """Renormalizes the output of the ``optimizer`` (see optimizerHandler module for more), and runs
         a simulation with the optimal parameters to receive an optimal trace.
         The components of the fitness value is calculated on this optimal trace.
         Settings of the entire work flow are saved into a configuration file named "model name"_settings.xml.
         A report of the results is generated in the form of a html document.
-        :param args: currently not in use
+
+        :param args: currently not in use (Default value = {})
+
         """
         if self.option_handler.type[-1] == "hippounit":
             self.optimizer.fit_obj.is_figures_saved = True
@@ -954,9 +988,11 @@ class coreModul:
                 json.dump(json_var, outfile, indent=4)
 
     def callGrid(self, resolution):
-        """
-        Calculates fitness values on a defined grid (see optimizerHandler module for more).
+        """Calculates fitness values on a defined grid (see optimizerHandler module for more).
         This tool is purely for analyzing results, and we do not recommend to use it to obtain parameter values.
+
+        :param resolution: 
+
         """
         import copy
 

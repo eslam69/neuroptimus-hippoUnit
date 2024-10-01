@@ -10,8 +10,7 @@ warnings.simplefilter("ignore", UserWarning)
 
 
 def main(parameters):
-    """
-    The main function, which starts to software according to the given command line arguments.
+    """The main function, which starts to software according to the given command line arguments.
 
     :param parameters: the command line parameters:
     * -h help
