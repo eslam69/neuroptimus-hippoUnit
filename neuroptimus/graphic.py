@@ -2,9 +2,12 @@ import sys
 from traceHandler import sizeError
 try:
     import matplotlib
-    matplotlib.use("Qt5Agg")
+    # matplotlib.use("Qt5Agg")
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+    from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+
     from matplotlib.figure import Figure
 except RuntimeError as re:
     print(re)
@@ -58,6 +61,28 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 import os
 from PyQt5.QtCore import QThread, pyqtSignal
+
+class MplCanvas(FigureCanvas):
+
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig, self.ax = plt.subplots(figsize=(width, height), dpi=dpi)
+        super(MplCanvas, self).__init__(fig)
+
+
+class PlotWindow(QMainWindow):
+
+    def __init__(self):
+        super().__init__()
+        self.canvas = MplCanvas(self, width=5, height=4, dpi=100)
+        self.toolbar = NavigationToolbar(self.canvas, self)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.toolbar)
+        layout.addWidget(self.canvas)
+
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
 
 class FileWatcherQTThread(QThread):
     progress = pyqtSignal(int)  # This signal emits the current progress as an integer
@@ -4165,6 +4190,8 @@ class Ui_Neuroptimus(QMainWindow):
         """
         Creates the Generation plot from the statistics file.
         """
+        print("PlotGen")
+        matplotlib.use('Qt5Agg')
         plt.close('all')
         generation, psize, worst, best, median, average, stdev  = [], [], [], [], [], [], []
         import json
@@ -4182,23 +4209,46 @@ class Ui_Neuroptimus(QMainWindow):
         data = [average, median, best, worst]
         colors = ['black', 'blue', 'green', 'red']
         labels = ['average', 'median', 'best', 'worst']
-        figure = plt.figure()
+        # figure = plt.figure()
+        # canvas = MplCanvas(self, width=5, height=4, dpi=100)
+        # toolbar = NavigationToolbar(canvas, self)
+        app = QApplication.instance()
+        if app is None:
+            app = QApplication([])
+
+        self.plot_window = PlotWindow()
+        canvas = self.plot_window.canvas
         try:
-            plt.errorbar(generation, average, stderr, color=colors[0], label=labels[0])
+            # plt.errorbar(generation, average, stderr, color=colors[0], label=labels[0])
+            #plot errorbar
+            canvas.ax.errorbar(generation, average, stderr, color=colors[0], label=labels[0])
         except:
-            plt.plot(generation, average, color=colors[0], label=labels[0])
+            #print the error stack
+            traceback.print_exc()
+            # plt.plot(generation, average, color=colors[0], label=labels[0])
+            canvas.ax.plot(generation, average, color=colors[0], label=labels[0])
         for d, col, lab in zip(data[1:], colors[1:], labels[1:]):
-            plt.plot(generation, d, '.-', color=col, label=lab)
-        plt.fill_between(generation, data[2], data[3], color='#e6f2e6')
-        plt.grid(True)
+            canvas.ax.plot(generation, d, '.-', color=col, label=lab)
+            print(d)
+        
+        canvas.ax.fill_between(generation, data[2], data[3], color='#e6f2e6')
+        canvas.ax.grid(True)
         ymin = min([min(d) for d in data])
         ymax = max([max(d) for d in data])
         yrange = ymax - ymin
-        plt.ylim((ymin - 0.1*yrange, ymax + 0.1*yrange))  
-        plt.legend(loc='upper left')    
-        plt.xlabel('Generation')
-        plt.ylabel('Fitness')
-        plt.show() 
+        # plt.ylim((ymin - 0.1*yrange, ymax + 0.1*yrange))  
+        # plt.legend(loc='upper left')    
+        # plt.xlabel('Generation')
+        # plt.ylabel('Fitness')
+        # plt.show()
+        canvas.ax.set_ylim((ymin - 0.1*yrange, ymax + 0.1*yrange))
+        canvas.ax.legend(loc='upper left')
+        canvas.ax.set_xlabel('Generation')
+        canvas.ax.set_ylabel('Fitness')
+        canvas.draw()
+        self.plot_window.show()
+        app.exec_()
+        print("PlotGen end")
 
 
     def PlotGrid(self, e):

@@ -999,7 +999,7 @@ class CMAES_CMAES(baseOptimizer):
 			"""
 			with Pool(int(self.number_of_cpu)) as pool:
 				for generation in range(int(self.number_of_generations)):
-					print("Generation: {0}".format(generation))
+					# print("Generation: {0}".format(generation))
 					solutions = []
 					candidate = [self.cmaoptimizer.ask() for _ in range(self.cmaoptimizer.population_size)]
 					fitness = pool.map(self.ffun,candidate)

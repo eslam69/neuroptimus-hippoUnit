@@ -1,7 +1,7 @@
-import threading
-import time
 import matplotlib
 matplotlib.use('Agg')
+import threading
+import time
 import sys
 import os
 import Core

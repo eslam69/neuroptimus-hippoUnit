@@ -8,7 +8,8 @@ import numpy
 import json
 import os
 import matplotlib
-matplotlib.use("Qt5Agg")
+# matplotlib.use("Qt5Agg")
+matplotlib.use("Agg")
 matplotlib.interactive(False)
 from matplotlib import pyplot as plt
 
