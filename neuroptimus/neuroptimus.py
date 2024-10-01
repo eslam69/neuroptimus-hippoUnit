@@ -3,7 +3,8 @@ import getopt
 import traceback
 import sys
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 warnings.simplefilter("ignore", UserWarning)
 
 
@@ -24,10 +25,13 @@ def main(parameters):
 
     for o, a in parameters:
         if o == "-h":
-            print("This is the command line help of Optimizer\nRecognised arguments:\n\t-h:Help\n\t-g:Graphical interface\n\t-c:Command line interface, specify the settings file in the 2nd argument")
+            print(
+                "This is the command line help of Optimizer\nRecognised arguments:\n\t-h:Help\n\t-g:Graphical interface\n\t-c:Command line interface, specify the settings file in the 2nd argument"
+            )
             sys.exit()
         elif o == "-g":
             import graphic
+
             try:
                 print(a)
                 graphic.main(a)
@@ -53,6 +57,5 @@ if __name__ == "__main__":
     try:
         opts, args = getopt.getopt(sys.argv[1:], "c:gh", ["help"])
     except getopt.GetoptError as err:
-        sys.exit(
-            "Invalid argument! Please run the program with -h argument for help!")
+        sys.exit("Invalid argument! Please run the program with -h argument for help!")
     main(opts)
