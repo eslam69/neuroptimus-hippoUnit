@@ -1,10 +1,11 @@
+import warnings
+import getopt
+import traceback
+import sys
 import matplotlib
 matplotlib.use('Agg')
-import sys
-import traceback
-import getopt
-import warnings
 warnings.simplefilter("ignore", UserWarning)
+
 
 def main(parameters):
     """
@@ -21,11 +22,11 @@ def main(parameters):
         print("No argument, please type -h for help")
         sys.exit()
 
-    for o,a in parameters:
-        if o=="-h":
+    for o, a in parameters:
+        if o == "-h":
             print("This is the command line help of Optimizer\nRecognised arguments:\n\t-h:Help\n\t-g:Graphical interface\n\t-c:Command line interface, specify the settings file in the 2nd argument")
             sys.exit()
-        elif o=="-g":
+        elif o == "-g":
             import graphic
             try:
                 print(a)
@@ -34,7 +35,7 @@ def main(parameters):
             except IndexError as IE:
                 print(IE)
                 traceback.print_exc()
-        elif o=="-c":
+        elif o == "-c":
             try:
                 import cmd_line
             except Exception as e:
@@ -47,11 +48,11 @@ def main(parameters):
                 traceback.print_exc()
                 sys.exit("Missing filename!")
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "c:gh", ["help"])	
+        opts, args = getopt.getopt(sys.argv[1:], "c:gh", ["help"])
     except getopt.GetoptError as err:
-        sys.exit("Invalid argument! Please run the program with -h argument for help!")
+        sys.exit(
+            "Invalid argument! Please run the program with -h argument for help!")
     main(opts)
-
-
