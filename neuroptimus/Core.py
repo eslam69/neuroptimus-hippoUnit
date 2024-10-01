@@ -1,14 +1,15 @@
+import json
+import os
+import time
+from datetime import datetime
+
+import matplotlib
+import numpy
 from matplotlib import pyplot as plt
-from traceHandler import *
 from modelHandler import *
 from optimizerHandler import *
 from optionHandler import optionHandler
-import time
-from datetime import datetime
-import numpy
-import json
-import os
-import matplotlib
+from traceHandler import *
 
 # matplotlib.use("Qt5Agg")
 matplotlib.use("Agg")

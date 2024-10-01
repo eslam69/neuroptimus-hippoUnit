@@ -1,5 +1,6 @@
 import importlib.util
 import sys
+
 from traceHandler import sizeError
 
 try:
@@ -8,48 +9,35 @@ try:
     # matplotlib.use("Qt5Agg")
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-    from matplotlib.backends.backend_qt5agg import (
-        NavigationToolbar2QT as NavigationToolbar,
-    )
-
+    from matplotlib.backends.backend_qt5agg import \
+        FigureCanvasQTAgg as FigureCanvas
+    from matplotlib.backends.backend_qt5agg import \
+        NavigationToolbar2QT as NavigationToolbar
     from matplotlib.figure import Figure
 except RuntimeError as re:
     print(re)
     sys.exit()
+import json
 import os
-from copy import copy
-import Core
-import numpy
 import os.path
-from functools import partial, reduce, wraps
 import re
 import threading
-
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import (
-    QMainWindow,
-    QToolTip,
-    QApplication,
-    QWidget,
-    QInputDialog,
-    QLineEdit,
-    QFileDialog,
-    QTableWidgetItem,
-    QSizePolicy,
-    QVBoxLayout,
-    QGroupBox,
-    QTableWidget,
-    QHBoxLayout,
-    QPushButton,
-    QProgressBar,
-)
-from PyQt5.QtGui import *
-from PyQt5.QtCore import QThread, pyqtSignal
-import json
-from collections import OrderedDict
 import traceback
 import warnings
+from collections import OrderedDict
+from copy import copy
+from functools import partial, reduce, wraps
+
+import Core
+import numpy
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import (QApplication, QFileDialog, QGroupBox, QHBoxLayout,
+                             QInputDialog, QLineEdit, QMainWindow,
+                             QProgressBar, QPushButton, QSizePolicy,
+                             QTableWidget, QTableWidgetItem, QToolTip,
+                             QVBoxLayout, QWidget)
 
 warnings.simplefilter("ignore", UserWarning)
 

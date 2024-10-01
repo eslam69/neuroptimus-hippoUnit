@@ -1,20 +1,18 @@
-from fitnessFunctions import fF, frange, fF_Factory
-from optionHandler import optionHandler
-import sys
-import logging
-import numpy as np
 import copy
-import random
 import json
-import time
+import logging
 import os
-from math import sqrt
-
-from multiprocessing import Pool
-
+import random
+import sys
+import time
 from itertools import combinations, product
-
+from math import sqrt
+from multiprocessing import Pool
 from types import MethodType
+
+import numpy as np
+from fitnessFunctions import fF, fF_Factory, frange
+from optionHandler import optionHandler
 
 try:
     import copyreg
@@ -254,7 +252,7 @@ class ScipyAlgorithmBasis(baseOptimizer):
 
     def __init__(self, reader_obj, option_obj):
         baseOptimizer.__init__(self, reader_obj, option_obj)
-        from scipy import optimize, array, ndarray
+        from scipy import array, ndarray, optimize
 
         self.scipy_optimize = optimize
         self.scipy_array = array

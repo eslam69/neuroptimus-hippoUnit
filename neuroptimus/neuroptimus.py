@@ -1,7 +1,8 @@
-import warnings
 import getopt
-import traceback
 import sys
+import traceback
+import warnings
+
 import matplotlib
 
 matplotlib.use("Agg")

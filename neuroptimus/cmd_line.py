@@ -1,12 +1,13 @@
-from tqdm import tqdm
-from pylab import *
 import json
-import Core
 import os
 import sys
-import time
 import threading
+import time
+
+import Core
 import matplotlib
+from pylab import *
+from tqdm import tqdm
 
 matplotlib.use("Agg")
 matplotlib.interactive(False)
