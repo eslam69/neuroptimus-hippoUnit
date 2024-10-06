@@ -32,7 +32,10 @@ import warnings
 warnings.simplefilter("ignore", UserWarning)
 
 import importlib.util
-
+try:
+    import pymupdf  # PyMuPDF
+except:
+    import fitz as pymupdf  # PyMuPDF
 
 DEBUG = False
 def verbose(*args, **kwargs):
@@ -110,6 +113,8 @@ class FileWatcherQTThread(QThread):
                 pass
 
     def stop(self):
+        if not self._is_running:
+            return
         self._is_running = False
         self.wait()  # Wait for the thread to finish
         self.progress.emit(-1)
@@ -230,13 +235,16 @@ class FittingThread(QThread):
     finished = pyqtSignal()
     error = pyqtSignal(str)
 
-    def __init__(self, parent=None):
+    def __init__(self,method_name ,parent=None):
         super().__init__(parent)
+        self.method_name = method_name
 
     def run(self):
         try:
             # Call the runsim method
-            started = self.parent().runsim()
+            
+            #call method name
+            started = getattr(self.parent(), self.method_name)()
             if  not started:
                 return
             # Emit the finished signal
@@ -2173,10 +2181,18 @@ class Ui_Neuroptimus(QMainWindow):
         self.label_72.setText(_translate("Neuroptimus", "Final Result"))
         self.figure2, self.results_tab_axes = plt.subplots( dpi=80)
         self.canvas2 = FigureCanvas(self.figure2)
+        self.toolbar2 =  NavigationToolbar(self.canvas2, self)
+        self.plot_selector_dropDown = QtWidgets.QComboBox()
+        self.plot_selector_dropDown.setEnabled(False)
+        self.plot_selector_dropDown.currentTextChanged.connect(self.plot_selector)
+        self.generated_plots_paths = None
         self.canvas2.setParent(self.plot_widget)
-        hbox2 = QtWidgets.QHBoxLayout(self.plot_widget)
-        hbox2.addWidget(self.canvas2)
-        self.plot_widget.setLayout(hbox2)
+        results_plot_layout = QtWidgets.QVBoxLayout(self.plot_widget)
+        results_plot_layout.addWidget(self.plot_selector_dropDown)
+        results_plot_layout.addWidget(self.canvas2)
+        results_plot_layout.addWidget(self.toolbar2)
+
+        self.plot_widget.setLayout(results_plot_layout)
        
         self.pushButton_34.setText(_translate("Neuroptimus", "Save Parameters"))
         self.pushButton_34.clicked.connect(self.SaveParam)
@@ -2298,8 +2314,13 @@ class Ui_Neuroptimus(QMainWindow):
             
 
     def startFittingThread(self):
+        if self.is_optimization_active:
+            popup("Optimization is already running")
+            return False
+        
+        
         # Create a new thread for optimization
-        self.fitting_thread = FittingThread(self)
+        self.fitting_thread = FittingThread(method_name= "runsim",parent = self)
         # self.fitting_thread.finished.connect(self.on_fitting_finished)
         # self.fitting_thread.error.connect(self.on_fitting_error)
 
@@ -2686,6 +2707,8 @@ class Ui_Neuroptimus(QMainWindow):
         Sets units for drop down widget selecting simulation type.
         """
         self.dropdown.clear()
+        self.plot_selector_dropDown.clear()
+        self.plot_selector_dropDown.setEnabled(False)
         # if not is_hippounit_installed():
         #     self.type_selector[2] = None
         self.set_widgets_in_list(self.target_data_ui_components,True)
@@ -3873,6 +3896,7 @@ class Ui_Neuroptimus(QMainWindow):
         If an error happens, stores the number of tab in a list and it's error string in an other list.
         Switch to the tab, where the error happened and popup the erro.
         """
+
         if self.is_optimization_active:
             popup("Optimization is already running")
             return False
@@ -4026,7 +4050,7 @@ class Ui_Neuroptimus(QMainWindow):
                 else:
                     self.core.ThirdStep(self.kwargs, )
                 #fill the progress bar after finishing the third step
-                self.progress_thread.stop()
+                
                 # self.fill_progrees()
                 #wait for the thread to finish then stop the progress bar
                 # self.updateProgressBar(-1)
@@ -4048,6 +4072,7 @@ class Ui_Neuroptimus(QMainWindow):
 
                 try:
                     self.core.FourthStep()
+                    self.progress_thread.stop()
                     self.tabwidget.setTabEnabled(5,True)
                     self.tabwidget.setTabEnabled(6,True)
                     self.tabwidget.setCurrentIndex(5)
@@ -4061,12 +4086,69 @@ class Ui_Neuroptimus(QMainWindow):
                     traceback.print_exc()
                     print("#"*20)
                     popup(message)
+                    self.progress_thread.stop()
         self.is_optimization_active = False
         return True
         
         #stop the thread at the end of optimization
+    
+    def pdf_to_img(self, pdf_path):
+    
+        # Open the PDF file
+        pdf_document = pymupdf.open(pdf_path)
+        # Get the first page
+        page = pdf_document.load_page(0)
+        # Render the page to a pixmap
+        pix = page.get_pixmap()
+
+        # Convert the pixmap to an image
+        image = pix.tobytes("ppm")
+        return image, pix
+
+    def plot_from_path(self, generated_plot_path):
+        from PIL import Image
+        #if end with pdf
+        if generated_plot_path.endswith(".pdf"):
+            plot_img,pix = self.pdf_to_img(generated_plot_path)
+        
+            img = Image.frombytes("RGB", (int(pix.width), int(pix.height)), plot_img)
+        elif generated_plot_path.endswith(".png"):
+            img = Image.open(generated_plot_path)
+
+        self.results_tab_axes.clear()
+        self.results_tab_axes.imshow(img)
+        self.canvas2.draw()
+
+
+    def plot_selector(self , index):
+        selected_plot = self.plot_selector_dropDown.currentText()
+        selected_plot_path = self.generated_plots_paths[selected_plot]
+        self.plot_from_path(selected_plot_path)
+     
+
+    def _handle_hippounit_plots(self):
+        #make sure self.plot_selector_dropDown is enabled
+        self.plot_selector_dropDown.setEnabled(True)
+        #clear the plot_selector_dropDown
+        # disable self.plot_selector_dropDown signals
+        self.plot_selector_dropDown.blockSignals(True)
+        self.plot_selector_dropDown.clear()
+        #TODO: ADD hippoUnit plots
+        self.generated_plots_paths= self.core.get_generated_plots_paths("Feature_errors")
+        if isinstance(self.generated_plots_paths, dict) :
+            for plot in self.generated_plots_paths:
+                self.plot_selector_dropDown.addItem(plot)
+            self.plot_selector_dropDown.blockSignals(False)
+            
+            self.plot_selector_dropDown.setCurrentIndex(0)
         
 
+        # plot_path = "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/test_model_package/output/figs/somaticfeat_test_dataset/CA1_Bianchi/Feature_errors.pdf"
+        
+
+
+        
+        
 
 
     def results_tab_plot(self):
@@ -4092,6 +4174,9 @@ class Ui_Neuroptimus(QMainWindow):
         self.results_tab_axes.cla()
         mode = self.core.option_handler.type[-1].lower()
         if mode in ["voltage", "current"]:
+            # disable self.plot_selector_dropDown
+            self.plot_selector_dropDown.setEnabled(False)
+            
             for n in range(self.core.data_handler.number_of_traces()):
                 exp_data.extend(self.core.data_handler.data.GetTrace(n))
                 model_data.extend(self.core.final_result[n])
@@ -4113,6 +4198,7 @@ class Ui_Neuroptimus(QMainWindow):
             plt.close()
 
         elif mode == "features":
+            self.plot_selector_dropDown.setEnabled(False)
             for n in range(len(self.core.data_handler.features_data["stim_amp"])):
                 model_data.extend(self.core.final_result[n])
             no_traces=len(self.core.data_handler.features_data["stim_amp"])
@@ -4131,7 +4217,8 @@ class Ui_Neuroptimus(QMainWindow):
             plt.tight_layout()
             plt.close()
         elif mode == "hippounit":
-            pass
+            self.plot_selector_dropDown.setEnabled(True)
+            self._handle_hippounit_plots()
             #TODO: ADD hippoUnit plots
         
     def SaveParam(self, e):
