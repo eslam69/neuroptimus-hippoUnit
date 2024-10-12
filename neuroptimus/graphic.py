@@ -4158,6 +4158,10 @@ class Ui_Neuroptimus(QMainWindow):
         return image, pix
 
     def plot_from_path(self, generated_plot_path):
+        #check if path exist
+        if not os.path.exists(generated_plot_path):
+            popup("The plot file does not exist")
+            return
         from PIL import Image
         #if end with pdf
         if generated_plot_path.endswith(".pdf"):
@@ -4186,7 +4190,8 @@ class Ui_Neuroptimus(QMainWindow):
         self.plot_selector_dropDown.blockSignals(True)
         self.plot_selector_dropDown.clear()
         #TODO: ADD hippoUnit plots
-        self.generated_plots_paths= self.core.get_generated_plots_paths("Feature_errors")
+        self.generated_plots_paths = self.core.get_generated_plots_paths()
+
         if isinstance(self.generated_plots_paths, dict) :
             for plot in self.generated_plots_paths:
                 self.plot_selector_dropDown.addItem(plot)

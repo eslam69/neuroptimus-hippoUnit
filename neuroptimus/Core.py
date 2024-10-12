@@ -725,23 +725,48 @@ class coreModul():
 		elif test_name == "ObliqueIntegrationTest":
 			return "oblique_integration"
 		
-	def get_generated_plots_paths(self, plot_name:str,format= "pdf"):
+	def get_generated_plots_paths(self, plot_name:str = None,format= "pdf"):
 		if self.option_handler.type[-1] == "hippounit": # TODO: what to plot in the html in the case of hippounit for each test type?
 			hippounit_settings = self.optimizer.fit_obj.model.settings
 			model_name = hippounit_settings["model"]["name"]
 			tests = hippounit_settings["model"]["tests"]
 			plot_paths = {}
-			for test in tests:
-				test_name = self.test_default_folder_name(test) #TODO : now we are assuming that there is only one test
-				dataset_name = hippounit_settings["model"]["dataset"]
-					
-				output_path = hippounit_settings["model"]["output_dir"]
-				if dataset_name:
-					plot_path = os.path.join(output_path, "figs", f"{test_name}_{dataset_name}/{model_name}/{plot_name}.{format}")
-				else:
-					plot_path = os.path.join(output_path, "figs", f"{test_name}/{model_name}/{plot_name}.{format}")
-				plot_name = f"{test_name} {plot_name}"
-				plot_paths[plot_name] = plot_path
+			if plot_name is not None:
+				for test in tests:
+					test_name = self.test_default_folder_name(test) #TODO : now we are assuming that there is only one test
+					dataset_name = hippounit_settings["model"]["dataset"]
+						
+					output_path = hippounit_settings["model"]["output_dir"]
+					if dataset_name : 
+						plots_path_per_test = os.path.join(output_path, "figs", f"{test_name}_{dataset_name}/{model_name}/{plot_name}.{format}")
+						#check if the file exists
+						if not os.path.exists(plots_path_per_test):
+							plots_path_per_test = os.path.join(output_path, "figs", f"{test_name}/{model_name}/{plot_name}.{format}")
+					else:
+						plots_path_per_test = os.path.join(output_path, "figs", f"{test_name}/{model_name}/{plot_name}.{format}")
+					plot_name = f"{test_name} {plot_name}"
+					if os.path.exists(plots_path_per_test):
+						plot_paths[plot_name] = plots_path_per_test
+			else: #get all pdf plots in each test "figs" folder
+				for test in tests:
+					test_name = self.test_default_folder_name(test)
+					dataset_name = hippounit_settings["model"]["dataset"]
+					output_path = hippounit_settings["model"]["output_dir"]
+					if dataset_name:
+						plots_path_per_test = os.path.join(output_path, "figs", f"{test_name}_{dataset_name}/{model_name}")
+						#check if the file exists
+						if not os.path.exists(plots_path_per_test):
+							plots_path_per_test = os.path.join(output_path, "figs", f"{test_name}/{model_name}")
+						for file in os.listdir(plots_path_per_test):
+							if file.endswith(f".{format}"):
+								plot_name = file.split(".")[0]
+								plot_paths[f"{test_name} {plot_name}"] = os.path.join(plots_path_per_test, file)
+					else:
+						plots_path_per_test = os.path.join(output_path, "figs", f"{test_name}/{model_name}")
+						for file in os.listdir(plots_path_per_test):
+							if file.endswith(f".{format}"):
+								plot_name = file.split(".")[0]
+								plot_paths[f"{test_name} {plot_name}"] = os.path.join(plots_path_per_test, file)
 			return plot_paths
 			
 		else:
