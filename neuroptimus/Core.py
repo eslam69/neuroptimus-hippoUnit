@@ -134,7 +134,7 @@ class coreModul():
 
 	def htmlPdf(self, inp):
 		#return "<p align=\"center\"><embed src = \""+inp+"#toolbar=0&navpanes=0&scrollbar=0\" width = \"800px\" height = \"630px\" /></p>"
-		return "<p align=\"center\"><embed src = \" "+inp+" \" width = \"800px\" height = \"630px\" /></p>"
+		return f"""<p align=\"center\"><embed src = \"{inp}\" width = \"800px\" height = \"630px\" /></p>"""
 	
 	
 
@@ -605,8 +605,19 @@ class coreModul():
 					test_name += test + "_"
 			test_name = test_name[:-1]
 			dataset_name = hippounit_settings["model"]["dataset"]
-			pdf_path = "output/figs/{}_{}/{}/traces.pdf".format(test_name, dataset_name, model_name)
-			tmp_str+=self.htmlPdf(pdf_path)+"\n"
+			output_path = hippounit_settings["model"]["output_dir"]
+
+			# pdf_path = "output/figs/{}_{}/{}/traces.pdf".format(test_name, dataset_name, model_name)
+			traces_pdfs = self.get_generated_plots_paths("traces", "pdf")
+			#if any value ends with traces.pdf show it
+			for key, pdf_path in traces_pdfs.items(): #TODO list all traces from different tests
+				if pdf_path.endswith("traces.pdf"):
+					tmp_str+=self.htmlPdf(pdf_path)+"\n"
+					break
+				
+			# pdf_path = os.path.join(output_path, "figs", "{}_{}/{}/traces.pdf".format(test_name, dataset_name, model_name))
+
+			
 		else:
 			tmp_str+=self.htmlPciture("result_trace.png")+"\n"
 
@@ -700,8 +711,67 @@ class coreModul():
 			with open('metadata.json', 'w+') as outfile:
 				json.dump(json_var, outfile, indent=4)
 			
+	def test_default_folder_name(self, test_name:str) -> str:
+		if test_name == "SomaticFeaturesTest":
+			return "somaticfeat"
+		elif test_name == "PSPAttenuationTest":
+			return "PSP_attenuation"
+		elif test_name == "BackpropagatingAPTest":
+			return "backpropagating_AP"
+		elif test_name == "PathwayInteraction":
+			return "pathway_interaction"
+		elif test_name == "DepolarizationBlockTest":
+			return "depol_block"
+		elif test_name == "ObliqueIntegrationTest":
+			return "oblique_integration"
 		
-
+	def get_generated_plots_paths(self, plot_name:str = None,format= "pdf"):
+		if self.option_handler.type[-1] == "hippounit": # TODO: what to plot in the html in the case of hippounit for each test type?
+			hippounit_settings = self.optimizer.fit_obj.model.settings
+			model_name = hippounit_settings["model"]["name"]
+			tests = hippounit_settings["model"]["tests"]
+			plot_paths = {}
+			if plot_name is not None:
+				for test in tests:
+					test_name = self.test_default_folder_name(test) #TODO : now we are assuming that there is only one test
+					dataset_name = hippounit_settings["model"]["dataset"]
+						
+					output_path = hippounit_settings["model"]["output_dir"]
+					if dataset_name : 
+						plots_path_per_test = os.path.join(output_path, "figs", f"{test_name}_{dataset_name}/{model_name}/{plot_name}.{format}")
+						#check if the file exists
+						if not os.path.exists(plots_path_per_test):
+							plots_path_per_test = os.path.join(output_path, "figs", f"{test_name}/{model_name}/{plot_name}.{format}")
+					else:
+						plots_path_per_test = os.path.join(output_path, "figs", f"{test_name}/{model_name}/{plot_name}.{format}")
+					plot_name = f"{test_name} {plot_name}"
+					if os.path.exists(plots_path_per_test):
+						plot_paths[plot_name] = plots_path_per_test
+			else: #get all pdf plots in each test "figs" folder
+				for test in tests:
+					test_name = self.test_default_folder_name(test)
+					dataset_name = hippounit_settings["model"]["dataset"]
+					output_path = hippounit_settings["model"]["output_dir"]
+					if dataset_name:
+						plots_path_per_test = os.path.join(output_path, "figs", f"{test_name}_{dataset_name}/{model_name}")
+						#check if the file exists
+						if not os.path.exists(plots_path_per_test):
+							plots_path_per_test = os.path.join(output_path, "figs", f"{test_name}/{model_name}")
+						for file in os.listdir(plots_path_per_test):
+							if file.endswith(f".{format}"):
+								plot_name = file.split(".")[0]
+								plot_paths[f"{test_name} {plot_name}"] = os.path.join(plots_path_per_test, file)
+					else:
+						plots_path_per_test = os.path.join(output_path, "figs", f"{test_name}/{model_name}")
+						for file in os.listdir(plots_path_per_test):
+							if file.endswith(f".{format}"):
+								plot_name = file.split(".")[0]
+								plot_paths[f"{test_name} {plot_name}"] = os.path.join(plots_path_per_test, file)
+			return plot_paths
+			
+		else:
+			return "result_trace.png"
+		
 
 	def callGrid(self,resolution):
 		"""

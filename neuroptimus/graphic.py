@@ -32,7 +32,10 @@ import warnings
 warnings.simplefilter("ignore", UserWarning)
 
 import importlib.util
-
+try:
+    import pymupdf  # PyMuPDF
+except:
+    import fitz as pymupdf  # PyMuPDF
 
 DEBUG = False
 def verbose(*args, **kwargs):
@@ -110,6 +113,8 @@ class FileWatcherQTThread(QThread):
                 pass
 
     def stop(self):
+        if not self._is_running:
+            return
         self._is_running = False
         self.wait()  # Wait for the thread to finish
         self.progress.emit(-1)
@@ -230,17 +235,22 @@ class FittingThread(QThread):
     finished = pyqtSignal()
     error = pyqtSignal(str)
 
-    def __init__(self, parent=None):
+    def __init__(self,method_name ,parent=None):
         super().__init__(parent)
+        self.method_name = method_name
 
     def run(self):
         try:
             # Call the runsim method
-            started = self.parent().runsim()
+            
+            #call method name
+            started = getattr(self.parent(), self.method_name)()
             if  not started:
+                print("Thread not started")
                 return
             # Emit the finished signal
             self.finished.emit()
+            print("Thread finished")
         except Exception as e:
             # Emit the error signal with the error message
             self.error.emit(str(e))
@@ -388,9 +398,9 @@ class Ui_Neuroptimus(QMainWindow):
         self.gui_elements_state["celsius_input"] = {}
         self.gui_elements_state["soma_input"] = {}
 
-        
-        self.gui_elements_state["fitlist"] = {}
         self.gui_elements_state["test_specific_settings_table"] = {}
+        self.gui_elements_state["fitlist"] = {}
+        
         
         self.gui_elements_state["algolist"] = {}
         self.gui_elements_state["algorithm_parameter_list"] = {}
@@ -1674,9 +1684,9 @@ class Ui_Neuroptimus(QMainWindow):
                         row_values = []
                         for col in range(self.algorithm_parameter_list.columnCount()):
                             item = self.algorithm_parameter_list.item(row, col)
-                            if (item.flags() & QtCore.Qt.ItemIsUserCheckable) and not self.algorithm_parameter_list.item(row, col).text():
+                            if (item.flags() & QtCore.Qt.ItemIsUserCheckable) and not self.algorithm_parameter_list.item(row, col).text(): #check if the cell is checkable and empty
                                 row_values.append(item.checkState() == QtCore.Qt.Checked)
-                            else:
+                            else: #else save it's text
                                 row_values.append(self.algorithm_parameter_list.item(row, col).text())
                         table.append(row_values)
                 self.gui_elements_state[component_name] = {"type": "QTabelWidget", "value": table}
@@ -1727,6 +1737,15 @@ class Ui_Neuroptimus(QMainWindow):
                 elif component_name == "SiW.pushButton_accept":
                     if loadedValue["value"]:
                         self.SiW.pushButton_accept.click()
+                
+                elif component_name == "test_specific_settings_table":
+                    #update cells value in the table from the loaded table
+                    table = loadedValue["value"]
+                    if table:
+                        for row in range(len(table)):
+                            for column in range(0,len(table[0])):
+                                self.test_specific_settings_table.item(row, column).setText(table[row][column])
+
                 elif component_name == "fitlist":
                     table = loadedValue["value"] # [[],[]]
                     if table:
@@ -1745,15 +1764,16 @@ class Ui_Neuroptimus(QMainWindow):
                                 self.fitlist.selectRow(row)
                                 # self.fitlist.setItem(row, col, QtWidgets.QTableWidgetItem(table[row][col]))
                                 self.fitlist.item(row,col).setText(table[row][col])
-                                self.fitchanged()
+                                # self.fitlist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+                                self._enable_related_hippoUnit_settings(row)
 
-                elif component_name == "test_specific_settings_table":
-                    #update cells value in the table from the loaded table
-                    table = loadedValue["value"]
-                    if table:
-                        for row in range(len(table)):
-                            for column in range(0,len(table[0])):
-                                self.test_specific_settings_table.item(row, column).setText(table[row][column])
+                # elif component_name == "test_specific_settings_table":
+                #     #update cells value in the table from the loaded table
+                #     table = loadedValue["value"]
+                #     if table:
+                #         for row in range(len(table)):
+                #             for column in range(0,len(table[0])):
+                #                 self.test_specific_settings_table.item(row, column).setText(table[row][column])
 
                 elif component_name == "algolist":
                     selected_row = loadedValue["current_row"]
@@ -2173,10 +2193,18 @@ class Ui_Neuroptimus(QMainWindow):
         self.label_72.setText(_translate("Neuroptimus", "Final Result"))
         self.figure2, self.results_tab_axes = plt.subplots( dpi=80)
         self.canvas2 = FigureCanvas(self.figure2)
+        self.toolbar2 =  NavigationToolbar(self.canvas2, self)
+        self.plot_selector_dropDown = QtWidgets.QComboBox()
+        self.plot_selector_dropDown.setEnabled(False)
+        self.plot_selector_dropDown.currentTextChanged.connect(self.plot_selector)
+        self.generated_plots_paths = None
         self.canvas2.setParent(self.plot_widget)
-        hbox2 = QtWidgets.QHBoxLayout(self.plot_widget)
-        hbox2.addWidget(self.canvas2)
-        self.plot_widget.setLayout(hbox2)
+        results_plot_layout = QtWidgets.QVBoxLayout(self.plot_widget)
+        results_plot_layout.addWidget(self.plot_selector_dropDown)
+        results_plot_layout.addWidget(self.canvas2)
+        results_plot_layout.addWidget(self.toolbar2)
+
+        self.plot_widget.setLayout(results_plot_layout)
        
         self.pushButton_34.setText(_translate("Neuroptimus", "Save Parameters"))
         self.pushButton_34.clicked.connect(self.SaveParam)
@@ -2298,8 +2326,11 @@ class Ui_Neuroptimus(QMainWindow):
             
 
     def startFittingThread(self):
+        
+    
+        
         # Create a new thread for optimization
-        self.fitting_thread = FittingThread(self)
+        self.fitting_thread = FittingThread(method_name= "runsim",parent = self)
         # self.fitting_thread.finished.connect(self.on_fitting_finished)
         # self.fitting_thread.error.connect(self.on_fitting_error)
 
@@ -2686,6 +2717,8 @@ class Ui_Neuroptimus(QMainWindow):
         Sets units for drop down widget selecting simulation type.
         """
         self.dropdown.clear()
+        self.plot_selector_dropDown.clear()
+        self.plot_selector_dropDown.setEnabled(False)
         # if not is_hippounit_installed():
         #     self.type_selector[2] = None
         self.set_widgets_in_list(self.target_data_ui_components,True)
@@ -3251,9 +3284,26 @@ class Ui_Neuroptimus(QMainWindow):
         if self.fitlist.item(selected_row, 1) != None and self.fitlist.item(selected_row, 1).text() != ""  and float(self.fitlist.item(selected_row, 1).text()) != 0:
             return True
 
+    def _enable_related_hippoUnit_settings(self,selected_row):
+        """
+        Enables the related settings in the table for the selected Hippounit test
+        """
+        test_name = self.fitlist.item(selected_row, 0).text()
+        is_test_weighted = self._check_fitlist_weight(selected_row)
+                
+                
+        if is_test_weighted and test_name in self.HippoTests_required_parameters.keys():
+            
+            required_properties_by_test = self.HippoTests_required_parameters[test_name]
+            for property in required_properties_by_test:
+                property_row = self.HippoTests_parameter_location_in_table[property]
+                self.test_specific_settings_table.item(property_row, 1).setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled)
+                self.test_specific_settings_table.item(property_row, 1).setBackground(WHITE)
+                self.test_specific_settings_table.item(property_row, 0).setBackground(WHITE)
+        else:
+            pass
 
-
-    def fitchanged(self):
+    def fitchanged(self,row_idx=None):
         """
         Calls when the weights changed for the fitness functions. Checks which Hippounit test is selected and enables the corresponding row in the settings table.
         """
@@ -3271,7 +3321,10 @@ class Ui_Neuroptimus(QMainWindow):
             
             # self.HippoTests_parameter_location_in_table = {"TrunkSecList_name":3 , "ObliqueSecList_name":4 , "TuftSecList_name":5, "num_of_dend_locations":6}
             #get currently selected row 
-            selected_row = self.fitlist.currentRow()
+            if row_idx is None:
+                selected_row = self.fitlist.currentRow()
+            else:
+                selected_row = row_idx
             # verbose("Current selected row ---------->",selected_row)
 
             #get the name of the test if not its's weight (2nd column) is not none and not empty and not 0
@@ -3599,7 +3652,7 @@ class Ui_Neuroptimus(QMainWindow):
         self.hippounit_config["model"]["SomaSecList_name"] = self.test_specific_settings_table.item(2,1).text() if self.test_specific_settings_table.item(2,1).text() != "" else None
 
         #the trunk section list name
-        hippo_paramaters_to_check = ["TrunkSecList_name", "ObliqueSecList_name", "TuftSecList_name", "num_of_dend_locations"] 
+        hippo_paramaters_to_check = ["TrunkSecList_name", "ObliqueSecList_name", "TuftSecList_name"] 
         #Assign the values of these parameters to the config file, if they are not empty or none and was supposed to be set
         for param in hippo_paramaters_to_check:
             # get the value of the parameter based on the configuaration dictionary HippoTests_parameter_location_in_table which maps the parameter name to the row in the table
@@ -3678,6 +3731,20 @@ class Ui_Neuroptimus(QMainWindow):
                         popup("Stimuli path must be set to a valid file path!")
                         return None
                     self.hippounit_config["tests"][test_real_name]["stimuli_file_path"] = stimuli_path
+                
+                # if num_of_dend_locations is set for PSPAttenuationTest or PathwayInteraction
+                if test_real_name in ["PSPAttenuationTest","PathwayInteraction"]:
+                    #get number of dend locations                    
+                    try:
+                        self.hippounit_config["tests"][test_real_name]["num_of_dend_locations"] = int(self.test_specific_settings_table.item(self.HippoTests_parameter_location_in_table["num_of_dend_locations"] ,1).text())
+                    except:
+                        #go to tab 4
+                        self.tabwidget.setCurrentIndex(3)
+                        #focus on the num_of_dend_locations input
+                        self.test_specific_settings_table.item(self.HippoTests_parameter_location_in_table["num_of_dend_locations"],1).setSelected(True)
+                        popup("Number of dend locations must be set to a number!")
+                        return None
+
                 #get penalty of missing feature for the test, the 5th column of the row
                 try:
                     self.hippounit_config["tests"][test_real_name]["unevaluated_feature_penalty"] = float(self.fitlist.item(row,4).text())
@@ -3689,7 +3756,6 @@ class Ui_Neuroptimus(QMainWindow):
                     popup("Missing feature penalty must be set to a number!")
                     return None
         # print(self.hippounit_config)
-
         # ---------------------------------------------------------------------------- #
         # Now we will preparet the neuroptimus json config file from the GUI
         # get paramaters from self.BW.boundary_table save them to ordered dict
@@ -3861,7 +3927,8 @@ class Ui_Neuroptimus(QMainWindow):
             QtWidgets.QApplication.processEvents()
 
     
-
+    def _stop_optimization(self):
+        self.is_optimization_active = False
 
         
     def runsim(self,singlerun=False)->bool: 
@@ -3873,10 +3940,12 @@ class Ui_Neuroptimus(QMainWindow):
         If an error happens, stores the number of tab in a list and it's error string in an other list.
         Switch to the tab, where the error happened and popup the erro.
         """
+
         if self.is_optimization_active:
             popup("Optimization is already running")
             return False
         
+
         self.is_optimization_active = True
 
 
@@ -3884,22 +3953,29 @@ class Ui_Neuroptimus(QMainWindow):
     
         if self.core.option_handler.type[-1].lower() == "hippounit":
             json_filename =  self.hippounit_gui_to_json()
+            print("Returned From hippounit_gui_to_json")
+            print("File save to", json_filename)
             if json_filename is None:
                 popup("There was an error in the Hippounit settings, please check them")
+                self._stop_optimization()
                 return
             try:
                 with open(json_filename, "r") as f:
+                    print("Reading HippoUnit Config From", json_filename)
                     json_data = json.load(f)
                     
             except IOError as ioe:
                 popup("File not found!\n")
+                self._stop_optimization()
                 print(ioe)
                 sys.exit("File not found!\n")
+                
             try:
                 self.core.option_handler.ReadJson(json_data['attributes'])
             except Exception as e:
                 # print(e)
                 traceback.print_exc()
+                self._stop_optimization()
                 popup("Error in reading json file")
                 return
         # self.core.option_handler.ReadJson(json_data['attributes'])
@@ -4026,7 +4102,7 @@ class Ui_Neuroptimus(QMainWindow):
                 else:
                     self.core.ThirdStep(self.kwargs, )
                 #fill the progress bar after finishing the third step
-                self.progress_thread.stop()
+                
                 # self.fill_progrees()
                 #wait for the thread to finish then stop the progress bar
                 # self.updateProgressBar(-1)
@@ -4048,6 +4124,7 @@ class Ui_Neuroptimus(QMainWindow):
 
                 try:
                     self.core.FourthStep()
+                    self.progress_thread.stop()
                     self.tabwidget.setTabEnabled(5,True)
                     self.tabwidget.setTabEnabled(6,True)
                     self.tabwidget.setCurrentIndex(5)
@@ -4061,12 +4138,74 @@ class Ui_Neuroptimus(QMainWindow):
                     traceback.print_exc()
                     print("#"*20)
                     popup(message)
+                    self.progress_thread.stop()
         self.is_optimization_active = False
         return True
         
         #stop the thread at the end of optimization
+    
+    def pdf_to_img(self, pdf_path):
+    
+        # Open the PDF file
+        pdf_document = pymupdf.open(pdf_path)
+        # Get the first page
+        page = pdf_document.load_page(0)
+        # Render the page to a pixmap
+        pix = page.get_pixmap()
+
+        # Convert the pixmap to an image
+        image = pix.tobytes("ppm")
+        return image, pix
+
+    def plot_from_path(self, generated_plot_path):
+        #check if path exist
+        if not os.path.exists(generated_plot_path):
+            popup("The plot file does not exist")
+            return
+        from PIL import Image
+        #if end with pdf
+        if generated_plot_path.endswith(".pdf"):
+            plot_img,pix = self.pdf_to_img(generated_plot_path)
+        
+            img = Image.frombytes("RGB", (int(pix.width), int(pix.height)), plot_img)
+        elif generated_plot_path.endswith(".png"):
+            img = Image.open(generated_plot_path)
+
+        self.results_tab_axes.clear()
+        self.results_tab_axes.imshow(img)
+        self.canvas2.draw()
+
+
+    def plot_selector(self , index):
+        selected_plot = self.plot_selector_dropDown.currentText()
+        selected_plot_path = self.generated_plots_paths[selected_plot]
+        self.plot_from_path(selected_plot_path)
+     
+
+    def _handle_hippounit_plots(self):
+        #make sure self.plot_selector_dropDown is enabled
+        self.plot_selector_dropDown.setEnabled(True)
+        #clear the plot_selector_dropDown
+        # disable self.plot_selector_dropDown signals
+        self.plot_selector_dropDown.blockSignals(True)
+        self.plot_selector_dropDown.clear()
+        #TODO: ADD hippoUnit plots
+        self.generated_plots_paths = self.core.get_generated_plots_paths()
+
+        if isinstance(self.generated_plots_paths, dict) :
+            for plot in self.generated_plots_paths:
+                self.plot_selector_dropDown.addItem(plot)
+            self.plot_selector_dropDown.blockSignals(False)
+            
+            self.plot_selector_dropDown.setCurrentIndex(0)
         
 
+        # plot_path = "/home/eslam/gsoc/neuroptimus-hippoUnit/neuroptimus/Data/test_model_package/output/figs/somaticfeat_test_dataset/CA1_Bianchi/Feature_errors.pdf"
+        
+
+
+        
+        
 
 
     def results_tab_plot(self):
@@ -4092,6 +4231,9 @@ class Ui_Neuroptimus(QMainWindow):
         self.results_tab_axes.cla()
         mode = self.core.option_handler.type[-1].lower()
         if mode in ["voltage", "current"]:
+            # disable self.plot_selector_dropDown
+            self.plot_selector_dropDown.setEnabled(False)
+            
             for n in range(self.core.data_handler.number_of_traces()):
                 exp_data.extend(self.core.data_handler.data.GetTrace(n))
                 model_data.extend(self.core.final_result[n])
@@ -4113,6 +4255,7 @@ class Ui_Neuroptimus(QMainWindow):
             plt.close()
 
         elif mode == "features":
+            self.plot_selector_dropDown.setEnabled(False)
             for n in range(len(self.core.data_handler.features_data["stim_amp"])):
                 model_data.extend(self.core.final_result[n])
             no_traces=len(self.core.data_handler.features_data["stim_amp"])
@@ -4131,7 +4274,8 @@ class Ui_Neuroptimus(QMainWindow):
             plt.tight_layout()
             plt.close()
         elif mode == "hippounit":
-            pass
+            self.plot_selector_dropDown.setEnabled(True)
+            self._handle_hippounit_plots()
             #TODO: ADD hippoUnit plots
         
     def SaveParam(self, e):
